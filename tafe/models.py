@@ -80,7 +80,7 @@ class Student(Person):
         if not self.pk:
             super(Student, self).save() # Call the first save() method to get pk
             self.slug = slugify(self.get_id())
-            super(Student, self).save() # Call the "real" save() method.
+        super(Student, self).save() # Call the "real" save() method.
 
 class Staff(Person):
     '''Respresents each Staff member'''
