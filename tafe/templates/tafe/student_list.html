@@ -1,0 +1,32 @@
+{% extends "tafe/base_site.html" %}
+{% comment %}
+
+Student list page of the portal.
+
+{% endcomment %}
+
+{% block title %}
+List of people available
+{% endblock %}
+{% block coltype %}colMS{% endblock %}
+{% block content %}
+{{ block.super }}<h3>Student register</h3>
+{% if student_list %}
+    {% regroup student_list by first_letter as letter_list %} 
+    {% for letter in letter_list %}
+        <a href="#{{ letter.grouper }}">{{ letter.grouper }}</a>
+    {% endfor %}
+        
+    {% for letter in letter_list %}
+        <h3 id="{{ letter.grouper }}">{{ letter.grouper }}</h3>
+        <ul>
+            {% for student in letter.list %}
+                <li><a href="{{ student.get_absolute_url }}">{{ student }}</a></li>
+            {% endfor %}
+        </ul>
+        </li>
+    {% endfor %}
+{% else %}
+    <p>No students are available.</p>
+{% endif %}
+{% endblock %}

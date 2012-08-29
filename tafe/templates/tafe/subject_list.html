@@ -1,0 +1,32 @@
+{% extends "tafe/base_site.html" %}
+{% comment %}
+
+Vacancy list page of the portal.
+
+{% endcomment %}
+
+{% block title %}
+Subject list
+{% endblock %}
+{% block coltype %}colMS{% endblock %}
+{% block content %}
+{{ block.super }}
+{% if subject_list %}
+    {% regroup subject_list by first_letter as letter_list %} 
+    {% for letter in letter_list %}
+        <a href="#{{ letter.grouper }}">{{ letter.grouper }}</a>
+    {% endfor %}
+        
+    {% for letter in letter_list %}
+        <h3 id="{{ letter.grouper }}">{{ letter.grouper }}</h3>
+        <ul>
+            {% for subject in letter.list %}
+                <li><a href="{{ subject.get_absolute_url }}">{{ subject }}</a></li>
+            {% endfor %}
+        </ul>
+        </li>
+    {% endfor %}
+{% else %}
+    <p>No people are available.</p>
+{% endif %}
+{% endblock %}
