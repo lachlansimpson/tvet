@@ -61,10 +61,6 @@ class Person(models.Model):
     def first_letter(self):
         return self.surname and self.surname[0] or ''
 
-    @models.permalink	
-    def get_absolute_url(self):
-        return ('person_view', [str(self.slug)])
-
 class Student(Person):
     '''Represents each student '''
     def get_id(self):
@@ -82,6 +78,10 @@ class Student(Person):
             self.slug = slugify(self.get_id())
         super(Student, self).save() # Call the "real" save() method.
 
+    @models.permalink	
+    def get_absolute_url(self):
+        return ('student_view', [str(self.slug)])
+
 class Staff(Person):
     '''Respresents each Staff member'''
     def get_id(self):
@@ -90,6 +90,10 @@ class Staff(Person):
     def save(self):
         self.slug = slugify(self) #slugify staff members name
         super(Staff, self).save() 
+
+    @models.permalink	
+    def get_absolute_url(self):
+        return ('staff_view', [str(self.slug)])
 
 class Subject(models.Model):
     '''Represents individual subjects, classes, cohorts'''
