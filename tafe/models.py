@@ -108,6 +108,10 @@ class Subject(models.Model):
         '''Subject reference: subject name and the year given'''
         return self.name + ', ' + str(self.year) 
 
+    @models.permalink	
+    def get_absolute_url(self):
+        return ('subject_view', [str(self.slug)])
+
 class Course(models.Model):
     '''Represents Courses - a collection of subjects leading to a degree'''
     name = models.CharField(max_length=30)
@@ -124,6 +128,10 @@ class Course(models.Model):
         '''Course Reference: name of the course'''
         return self.name
 
+    @models.permalink	
+    def get_absolute_url(self):
+        return ('course_view', [str(self.slug)])
+
 class SubjectResults(models.Model):
     '''Represents an Assignment and it's results'''
     name = models.CharField(max_length=30)
@@ -137,6 +145,10 @@ class SubjectResults(models.Model):
     def __unicode__(self):
         '''SubjectResults reference: the assignment name, due date and grade given'''
         return self.name + ', ' + str(self.date) + ', ' + str(self.grade)
+
+    @models.permalink	
+    def get_absolute_url(self):
+        return ('subjectresults_view', [str(self.slug)])
 
 class Attendance(models.Model):
     '''Represents the "roll call" or attendance record'''
@@ -155,6 +167,10 @@ class Attendance(models.Model):
         if not self.date:
             self.date = today
         super(Attendance, self).save()
+
+    @models.permalink	
+    def get_absolute_url(self):
+        return ('attendance_view', [str(self.slug)])
 
 class Enrolment(models.Model):
     '''Represents a Student's enrolment in a Course'''
@@ -177,6 +193,10 @@ class Enrolment(models.Model):
             enrol + ', ' + self.get_course_results_display()
         return enrol
 
+    @models.permalink	
+    def get_absolute_url(self):
+        return ('enrolment_view', [str(self.slug)])
+
 class Grade(models.Model):
     '''Represents a Student's interactions with a Subject'''
     student = models.ForeignKey(Student)
@@ -188,3 +208,9 @@ class Grade(models.Model):
     def __unicode__(self):
         '''Grade reference: student's name and subject '''
         return str(self.student) + ', ' + str(self.subject)
+    
+    @models.permalink	
+    def get_absolute_url(self):
+        return ('grade_view', [str(self.slug)])
+
+
