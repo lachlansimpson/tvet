@@ -1,6 +1,6 @@
 from django.db import models
 from django.template.defaultfilters import slugify
-import datetime;
+import datetime
 
 today = datetime.date.today() # used by the Attendance record
 
@@ -41,7 +41,7 @@ class Person(models.Model):
     '''Abstract Class under Student and Staff'''
     first_name = models.CharField(max_length=30)
     surname = models.CharField(max_length=30)
-    slug = models.SlugField(editable=False, blank=True)
+    slug = models.SlugField(max_length=40, editable=False, blank=True)
     dob = models.DateField('Date of Birth')  
     gender = models.CharField(max_length='1', choices=GENDER_CHOICES,
                               default='F')
@@ -72,7 +72,8 @@ class Student(Person):
         return self.pk + 100000
 
     def save(self):
-        ''' Set the Slug to student ID number''' 
+        '''Can't use prepopulated_fields due to function's restrictions
+        Set the Slug to student ID number''' 
         if not self.pk:
             super(Student, self).save() # Call the first save() method to get pk
             self.slug = slugify(self.get_id())
@@ -97,16 +98,12 @@ class Staff(Person):
 
 class Subject(models.Model):
     '''Represents individual subjects, classes, cohorts'''
+    ''' TODO: name it UNIT OF COMPETENCE '''
     name = models.CharField(max_length=30)
-    slug = models.CharField(max_length=30, blank=True)
+    slug = models.SlugField(max_length=40)
     semester = models.CharField(max_length=1, blank=True, choices=SEMESTER_CHOICES)
     year = models.IntegerField()
     members = models.ManyToManyField(Student, through='Grade', blank=True, null=True)
-
-    def save(self):
-        ''' required for slug '''
-        self.slug = slugify(self)
-        super(Subject, self).save()
 
     def __unicode__(self):
         '''Subject reference: subject name and the year given'''
@@ -118,15 +115,11 @@ class Subject(models.Model):
 
 class Course(models.Model):
     '''Represents Courses - a collection of subjects leading to a degree'''
+    ''' TODO: aka Qualifications'''
     name = models.CharField(max_length=30)
-    slug = models.CharField(max_length=30, blank=True)
+    slug = models.SlugField(max_length=40)
     students = models.ManyToManyField(Student, through='Enrolment', blank=True, null=True)
     subjects = models.ManyToManyField(Subject, blank=True, null=True)
-
-    def save(self):
-        ''' required to set slug '''
-        self.slug = slugify(self.name)
-        super(Course, self).save()
 
     def __unicode__(self):
         '''Course Reference: name of the course'''
@@ -183,6 +176,7 @@ class Enrolment(models.Model):
     date_started = models.DateField()
     date_ended = models.DateField(blank=True, null=True)
     mark = models.CharField(max_length=1, choices=COURSE_RESULTS, blank=True)
+    slug = models.SlugField(max_length=40, blank=True)
 
     def __unicode__(self):
         '''
@@ -201,14 +195,24 @@ class Enrolment(models.Model):
     def get_absolute_url(self):
         return ('enrolment_view', [str(self.slug)])
 
+    def save(self):
+        '''Can't use prepopulated_fields due to function's restrictions
+        using the unique combination of student, course and year started
+        '''
+        year_started = self.date_started.year()
+        slug_str = self.student + self.course + str(year_started)
+        self.slug = slugify(slug_str)
+        super(Enrolment, self).save() 
+
 class Grade(models.Model):
-    '''Represents a Student's interactions with a Subject'''
+    '''Represents a Student's interactions with a Subject. ie, being in a class.'''
     student = models.ForeignKey(Student)
     subject = models.ForeignKey(Subject)
     date_started = models.DateField()
     results = models.ForeignKey(SubjectResults, blank=True, null=True)
     attendance = models.ManyToManyField(Attendance, blank=True, null=True) 
-    
+    slug = models.SlugField(max_length=60)
+
     def __unicode__(self):
         '''Grade reference: student's name and subject '''
         return str(self.student) + ', ' + str(self.subject)
@@ -217,4 +221,11 @@ class Grade(models.Model):
     def get_absolute_url(self):
         return ('grade_view', [str(self.slug)])
 
-
+    def save(self):
+        '''Can't use prepopulated_fields due to function's restrictions
+        using the unique combination of student, subject and year they started
+        the class'''
+        year_started = self.date_started.year()
+        slug_temp = self.student + self.subject + str(year_started)
+        self.slug = slugify(slug_temp)
+        super(Grade, self).save() 

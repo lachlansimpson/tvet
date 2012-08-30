@@ -15,6 +15,14 @@ class StudentAdminForm(ModelForm):
 class StudentAdmin(admin.ModelAdmin):
     form = StudentAdminForm
 
+class SubjectAdmin(admin.ModelAdmin):
+    model = Subject
+    prepopulated_fields = {'slug': ('name','year')}
+
+class CourseAdmin(admin.ModelAdmin):
+    model = Course
+    prepopulated_fields = {'slug': ('name',)}
+
 class AttendanceInline(admin.StackedInline):
     model = Attendance
     template = 'admin/collapsed_tabular_inline.html'

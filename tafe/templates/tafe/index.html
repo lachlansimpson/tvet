@@ -1,0 +1,15 @@
+{% extends "tafe/base_site.html" %}
+{% comment %}
+
+{% load i18n admin_static %}
+
+{% block extrastyle %}{{ block.super }}<link rel="stylesheet" type="text/css" href="{% static "admin/css/dashboard.css" %}" />{% endblock %}
+
+
+{% block bodyclass %}dashboard{% endblock %}
+{% block breadcrumbs %}{% endblock %}
+{% endcomment %}
+{% block coltype %}colMS{% endblock %}
+{% block content %}
+    {{ block.super }}
+{% endblock %}
