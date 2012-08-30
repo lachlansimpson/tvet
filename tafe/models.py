@@ -199,8 +199,8 @@ class Enrolment(models.Model):
         '''Can't use prepopulated_fields due to function's restrictions
         using the unique combination of student, course and year started
         '''
-        year_started = self.date_started.year()
-        slug_str = self.student + self.course + str(year_started)
+        year_started = self.date_started.year
+        slug_str = str(self.student) + ' ' + str(self.course) + ' ' + str(year_started)
         self.slug = slugify(slug_str)
         super(Enrolment, self).save() 
 

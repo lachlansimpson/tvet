@@ -7,7 +7,7 @@ urlpatterns = patterns('',
     #url(r'^$', 'index'),
     url(r'^$', ListView.as_view(queryset=Subject.objects.all())),
     
-    url(r'^students/$', ListView.as_view(queryset=Student.objects.all())),
+    url(r'^students/$', ListView.as_view(queryset=Student.objects.all().order_by('surname'))),
     url(r'^student/(?P<slug>[-\w]+)/$', DetailView.as_view(model=Student), name='student_view'),
 
     url(r'^courses/$', ListView.as_view(queryset=Course.objects.all())),

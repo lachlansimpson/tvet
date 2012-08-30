@@ -1,32 +1,25 @@
 {% extends "tafe/base_site.html" %}
 {% comment %}
 
-Vacancy list page of the portal.
+Course list page of the portal.
 
 {% endcomment %}
 
 {% block title %}
-Course list
+    Course list
 {% endblock %}
 {% block coltype %}colMS{% endblock %}
 {% block content %}
-{{ block.super }}
+    {{ block.super }}
+<h3>Courses Available</h3>    
 {% if course_list %}
-    {% regroup course_list by first_letter as letter_list %} 
-    {% for letter in letter_list %}
-        <a href="#{{ letter.grouper }}">{{ letter.grouper }}</a>
-    {% endfor %}
-        
-    {% for letter in letter_list %}
-        <h3 id="{{ letter.grouper }}">{{ letter.grouper }}</h3>
-        <ul>
-            {% for course in letter.list %}
-                <li><a href="{{ course.get_absolute_url }}">{{ course }}</a></li>
-            {% endfor %}
-        </ul>
-        </li>
-    {% endfor %}
+    <h3 id="{{ letter.grouper }}">{{ letter.grouper }}</h3>
+    <ul>
+        {% for course in course_list %}
+        <li><a href="{{ course.get_absolute_url }}">{{ course }}</a></li>
+        {% endfor %}
+    </ul>
 {% else %}
-    <p>No people are available.</p>
+    <p>No courses are available.</p>
 {% endif %}
 {% endblock %}

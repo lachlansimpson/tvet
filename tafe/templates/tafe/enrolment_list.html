@@ -1,7 +1,7 @@
 {% extends "tafe/base_site.html" %}
 {% comment %}
 
-Student list page of the portal.
+Enrolments list page of the portal.
 
 {% endcomment %}
 
@@ -10,23 +10,13 @@ List of enrolments
 {% endblock %}
 {% block coltype %}colMS{% endblock %}
 {% block content %}
-{{ block.super }}<h3>Student register</h3>
-{% if enrolment_list %}
-    {% regroup enrolment_list by first_letter as letter_list %} 
-    {% for letter in letter_list %}
-        <a href="#{{ letter.grouper }}">{{ letter.grouper }}</a>
-    {% endfor %}
-        
-    {% for letter in letter_list %}
-        <h3 id="{{ letter.grouper }}">{{ letter.grouper }}</h3>
-        <ul>
-            {% for enrolment in letter.list %}
-                <li><a href="{{ enrolment.get_absolute_url }}">{{ enrolment }}</a></li>
-            {% endfor %}
-        </ul>
-        </li>
-    {% endfor %}
-{% else %}
-    <p>No enrolment are available.</p>
-{% endif %}
+    {{ block.super }}
+    <h3>Student register</h3>
+    {% if enrolment_list %}
+        {% for enrolment in enrolment_list %}
+            <li><a href="{{ enrolment.get_absolute_url }}">{{ enrolment }}</a></li>
+        {% endfor %}
+    {% else %}
+        <p>No enrolment are available.</p>
+    {% endif %}
 {% endblock %}

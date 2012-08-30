@@ -10,23 +10,13 @@ List of grades available
 {% endblock %}
 {% block coltype %}colMS{% endblock %}
 {% block content %}
-{{ block.super }}<h3>Grade register</h3>
-{% if grade_list %}
-    {% regroup grade_list by first_letter as letter_list %} 
-    {% for letter in letter_list %}
-        <a href="#{{ letter.grouper }}">{{ letter.grouper }}</a>
-    {% endfor %}
-        
-    {% for letter in letter_list %}
-        <h3 id="{{ letter.grouper }}">{{ letter.grouper }}</h3>
-        <ul>
-            {% for grade in letter.list %}
-                <li><a href="{{ grade.get_absolute_url }}">{{ grade }}</a></li>
-            {% endfor %}
-        </ul>
-        </li>
-    {% endfor %}
-{% else %}
-    <p>No grades are available.</p>
-{% endif %}
+    {{ block.super }}
+    <h3>Grade register</h3>
+    {% if grade_list %}
+        {% for grade in grade_list %}
+            <li><a href="{{ grade.get_absolute_url }}">{{ grade }}</a></li>
+        {% endfor %}
+    {% else %}
+        <p>No grades are available.</p>
+    {% endif %}
 {% endblock %}
