@@ -1,6 +1,7 @@
 from django.db import models
 from django.template.defaultfilters import slugify
 import datetime
+import calendar
 
 today = datetime.date.today() # used by the Attendance record
 
@@ -16,15 +17,27 @@ SEMESTER_CHOICES = (
 )
 
 SESSION_CHOICES = (
-    (u'M',u'Morning'),
-    (u'A',u'Afternoon'),
+    (u'0',u'Morning 1'),
+    (u'1',u'Morning 2'),
+    (u'2',u'Afternoon 1'),
+    (u'3',u'Afternoon 2'),
+    (u'4',u'Evening'),
+    (u'5',u'Weekend'),
 )
 
 REASON_CHOICES = (
-    (u'P',u'Present'),
-    (u'S',u'Sick'),
-    (u'L',u'Late'),
-    (u'U',u'Unexplained'),
+    (u'0',u'Present'),
+    (u'1',u'Absent'),
+    (u'2',u'Late'),
+    (u'3',u'Withdrawn'),
+)
+
+ABSENCE_CHOICES = (
+    (u'0',u'Sick'),
+    (u'1',u'Medical Certificate'),
+    (u'2',u'KIT Official'),
+    (u'3',u'Compassionate'),
+    (u'4',u'Unexplained'),
 )
 
 SUBJECT_RESULTS = (
@@ -36,6 +49,35 @@ COURSE_RESULTS = (
     (u'P',u'Pass'),
     (u'F',u'Fail'),
 )
+
+class Timetable(models.Model):
+    class Meta:
+        unique_together = ('year','term')
+
+    year = models.IntegerField()
+    term = models.IntegerField()
+    start_date = models.DateField()
+    end_date = models.DateField()
+    slug = models.SlugField(max_length=12)
+    
+    def __unicode__(self):
+        '''Timetable reference: year and term number'''
+        return str(self.year) + ', Term ' + str(self.term)
+
+class Session(models.Model):
+    session_number = models.CharField(max_length=1,choices=SESSION_CHOICES)
+    subject = models.ForeignKey('Subject')
+    timetable = models.ForeignKey(Timetable)
+    date = models.DateField()
+
+    def __unicode__(self):
+        '''Session Reference: day of week, date, term/year (Timetable)'''
+        date_readable = self.day_of_week() + ', ' + str(self.date.day) + ' ' + calendar.month_name[self.date.month]
+        return str(self.timetable) + ', ' + date_readable + ', '+ str(self.subject.name)
+
+    def day_of_week(self):
+        day_names = ['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday']
+        return day_names[self.date.weekday()] 
 
 class Person(models.Model):
     '''Abstract Class under Student and Staff'''
@@ -149,20 +191,18 @@ class SubjectResults(models.Model):
 
 class Attendance(models.Model):
     '''Represents the "roll call" or attendance record'''
-    date = models.DateField()
-    session = models.CharField(max_length=1, choices=SESSION_CHOICES)
+    session = models.ManyToManyField(Session)
     reason = models.CharField(max_length=1, choices=REASON_CHOICES, default='P')
+    absent = models.CharField(max_length=1, choices=ABSENCE_CHOICES, blank=True)
 
     def __unicode__(self):
         '''Attendance reference: returns date, session and reason'''
-        return str(self.date) + ', ' + self.get_session_display() + ', ' + self.get_reason_display()
+        return str(self.session) + ', ' + self.get_reason_display()
 
     ''' TODO: check to see if date can be set to today automatically 
     (like auto_now) but remain editable '''
     def save(self):
         ''' by default, set the date as today '''
-        if not self.date:
-            self.date = today
         super(Attendance, self).save()
 
     @models.permalink	
