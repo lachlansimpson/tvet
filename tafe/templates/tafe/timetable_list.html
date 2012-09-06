@@ -1,0 +1,22 @@
+{% extends "tafe/base_site.html" %}
+{% comment %}
+
+Timetable list page of the portal.
+
+{% endcomment %}
+
+{% block title %}
+    Timetable list
+{% endblock %}
+{% block coltype %}colMS{% endblock %}
+{% block content %}
+    {{ block.super }}
+    <h3>Timetables</h3>
+    {% if timetable_list %}
+        {% for timetable in timetable_list %}
+            <a href="{{ timetable.get_absolute_url }}">{{ timetable }}</a><br />
+        {% endfor %}
+    {% else %}
+        <p>No people are available.</p>
+    {% endif %}
+{% endblock %}

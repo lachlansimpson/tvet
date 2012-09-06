@@ -63,17 +63,25 @@ class Timetable(models.Model):
     def __unicode__(self):
         '''Timetable reference: year and term number'''
         return str(self.year) + ', Term ' + str(self.term)
+    
+    @models.permalink	
+    def get_absolute_url(self):
+        return ('timetable_view', [str(self.slug)])
 
 class Session(models.Model):
     session_number = models.CharField(max_length=1,choices=SESSION_CHOICES)
     subject = models.ForeignKey('Subject')
-    timetable = models.ForeignKey(Timetable)
+    timetable = models.ForeignKey(Timetable, related_name='sessions')
     date = models.DateField()
 
     def __unicode__(self):
         '''Session Reference: day of week, date, term/year (Timetable)'''
         date_readable = self.day_of_week() + ', ' + str(self.date.day) + ' ' + calendar.month_name[self.date.month]
         return str(self.timetable) + ', ' + date_readable + ', '+ str(self.subject.name)
+
+    def timetable_listing(self):
+        ''' returns date-free name for session to be put into timetable '''
+        return str(self.subject.name)
 
     def day_of_week(self):
         day_names = ['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday']
@@ -197,13 +205,8 @@ class Attendance(models.Model):
 
     def __unicode__(self):
         '''Attendance reference: returns date, session and reason'''
-        return str(self.session) + ', ' + self.get_reason_display()
-
-    ''' TODO: check to see if date can be set to today automatically 
-    (like auto_now) but remain editable '''
-    def save(self):
-        ''' by default, set the date as today '''
-        super(Attendance, self).save()
+        return self.session + ', ' + self.get_reason_display()
+        #return str(self.session) + ', ' + self.get_reason_display()
 
     @models.permalink	
     def get_absolute_url(self):
