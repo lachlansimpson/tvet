@@ -1,10 +1,8 @@
 from django.conf.urls import patterns, url
 from django.views.generic import DetailView, ListView
-#from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 from tafe.models import Student, Subject, Enrolment, Course, Grade, Timetable
-#from tafe.views import timetable_view
 
-urlpatterns = patterns('',
+urlpatterns = patterns('tafe.views',
     #url(r'^$', 'index'),
     url(r'^$', ListView.as_view(queryset=Subject.objects.all())),
     
@@ -23,9 +21,9 @@ urlpatterns = patterns('',
     url(r'^grades/$', ListView.as_view(queryset=Grade.objects.all())),
     url(r'^grade/(?P<slug>[-\w]+)/$', DetailView.as_view(model=Grade), name='grade_view'),
                       
-    url(r'^timetable/$', ListView.as_view(queryset=Timetable.objects.all().order_by('-year'))),
-#    url(r'^timetable/(?P<slug>[-\w]+)/$', timetable_view),
-    url(r'^timetable/(?P<slug>[-\w]+)/$', 'tafe.views.timetable_view'),
+    url(r'^timetables/$', ListView.as_view(queryset=Timetable.objects.all().order_by('-year'))),
+    #url(r'^timetable/(?P<slug>[-\w]+)/$', DetailView.as_view(model=Timetable), name='timetable_view'),
+    url(r'^timetable/(?P<slug>[-\w]+)/$', 'timetable_view'),
  
-    url(r'^timetable/(?P<year>\d{4})/$','timetable'),
+    #url(r'^timetable/(?P<year>\d{4})/$','timetable'),
 )

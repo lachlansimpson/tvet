@@ -5,7 +5,7 @@ Timetable detail page of the portal.
 {% endcomment %}
 
 {% block title %}
-    Timetable detail
+Timetable detail
 {% endblock %}
 
 {% block content %}
@@ -14,31 +14,31 @@ Timetable detail page of the portal.
 
     <table>
         <tr>
-        <td>Session</td>    
-        <td class="empty">Mon</td>
-        <td class="empty">Tue</td>
-        <td class="empty">Wed</td>
-        <td class="empty">Thu</td>
-        <td class="empty">Fri</td>
-        <td class="empty">Sat</td>
-        <td class="empty">Sun</td>
-    </tr>
-    {% for session_choice in all_sessions %}
-    <tr>
-        <td>{{ session_choice.session_number }}</td>
-        {% for weekday in session_choice %}
-        <td>
-            {% for session in weekday %}
-            {% for x in session %}
-                {{ x.timetable_listing }}<br />
+            <td>Session</td>    
+            <td class="empty">Mon</td>
+            <td class="empty">Tue</td>
+            <td class="empty">Wed</td>
+            <td class="empty">Thu</td>
+            <td class="empty">Fri</td>
+            <td class="empty">Sat</td>
+            <td class="empty">Sun</td>
+        </tr>
+        {% for session_choice in all_sessions %}
+        <tr>
+            <td>{{ session_number }}</td>
+            {% for weekday in session_choice %}
+            <td>
+                {% for session in weekday %}
+                {% for x in session %}
+                <a href="{{ x.get_absolute_url }}">{{ x.timetable_listing }}</a><br />
+                {% endfor %}
+                <!-- end of day | end of cell -->
+                {% endfor %}
+            </td> 
+            <!-- ends sesssion loop | ends row -->
             {% endfor %}
-            <!-- end of day | end of cell -->
-            {% endfor %}
-        </td> 
-        <!-- ends sesssion loop | ends row -->
+        </tr> 
         {% endfor %}
-    </tr> 
-    {% endfor %}
-  </table>
+    </table>
 </div>
 {% endblock %}

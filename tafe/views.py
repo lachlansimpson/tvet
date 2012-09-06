@@ -23,6 +23,7 @@ def timetable_view(request, slug):
     timetable = get_object_or_404(Timetable, slug=slug)
     all_sessions = [[]]
     weekdays = [[]]
+    session_numbers=[]
     if timetable.start_date.weekday() == 0:
         first_monday_in_term = timetable.start_date
     else:    
@@ -39,6 +40,7 @@ def timetable_view(request, slug):
         '''
         for each of the days of the week, we will make a column within that row 
         '''
+        session_numbers.append(session_choice)
         for day in range(0,5):
             ''' set the day of the week '''
             weekday = first_monday_in_term + datetime.timedelta(day)
@@ -46,7 +48,7 @@ def timetable_view(request, slug):
             daily_sessions = timetable.sessions.filter(date=weekday).filter(session_number=session_choice)
             '''append the list to the day of the week list per day'''
             weekdays[day].append(daily_sessions)
-            '''append the day of the week list to all sessions per session_choice'''
+            '''append the day of the week list to all_sessions per session_choice'''
             all_sessions[session_choice].append(weekdays[day])
             
             if len(weekdays) < 7:
@@ -55,8 +57,6 @@ def timetable_view(request, slug):
         all_sessions.append([])
 
     return render_to_response('tafe/timetable_detail.html',{'timetable':timetable,'all_sessions':all_sessions})
-    #return render_to_response('tafe/timetable_detail.html',{'timetable':timetable,'daily_sessions':daily_sessions})
-
 
 '''
 @login_required
