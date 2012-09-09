@@ -125,6 +125,7 @@ INSTALLED_APPS = (
     'tafe',
     'south',
     'crispy_forms',
+    'django_extensions',
 )
 
 # A sample logging configuration. The only tangible logging
