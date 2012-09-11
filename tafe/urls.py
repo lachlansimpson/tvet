@@ -23,7 +23,8 @@ urlpatterns = patterns('tafe.views',
                       
     url(r'^timetables/$', ListView.as_view(queryset=Timetable.objects.all().order_by('-year'))),
     #url(r'^timetable/(?P<slug>[-\w]+)/$', DetailView.as_view(model=Timetable), name='timetable_view'),
-    url(r'^timetable/(?P<slug>[-\w]+)/$', 'timetable_view'),
+    url(r'^timetable/(?P<slug>[-\w]+)/$', 'timetable_week_view'),
+    #url(r'^timetable/(?P<slug>[-\w]+)/?P<day>[-\w]+/$', 'timetable_day_view'),
  
     #url(r'^timetable/(?P<year>\d{4})/$','timetable'),
 )

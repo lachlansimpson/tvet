@@ -45,7 +45,11 @@ class TimetableAdmin(admin.ModelAdmin):
     model = Timetable
     prepopulated_fields = {'slug': ('year','term')}
 
-admin.site.register(Session)
+class SessionAdmin(admin.ModelAdmin):
+    model = Session
+    list_display = ('date','timetable','subject','get_session_number_display')
+
+admin.site.register(Session, SessionAdmin)
 admin.site.register(Timetable, TimetableAdmin)
 admin.site.register(Attendance)
 admin.site.register(Student)
