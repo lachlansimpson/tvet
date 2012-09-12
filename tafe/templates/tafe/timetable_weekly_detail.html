@@ -1,0 +1,42 @@
+{% extends "tafe/base_site.html" %}
+
+{% comment %}
+Timetable detail page of the portal.
+{% endcomment %}
+
+{% block title %}
+Timetable detail
+{% endblock %}
+
+{% block content %}
+<div id="content-left">
+    <h3>{{ timetable.year }}, Term {{ timetable.term }} Timetable</h3>
+    {{ all_sessions }}
+    <table> 
+        <tr>
+            <td>Session</td>
+            <td>Monday</td>
+            <td>Tuesday</td>
+            <td>Wednesday</td>
+            <td>Thursday</td>
+            <td>Friday</td>
+            <td>Weekend</td>
+        </tr>
+        {% for day in all_sessions %}
+        <tr>
+            <td>{{ day.0.0.0.0.get_session_number_display }}</td>
+            {% for session in day %}
+                <td>
+                {% for grade in session %}
+                    {% for x in grade %}
+                        {% for y in x %}
+                        {{ y.subject.name }}&nbsp <br />
+                        {% endfor %}
+                    {% endfor %}
+                {% endfor %} </td> 
+            {% endfor %}
+        </tr>
+        {% endfor %}
+    </table>
+</div>
+{% endblock %}
