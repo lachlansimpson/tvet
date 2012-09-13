@@ -73,11 +73,11 @@ class Session(models.Model):
     subject = models.ForeignKey('Subject')
     timetable = models.ForeignKey(Timetable, related_name='sessions')
     date = models.DateField()
+    slug = models.SlugField(max_length=50)
 
     def __unicode__(self):
         '''Session Reference: day of week, date, term/year (Timetable)'''
-        date_readable = self.day_of_week() + ', ' + str(self.date.day) + ' ' + calendar.month_name[self.date.month]
-        return str(self.timetable) + ', ' + date_readable + ', '+ str(self.subject.name)
+        return self.day_of_week() + ', ' + self.get_session_number_display() + ', '+ str(self.subject.name)
 
     def timetable_listing(self):
         ''' returns date-free name for session to be put into timetable '''
@@ -86,6 +86,19 @@ class Session(models.Model):
     def day_of_week(self):
         day_names = ['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday']
         return day_names[self.date.weekday()] 
+
+    @models.permalink
+    def get_absolute_url(self):
+        return ('session_view', (), {
+            'year': self.date.year,
+            'month': self.date.month,
+            'day': self.date.day,
+            'slug': self.slug})
+    
+    def save(self):
+        slug_temp = str(self.subject.name) + " " + self.get_session_number_display()
+        self.slug = slugify(slug_temp)
+        super(Session, self).save() 
 
 class Person(models.Model):
     '''Abstract Class under Student and Staff'''

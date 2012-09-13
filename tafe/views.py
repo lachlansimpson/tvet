@@ -95,32 +95,3 @@ def timetable_daily_view(request,year,month,day):
 
     return render_to_response('tafe/timetable_daily_detail.html',{'timetable':timetable,'daily_sessions':daily_sessions, 'date':date})
 """
-""" OLD WEEK VIEW
-''' Get the first Monday of the Timetable/Semester '''
-if timetable.start_date.weekday() == 0:
-    first_monday_in_term = timetable.start_date
-else:    
-    first_monday_in_term = timetable.start_date + datetime.timedelta(7 - timetable.start_date.weekday())
-
-
-
-    ''' For each day of the week '''
-    for day in range(5):
-        weekday = first_monday_in_term + datetime.timedelta(day)
-        ''' weekdays is the daily list of sessions '''
-        weekdays = [[]]
-        ''' for each session of the day '''
-        for session_choice in range(5):
-            ''' retrieve what's on '''
-            sessions = timetable.sessions.filter(date=weekday).filter(session_number=session_choice)
-            ''' add it to the daily schedule list '''
-            weekdays[session_choice].append(sessions)
-            if session_choice < 4:
-                weekdays.append([])
-                ''' add the just completed day of four sessions to the all_sessions list '''
-                all_sessions[day].append(weekdays)
-                if day < 4:
-                    all_sessions.append([])
-
-    return render_to_response('tafe/timetable_detail.html',{'timetable':timetable,'all_sessions':all_sessions})
-"""  

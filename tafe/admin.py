@@ -47,7 +47,8 @@ class TimetableAdmin(admin.ModelAdmin):
 
 class SessionAdmin(admin.ModelAdmin):
     model = Session
-    list_display = ('date','timetable','subject','get_session_number_display')
+    list_display = ('day_of_week','date','timetable','subject','get_session_number_display')
+    list_filter = ('date','session_number')
 
 admin.site.register(Session, SessionAdmin)
 admin.site.register(Timetable, TimetableAdmin)

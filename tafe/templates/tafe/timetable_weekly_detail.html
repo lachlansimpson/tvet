@@ -11,29 +11,28 @@ Timetable detail
 {% block content %}
 <div id="content-left">
     <h3>{{ timetable.year }}, Term {{ timetable.term }} Timetable</h3>
-    {{ all_sessions }}
     <table> 
         <tr>
-            <td>Session</td>
-            <td>Monday</td>
-            <td>Tuesday</td>
-            <td>Wednesday</td>
-            <td>Thursday</td>
-            <td>Friday</td>
-            <td>Weekend</td>
+            <td>Day</td>
+            <td>Morning 1</td>
+            <td>Morning 2</td>
+            <td>Afternoon 1</td>
+            <td>Afternoon 2</td>
+            <td>Other</td>
         </tr>
         {% for day in all_sessions %}
         <tr>
             <td>{{ day.0.0.0.0.get_session_number_display }}</td>
             {% for session in day %}
-                <td>
                 {% for grade in session %}
+                    <td>
                     {% for x in grade %}
                         {% for y in x %}
-                        {{ y.subject.name }}&nbsp <br />
+                        <a href="{{ y.get_absolute_url }}">{{ y.subject.name }}</a><br />
                         {% endfor %}
                     {% endfor %}
-                {% endfor %} </td> 
+                    </td>    
+                {% endfor %}
             {% endfor %}
         </tr>
         {% endfor %}
