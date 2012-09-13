@@ -37,7 +37,8 @@ def timetable_weekly_view(request, slug):
             ''' retrieve what's on '''
             sessions = timetable.sessions.filter(date=weekday).filter(session_number=session_choice)
             ''' add it to the daily schedule list '''
-            weekdays[session_choice].append(sessions)
+            for session in sessions:
+                weekdays[session_choice].append(session)
             ''' add the just completed day of four sessions to the all_sessions list '''
         all_sessions[day].append(weekdays)
 
