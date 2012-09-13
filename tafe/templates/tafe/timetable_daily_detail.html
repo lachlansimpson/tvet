@@ -10,18 +10,18 @@ Timetable detail
 
 {% block content %}
 <div id="content-left">
-    <h3>Timetable: {{ date|date }}</h3>
+    <h3>Daily Timetable: {{ date|date:"l, d F Y" }}</h3>
     <table> 
         <tr>
             <td>Session</td>
             <td>Classes</td>
         </tr>
-        {% for session in daily_sessions %}
+        {% for session_number in daily_sessions %}
         <tr>
-            <td>{{ session.name}}</td>
+            <td>{{ session_number.0.get_session_number_display }}</td>
             <td>
-            {% for subject in session %}
-                {{ subject }}<br />
+            {% for session in session_number %}
+            <a href="{{ session.get_absolute_url }}">{{ session.subject.name }}</a><br />
             {% endfor %}
             </td>
         </tr>

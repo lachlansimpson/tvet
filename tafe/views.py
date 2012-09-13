@@ -91,4 +91,4 @@ def timetable_daily_view(request, year, month, day):
         daily_sessions.append([])
         daily_sessions[session] = Session.objects.filter(date=date).filter(session_number=session)
 
-    return render_to_response('tafe/timetable_daily_detail.html',{'daily_sessions':daily_sessions})
+    return render_to_response('tafe/timetable_daily_detail.html',{'daily_sessions':daily_sessions, 'date':date})
