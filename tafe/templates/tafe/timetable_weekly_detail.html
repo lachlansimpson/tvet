@@ -22,7 +22,7 @@ Timetable detail
         </tr>
         {% for day in all_sessions %}
         <tr>
-            <td>{{ day.0.0.0.0.get_session_number_display }}</td>
+            <td>{{ day.0.0.0.day_of_week }}</td>
             {% for sessions in day %}
                 {% for session in sessions %}
                     <td>
