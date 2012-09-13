@@ -81,17 +81,14 @@ def session_create(request):
     else:
         form = SessionRecurringForm()
     return render_to_response('tafe/session_create.html',{'form':form}, RequestContext(request))
-"""
+
 @login_required
-def timetable_daily_view(request,year,month,day):
-    timetable = get_object_or_404(Timetable, slug=slug)
+def timetable_daily_view(request, year, month, day):
     daily_sessions = []
-    if not (year && month && day):
-        date = date.datetime.today()
+    date = datetime.date(int(year), int(month), int(day))
 
     for session in range(4):
         daily_sessions.append([])
-        daily_sessions[session] = timetable.sessions.filter(date=date).filter(session_number=session)
+        daily_sessions[session] = Session.objects.filter(date=date).filter(session_number=session)
 
-    return render_to_response('tafe/timetable_daily_detail.html',{'timetable':timetable,'daily_sessions':daily_sessions, 'date':date})
-"""
+    return render_to_response('tafe/timetable_daily_detail.html',{'daily_sessions':daily_sessions})
