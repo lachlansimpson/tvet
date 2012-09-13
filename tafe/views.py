@@ -92,3 +92,11 @@ def timetable_daily_view(request, year, month, day):
         daily_sessions[session] = Session.objects.filter(date=date).filter(session_number=session)
 
     return render_to_response('tafe/timetable_daily_detail.html',{'daily_sessions':daily_sessions, 'date':date})
+
+
+@login_required
+def session_view(request, year, month, day, slug):
+   req_date = datetime.date(int(year), int(month), int(day))
+   session = get_object_or_404(Session, slug=slug, date=req_date)
+
+   return render_to_response('tafe/session_detail.html',{'session':session})

@@ -1,7 +1,6 @@
 from django.db import models
 from django.template.defaultfilters import slugify
 import datetime
-import calendar
 
 today = datetime.date.today() # used by the Attendance record
 
@@ -73,7 +72,7 @@ class Session(models.Model):
     subject = models.ForeignKey('Subject')
     timetable = models.ForeignKey(Timetable, related_name='sessions')
     date = models.DateField()
-    slug = models.SlugField(max_length=50)
+    slug = models.SlugField(max_length=50,blank=True)
 
     def __unicode__(self):
         '''Session Reference: day of week, date, term/year (Timetable)'''
