@@ -33,7 +33,7 @@ class SubjectResultsInline(admin.StackedInline):
 
 class GradeAdmin(admin.ModelAdmin):
     fieldsets = [
-        ('',{'fields':['student','subject','date_started','results','attendance']}),
+        ('',{'fields':['student','subject','date_started','results']}),
     ]
 
 class EnrolmentAdmin(admin.ModelAdmin):
