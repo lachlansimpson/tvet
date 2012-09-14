@@ -73,6 +73,7 @@ class Session(models.Model):
     timetable = models.ForeignKey(Timetable, related_name='sessions')
     date = models.DateField()
     slug = models.SlugField(max_length=50,blank=True)
+    students = models.ManyToManyField('Student', through='Attendance', blank=True, null=True)
 
     def __unicode__(self):
         '''Session Reference: day of week, date, term/year (Timetable)'''
@@ -211,14 +212,14 @@ class SubjectResults(models.Model):
 
 class Attendance(models.Model):
     '''Represents the "roll call" or attendance record'''
-    session = models.ManyToManyField(Session)
+    session = models.ForeignKey(Session)
+    student = models.ForeignKey(Student)
     reason = models.CharField(max_length=1, choices=REASON_CHOICES, default='P')
     absent = models.CharField(max_length=1, choices=ABSENCE_CHOICES, blank=True)
 
     def __unicode__(self):
         '''Attendance reference: returns date, session and reason'''
         return self.session + ', ' + self.get_reason_display()
-        #return str(self.session) + ', ' + self.get_reason_display()
 
     @models.permalink	
     def get_absolute_url(self):
@@ -265,7 +266,6 @@ class Grade(models.Model):
     subject = models.ForeignKey(Subject)
     date_started = models.DateField()
     results = models.ForeignKey(SubjectResults, blank=True, null=True)
-    attendance = models.ManyToManyField(Attendance, blank=True, null=True) 
     slug = models.SlugField(max_length=60)
 
     def __unicode__(self):

@@ -27,7 +27,7 @@ Timetable detail
                 {% for session in sessions %}
                     <td>
                     {% for class in session %}
-                        <a href="{{ class.get_absolute_url }}">{{ class.subject.name }}</a><br />
+                    <a href="{{ class.get_absolute_url }}">{{ class.subject.name }}</a><br />
                     {% endfor %}
                     </td>    
                 {% endfor %}

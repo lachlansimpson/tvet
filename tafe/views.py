@@ -36,7 +36,7 @@ def timetable_weekly_view(request, slug):
             weekdays.append([])
             ''' retrieve what's on '''
             sessions = timetable.sessions.filter(date=weekday).filter(session_number=session_choice)
-            ''' add it to the daily schedule list '''
+            ''' add each session in the list to the daily schedule list for that session'''
             for session in sessions:
                 weekdays[session_choice].append(session)
             ''' add the just completed day of four sessions to the all_sessions list '''
@@ -93,7 +93,6 @@ def timetable_daily_view(request, year, month, day):
         daily_sessions[session] = Session.objects.filter(date=date).filter(session_number=session)
 
     return render_to_response('tafe/timetable_daily_detail.html',{'daily_sessions':daily_sessions, 'date':date})
-
 
 @login_required
 def session_view(request, year, month, day, slug):
