@@ -4,6 +4,32 @@ import datetime
 
 today = datetime.date.today() # used by the Attendance record
 
+ISLAND_CHOICES = (
+    ('01',u'Tarawa'),
+    ('02',u'Abaiang'),
+    ('03',u'Kiritimati'),
+    ('04',u'Makin'),
+    ('05',u'Butaritari'),
+    ('06',u'Marakei'),
+    ('07',u'Maiana'),
+    ('08',u'Kuria'),
+    ('09',u'Aranuka'),
+    ('10',u'Abemana'),
+    ('11',u'Nonouti'),
+    ('12',u'Tabiteua'),
+    ('13',u'Onotoa'),
+    ('14',u'Beru'),
+    ('15',u'Nikunau'),
+    ('16',u'Tamana'),
+    ('17',u'Arorae'),
+    ('18',u'Banaba'),
+    ('19',u'Teraina'),
+    ('20',u'Kanton'),
+    ('21',u'Tabuaeran'),
+    ('22',u'Other'),
+    ('23',u'International'),
+)
+
 GENDER_CHOICES = (
     (u'M',u'Male'),
     (u'F',u'Female'),
@@ -106,10 +132,13 @@ class Person(models.Model):
     surname = models.CharField(max_length=30)
     slug = models.SlugField(max_length=40, editable=False, blank=True)
     dob = models.DateField('Date of Birth')  
-    gender = models.CharField(max_length='1', choices=GENDER_CHOICES,
-                              default='F')
+    gender = models.CharField(max_length='1', choices=GENDER_CHOICES, default='F')
+    island = models.CharField(max_length='2', choices=ISLAND_CHOICES, default='01')
     phone = models.CharField(max_length=12, blank=True)
     email = models.EmailField(blank=True)
+    
+    disability = models.BooleanField()
+    disability_description = models.CharField(max_length=50, blank=True)
 
     added = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
@@ -125,6 +154,7 @@ class Person(models.Model):
         return self.surname and self.surname[0] or ''
 
 class Student(Person):
+    education_level = models.CharField(max_length=50, blank=True)
     '''Represents each student '''
     def get_id(self):
         ''' 
