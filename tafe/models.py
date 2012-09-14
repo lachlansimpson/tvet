@@ -191,7 +191,10 @@ class Staff(Person):
 
 class Subject(models.Model):
     '''Represents individual subjects, classes, cohorts'''
-    ''' TODO: name it UNIT OF COMPETENCE '''
+    class Meta:
+        verbose_name="Unit of Competence"
+        verbose_name_plural="Units of Competence"
+    
     name = models.CharField(max_length=30)
     slug = models.SlugField(max_length=40)
     semester = models.CharField(max_length=1, blank=True, choices=SEMESTER_CHOICES)
