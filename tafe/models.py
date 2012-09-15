@@ -126,11 +126,19 @@ class Session(models.Model):
         self.slug = slugify(slug_temp)
         super(Session, self).save() 
 
+class FemaleManager(models.Manager):
+    def get_query_set(self):
+        return super(FemaleManager, self).get_query_set().filter(gender='F')
+
+class MaleManager(models.Manager):
+    def get_query_set(self):
+        return super(MaleManager, self).get_query_set().filter(gender='M')
+
 class Person(models.Model):
     '''Abstract Class under Student and Staff'''
     first_name = models.CharField(max_length=30)
     surname = models.CharField(max_length=30)
-    slug = models.SlugField(max_length=40, editable=False, blank=True)
+    slug = models.SlugField('ID number', max_length=40, editable=False, blank=True)
     dob = models.DateField('Date of Birth')  
     gender = models.CharField(max_length='1', choices=GENDER_CHOICES, default='F')
     island = models.CharField(max_length='2', choices=ISLAND_CHOICES, default='01')
@@ -138,11 +146,15 @@ class Person(models.Model):
     email = models.EmailField(blank=True)
     
     disability = models.BooleanField()
-    disability_description = models.CharField(max_length=50, blank=True)
+    disability_description = models.CharField('Description', max_length=50, blank=True)
 
     added = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
 
+    people = models.Manager()
+    men = MaleManager()
+    women = FemaleManager()
+    
     class Meta:
         abstract = True
 
@@ -153,9 +165,18 @@ class Person(models.Model):
     def first_letter(self):
         return self.surname and self.surname[0] or ''
 
+#TODO Check how to filter by reverse FK
+class NewStudentManager(models.Manager):
+    def get_query_set(self):
+        return super(NewStudentManager, self).get_query_set().filter(enrolment__student__isnull=True)
+
 class Student(Person):
-    education_level = models.CharField(max_length=50, blank=True)
     '''Represents each student '''
+    education_level = models.CharField(max_length=50, blank=True)
+    
+    objects = models.Manager()
+    new_students = NewStudentManager()
+
     def get_id(self):
         ''' 
         This returns the student's DB reference number, or "student number"
@@ -192,8 +213,8 @@ class Staff(Person):
 class Subject(models.Model):
     '''Represents individual subjects, classes, cohorts'''
     class Meta:
-        verbose_name="Unit of Competence"
-        verbose_name_plural="Units of Competence"
+        verbose_name='Unit of Competence'
+        verbose_name_plural='Units of Competence'
     
     name = models.CharField(max_length=30)
     slug = models.SlugField(max_length=40)
@@ -211,7 +232,10 @@ class Subject(models.Model):
 
 class Course(models.Model):
     '''Represents Courses - a collection of subjects leading to a degree'''
-    ''' TODO: aka Qualifications'''
+    class Meta:
+        verbose_name='Qualification'
+        verbose_name_plural='Qualifications'
+
     name = models.CharField(max_length=30)
     slug = models.SlugField(max_length=40)
     students = models.ManyToManyField(Student, through='Enrolment', blank=True, null=True)
@@ -225,15 +249,33 @@ class Course(models.Model):
     def get_absolute_url(self):
         return ('course_view', [str(self.slug)])
 
+    def count_students(self):
+        return self.students.count()
+
+    def count_males(self):
+        return self.students.men().count()
+
+    def count_females(self):
+        return self.students.women().count()
+
+    def subjects_available(self):
+        list = ''
+        for subject in self.subjects.all():
+            if list == '':
+                list = subject.name
+            else:
+                list += ', ' + subject.name
+        return list 
+
 class SubjectResults(models.Model):
     '''Represents an Assignment and it's results'''
+    class Meta:
+        verbose_name='Result'
+        verbose_name_plural='Results'
+    
     name = models.CharField(max_length=30)
     date = models.DateField()
     mark = models.CharField(max_length=2, choices=SUBJECT_RESULTS)    
-
-    class Meta:
-        verbose_name = 'Subject Results'
-        verbose_name_plural = 'Subject Results'
 
     def __unicode__(self):
         '''SubjectResults reference: the assignment name, due date and grade given'''
@@ -245,6 +287,10 @@ class SubjectResults(models.Model):
 
 class Attendance(models.Model):
     '''Represents the "roll call" or attendance record'''
+    class Meta:
+        verbose_name='Attendence Record'
+        verbose_name_plural='Attendence Records'
+    
     session = models.ForeignKey(Session)
     student = models.ForeignKey(Student)
     reason = models.CharField(max_length=1, choices=REASON_CHOICES, default='P')
@@ -262,7 +308,7 @@ class Enrolment(models.Model):
     '''Represents a Student's enrolment in a Course'''
     student = models.ForeignKey(Student)
     course = models.ForeignKey(Course)
-    date_started = models.DateField()
+    date_started = models.DateField(default=today)
     date_ended = models.DateField(blank=True, null=True)
     mark = models.CharField(max_length=1, choices=COURSE_RESULTS, blank=True)
     slug = models.SlugField(max_length=40, blank=True)

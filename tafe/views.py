@@ -39,10 +39,21 @@ def timetable_weekly_view(request, slug):
             ''' add each session in the list to the daily schedule list for that session'''
             for session in sessions:
                 weekdays[session_choice].append(session)
-            ''' add the just completed day of four sessions to the all_sessions list '''
-        all_sessions[day].append(weekdays)
+                ''' add the just completed day of four sessions to the all_sessions list '''
+                all_sessions[day].append(weekdays)
 
     return render_to_response('tafe/timetable_weekly_detail.html',{'timetable':timetable,'all_sessions':all_sessions})
+
+@login_required
+def timetable_daily_view(request, year, month, day):
+    daily_sessions = []
+    date = datetime.date(int(year), int(month), int(day))
+
+    for session in range(4):
+        daily_sessions.append([])
+        daily_sessions[session] = Session.objects.filter(date=date).filter(session_number=session)
+
+    return render_to_response('tafe/timetable_daily_detail.html',{'daily_sessions':daily_sessions, 'date':date})
 
 @login_required
 def session_create(request):
@@ -79,24 +90,13 @@ def session_create(request):
 
             return HttpResponseRedirect('')
 
-    else:
-        form = SessionRecurringForm()
-    return render_to_response('tafe/session_create.html',{'form':form}, RequestContext(request))
-
-@login_required
-def timetable_daily_view(request, year, month, day):
-    daily_sessions = []
-    date = datetime.date(int(year), int(month), int(day))
-
-    for session in range(4):
-        daily_sessions.append([])
-        daily_sessions[session] = Session.objects.filter(date=date).filter(session_number=session)
-
-    return render_to_response('tafe/timetable_daily_detail.html',{'daily_sessions':daily_sessions, 'date':date})
+        else:
+            form = SessionRecurringForm()
+            return render_to_response('tafe/session_create.html',{'form':form}, RequestContext(request))
 
 @login_required
 def session_view(request, year, month, day, slug):
-   req_date = datetime.date(int(year), int(month), int(day))
-   session = get_object_or_404(Session, slug=slug, date=req_date)
+    req_date = datetime.date(int(year), int(month), int(day))
+    session = get_object_or_404(Session, slug=slug, date=req_date)
 
-   return render_to_response('tafe/session_detail.html',{'session':session})
+    return render_to_response('tafe/session_detail.html',{'session':session})

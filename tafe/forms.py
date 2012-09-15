@@ -1,6 +1,6 @@
 ''' forms.py holds the new forms for creating objects '''
 from django import forms
-from tafe.models import Timetable,Subject
+from tafe.models import Timetable, Subject
 from tafe.models import SESSION_CHOICES
 from django.forms.extras.widgets import SelectDateWidget
 

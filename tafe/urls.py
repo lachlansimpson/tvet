@@ -12,7 +12,7 @@ urlpatterns = patterns('tafe.views',
 
     url(r'^courses/$', ListView.as_view(queryset=Course.objects.all())),
     url(r'^course/(?P<slug>[-\w]+)/$', DetailView.as_view(model=Course), name='course_view'),
-    
+
     url(r'^subjects/$', ListView.as_view(queryset=Subject.objects.all())),
     url(r'^subject/(?P<slug>[-\w]+)/$', DetailView.as_view(model=Subject), name='subject_view'),
     
