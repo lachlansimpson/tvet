@@ -95,7 +95,7 @@ class Timetable(models.Model):
 
 class Session(models.Model):
     session_number = models.CharField(max_length=1,choices=SESSION_CHOICES)
-    subject = models.ForeignKey('Subject')
+    subject = models.ForeignKey('Subject', related_name='sessions')
     timetable = models.ForeignKey(Timetable, related_name='sessions')
     date = models.DateField()
     slug = models.SlugField(max_length=50,blank=True)
@@ -141,7 +141,7 @@ class Person(models.Model):
     slug = models.SlugField('ID number', max_length=40, editable=False, blank=True)
     dob = models.DateField('Date of Birth')  
     gender = models.CharField(max_length='1', choices=GENDER_CHOICES, default='F')
-    island = models.CharField(max_length='2', choices=ISLAND_CHOICES, default='01')
+    island = models.CharField(max_length='2', choices=ISLAND_CHOICES, default='01', blank=True, null=True)
     phone = models.CharField(max_length=12, blank=True)
     email = models.EmailField(blank=True)
     
@@ -164,6 +164,7 @@ class Person(models.Model):
 
     def first_letter(self):
         return self.surname and self.surname[0] or ''
+
 
 #TODO Check how to filter by reverse FK
 class NewStudentManager(models.Manager):
@@ -196,6 +197,64 @@ class Student(Person):
     @models.permalink	
     def get_absolute_url(self):
         return ('student_view', [str(self.slug)])
+
+class Applicant(Person):
+    applied_for = models.ForeignKey('Course', related_name='applicants')
+    education_level = models.CharField(max_length=50, blank=True)
+    successful = models.BooleanField()
+    short_listed = models.BooleanField()
+    test_ap = models.IntegerField('AP test result', blank=True, null=True)
+    test_ma = models.IntegerField('MA test result', blank=True, null=True)
+    test_eng = models.IntegerField('English test result', blank=True, null=True)
+    ranking = models.IntegerField(blank=True, null=True)
+    eligablility = models.BooleanField()
+    date_offer_sent = models.DateField(blank=True, null=True)
+    date_offer_accepted = models.DateField(blank=True, null=True)
+
+    def convert_to_student(self):
+        '''Turn an applicant into a student, create all required associated objects'''
+        if self.successful:
+            '''already converted'''
+            pass 
+        else:
+            '''not converted, let's go!'''
+            '''create the Student object, transfer all data'''
+            new_student = Student()
+            new_student.first_name = self.first_name
+            new_student.surname = self.surname
+            new_student.dob = self.dob
+            new_student.gender = self.gender
+            new_student.education_level = self.education_level
+            new_student.save()
+
+            '''Create the Enrolment record for the Student and the Course they applied for'''
+            new_enrolment = Enrolment()
+            new_enrolment.student = self
+            new_enrolment.course = self.applied_for
+            new_enrolment.save()
+            
+            '''At the moment all units/subjects in a course are compulsory - 
+            this method will need to change for greater flexibility in the future'''
+            ''' Create the Grade object for each unit in the course, related to the 
+            student object'''
+            for unit in self.applied_for.subjects:
+                new_grade = Grade()
+                new_grade.student = self
+                new_grade.subject = unit
+                new_grade.date_started = today
+                new_grade.save()
+
+                ''' For each grade, there is a session object per date
+                To which is attached an attendance record per student
+                Create all attendance records in advance'''
+                for session in unit.sessions:
+                    new_attendance_record = Attendance()
+                    new_attendance_record.student = self
+                    new_attendance_record.subject = unit
+                    new_attendance_record.save()
+
+            '''Converted successfully, move along'''
+            self.successful='True'
 
 class Staff(Person):
     '''Respresents each Staff member'''
@@ -239,7 +298,7 @@ class Course(models.Model):
     name = models.CharField(max_length=30)
     slug = models.SlugField(max_length=40)
     students = models.ManyToManyField(Student, through='Enrolment', blank=True, null=True)
-    subjects = models.ManyToManyField(Subject, blank=True, null=True)
+    subjects = models.ManyToManyField(Subject, related_name='courses', blank=True, null=True)
 
     def __unicode__(self):
         '''Course Reference: name of the course'''
@@ -291,8 +350,8 @@ class Attendance(models.Model):
         verbose_name='Attendence Record'
         verbose_name_plural='Attendence Records'
     
-    session = models.ForeignKey(Session)
-    student = models.ForeignKey(Student)
+    session = models.ForeignKey(Session, related_name='attendance_records')
+    student = models.ForeignKey(Student, related_name='attendance_records')
     reason = models.CharField(max_length=1, choices=REASON_CHOICES, default='P')
     absent = models.CharField(max_length=1, choices=ABSENCE_CHOICES, blank=True)
 
@@ -306,8 +365,8 @@ class Attendance(models.Model):
 
 class Enrolment(models.Model):
     '''Represents a Student's enrolment in a Course'''
-    student = models.ForeignKey(Student)
-    course = models.ForeignKey(Course)
+    student = models.ForeignKey(Student, related_name='enrolments')
+    course = models.ForeignKey(Course, related_name='enrolments')
     date_started = models.DateField(default=today)
     date_ended = models.DateField(blank=True, null=True)
     mark = models.CharField(max_length=1, choices=COURSE_RESULTS, blank=True)
@@ -341,10 +400,10 @@ class Enrolment(models.Model):
 
 class Grade(models.Model):
     '''Represents a Student's interactions with a Subject. ie, being in a class.'''
-    student = models.ForeignKey(Student)
-    subject = models.ForeignKey(Subject)
+    student = models.ForeignKey(Student, related_name='grades')
+    subject = models.ForeignKey(Subject, related_name='grades')
     date_started = models.DateField()
-    results = models.ForeignKey(SubjectResults, blank=True, null=True)
+    results = models.ForeignKey(SubjectResults, related_name='grades', blank=True, null=True)
     slug = models.SlugField(max_length=60)
 
     def __unicode__(self):

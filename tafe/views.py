@@ -1,6 +1,6 @@
 # Create your views here.
 
-from tafe.models import Subject, Timetable, Session
+from tafe.models import Subject, Timetable, Session, Course
 from tafe.forms import SessionRecurringForm
 from django.shortcuts import render_to_response, get_object_or_404
 from django.http import HttpResponseRedirect
@@ -100,3 +100,18 @@ def session_view(request, year, month, day, slug):
     session = get_object_or_404(Session, slug=slug, date=req_date)
 
     return render_to_response('tafe/session_detail.html',{'session':session})
+
+
+# VIEWS for the student enrollment, split into two. Get date, then get students
+@login_required
+def course_enrolment(request, slug):
+    course = get_object_or_404(Course, slug=slug)
+    if request.method=='POST':
+        form = EnrollCourseForm(request.POST)
+        if form.is_valid:
+            enroll_date = form.cleaned_data['enrol_date']
+    
+    else:
+        form = EnrollCourseForm()
+   
+        return render_to_response('tafe/course_enroll_date_request.html',{'form':form,'course':course}, RequestContext(request))
