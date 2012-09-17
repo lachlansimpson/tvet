@@ -214,6 +214,10 @@ class Applicant(Person):
     date_offer_accepted = models.DateField(blank=True, null=True)
     objects = models.Manager()
 
+    @models.permalink
+    def get_absolute_url(self):
+        return ('applicant_view', [str(self.slug)])
+    
     def save(self):
         if not self.pk:
             super(Applicant, self).save() # Call the first save() method to get pk

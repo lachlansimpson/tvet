@@ -5,14 +5,13 @@ Student detail page of the portal.
 {% endcomment %}
 
 {% block title %}
-Student detail
+Applicant detail
 {% endblock %}
 
 {% block content %}
 <div id="content-left">
     <div id="bio">
     <h2>{{ applicant }} - {{ applicant.applied_for }}</h2>
-    {{ applicant.slug }}    
     Date of birth: {{ applicant.dob }}    Age: {{ applicant.age_today }}<br />
     Gender: {{ applicant.get_gender_display }}<br />
     Island: {{ applicant.get_island_display }}<br />
