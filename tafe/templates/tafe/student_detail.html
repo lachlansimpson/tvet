@@ -5,11 +5,63 @@ Student detail page of the portal.
 {% endcomment %}
 
 {% block title %}
-    Student detail
+Student detail
 {% endblock %}
 
 {% block content %}
 <div id="content-left">
-    {{ student }}
+    <h2>{{ student }} - {{ student.get_id}}</h2>
+    Date of birth: {{ student.dob }}    Age: {{ student.age_today }}<br />
+    Gender: {{ student.get_gender_display }}<br />
+    Island: {{ student.get_island_display }}<br />
+    {% if student.phone %}
+    Phone: {{ student.phone }}<br />
+    {% endif %}
+    {% if student.email %}
+    Email: {{ student.email }}<br /> 
+    {% endif %}
+    {% if student.disability %}
+    Disability: {{ student.disbility_description }}<br />
+    {% endif %}
+    Highest Education level: {{ student.education_level }}<br />
+
+    <h3>Enrolment details</h3>
+    {% for enrolment in student.enrolments.all %}
+    <p><a href="{{ enrolment.course.get_absolute_url }}">{{ enrolment.course.name }}</a><br />
+    Date started: {{ enrolment.date_started }}<br />
+
+    {% if enrolment.date_ended %}
+    Date ended: {{ enrolment.date_ended }}<br />
+    {% endif %}
+
+    {% if enrolment.mark %}
+    Mark received: {{ enrolment.mark }}<br />
+    {% endif %}
+    </p>
+    {% endfor %}
+
+    <h3>Units of Competence</h3>
+
+    {% for unit in student.grades.all %}
+    <p>Subject: <a href="{{unit.subject.get_absolute_url}}">{{ unit.subject.name }}</a>, {{ unit.subject.year }}, semester: {{ unit.subject.semester }}<br />
+    Date Started: {{ unit.date_started }}<br /> 
+    {% if unit.results.count != 0 %}
+    {% for result in unit.results.all %}
+    {{ result }}
+    {% endfor %}
+    {% endif %} 
+    </p>
+    {% endfor %}
+
+    <h3>Attendence record</h3>
+    {% for record in student.attendence_records.all %}
+    {% if record.reason == 'P' %}
+    {{ record.reason }},  {{ record.absent }}<br />
+    {% endif %}
+    {% endfor %}
+    <h5>Admin</h5>
+    Date added: {{ student.added }}<br />
+    Date last changed: {{ student.updated }}
+
 </div>
 {% endblock %}

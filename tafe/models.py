@@ -165,6 +165,8 @@ class Person(models.Model):
     def first_letter(self):
         return self.surname and self.surname[0] or ''
 
+    def age_today(self):
+        return today.year() - self.dob.year()
 
 #TODO Check how to filter by reverse FK
 class NewStudentManager(models.Manager):
@@ -207,7 +209,7 @@ class Applicant(Person):
     test_ma = models.IntegerField('MA test result', blank=True, null=True)
     test_eng = models.IntegerField('English test result', blank=True, null=True)
     ranking = models.IntegerField(blank=True, null=True)
-    eligablility = models.BooleanField()
+    eligibility = models.BooleanField()
     date_offer_sent = models.DateField(blank=True, null=True)
     date_offer_accepted = models.DateField(blank=True, null=True)
 

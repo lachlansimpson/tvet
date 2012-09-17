@@ -1,4 +1,4 @@
-from tafe.models import Student, Course, Subject, Enrolment, Grade, Attendance, SubjectResults, Session, Timetable
+from tafe.models import Student, Course, Subject, Enrolment, Grade, Attendance, SubjectResults, Session, Timetable, Applicant, Person
 from django.contrib import admin
 from django.forms import ModelForm
 from django.forms.extras.widgets import SelectDateWidget 
@@ -20,6 +20,14 @@ class EnrolmentAdmin(admin.ModelAdmin):
         ('',{'fields':['student','course','date_started','date_ended','mark']}),
     ]
 
+class ApplicantAdminForm(ModelForm):
+    class Meta:
+        model = Applicant 
+        widgets = {
+            'dob': SelectDateWidget(),
+            'gender': RadioSelect(),
+        }            
+
 class StudentAdminForm(ModelForm):
     class Meta:
         model = Student
@@ -39,6 +47,20 @@ class StudentAdmin(admin.ModelAdmin):
     list_filter = ('gender', 'disability')
     ordering = ('-slug',) 
     readonly_fields = ('slug',)
+
+class ApplicantAdmin(admin.ModelAdmin):
+    fieldsets = (
+        ('Bio', { 'fields':(('first_name','surname'),('dob','gender', 'island',))}),
+                ('Contact Information', { 'fields':(('phone','email'),)}),
+                ('Other Information', { 'fields':(('disability','disability_description'), 'education_level')}),
+                ('Course Applied For', { 'fields':(('applied_for', 'short_listed'),)}),
+        ('Test Results', {'fields':(('test_ap','test_ma','test_eng'),)}),
+        ('Ranking, Eligibility and Success', {'fields':(('ranking','eligibility','successful'),)}),
+        ('Offer details', {'fields':(('date_offer_sent','date_offer_accepted'),)}),
+    )
+    form = ApplicantAdminForm
+    list_display = ('__unicode__', 'gender', 'disability', 'applied_for')
+    list_filter = ('gender', 'disability', 'applied_for')
 
 class SubjectAdmin(admin.ModelAdmin):
     list_display = ('name','year','semester')
@@ -82,6 +104,7 @@ class SessionAdmin(admin.ModelAdmin):
 admin.site.register(Session, SessionAdmin)
 admin.site.register(Timetable, TimetableAdmin)
 admin.site.register(Attendance)
+admin.site.register(Applicant, ApplicantAdmin)
 admin.site.register(Student, StudentAdmin)
 admin.site.register(Course, CourseAdmin)
 admin.site.register(Subject, SubjectAdmin)
