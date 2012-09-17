@@ -1,6 +1,6 @@
 from django.conf.urls import patterns, url
 from django.views.generic import DetailView, ListView
-from tafe.models import Student, Subject, Enrolment, Course, Grade, Timetable
+from tafe.models import Student, Subject, Enrolment, Course, Grade, Timetable, Applicant
 from tafe.views import session_create, session_view, timetable_daily_view
 
 urlpatterns = patterns('tafe.views',
@@ -9,6 +9,9 @@ urlpatterns = patterns('tafe.views',
     
     url(r'^students/$', ListView.as_view(queryset=Student.objects.all().order_by('surname'))),
     url(r'^student/(?P<slug>[-\w]+)/$', DetailView.as_view(model=Student), name='student_view'),
+
+    url(r'^applicants/$', ListView.as_view(queryset=Applicant.objects.all().order_by('surname'))),
+    url(r'^applicant/(?P<slug>[-\w]+)/$', DetailView.as_view(model=Applicant), name='applicant_view'),
 
     url(r'^courses/$', ListView.as_view(queryset=Course.objects.all())),
     url(r'^course/(?P<slug>[-\w]+)/$', DetailView.as_view(model=Course), name='course_view'),

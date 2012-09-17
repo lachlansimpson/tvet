@@ -212,6 +212,13 @@ class Applicant(Person):
     eligibility = models.BooleanField()
     date_offer_sent = models.DateField(blank=True, null=True)
     date_offer_accepted = models.DateField(blank=True, null=True)
+    objects = models.Manager()
+
+    def save(self):
+        if not self.pk:
+            super(Applicant, self).save() # Call the first save() method to get pk
+            self.slug = slugify(str(self))
+        super(Applicant, self).save() # Call the "real" save() method.
 
     def convert_to_student(self):
         '''Turn an applicant into a student, create all required associated objects'''

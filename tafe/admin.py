@@ -50,7 +50,7 @@ class StudentAdmin(admin.ModelAdmin):
 
 class ApplicantAdmin(admin.ModelAdmin):
     fieldsets = (
-        ('Bio', { 'fields':(('first_name','surname'),('dob','gender', 'island',))}),
+        ('Bio', { 'fields':(('first_name','surname'),('dob','gender', 'island'))}),
                 ('Contact Information', { 'fields':(('phone','email'),)}),
                 ('Other Information', { 'fields':(('disability','disability_description'), 'education_level')}),
                 ('Course Applied For', { 'fields':(('applied_for', 'short_listed'),)}),
