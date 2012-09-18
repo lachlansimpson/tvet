@@ -57,10 +57,12 @@ Student detail
     {% endfor %}
     </div>
     <div id="attendance">
-    <h3>Attendence record</h3>
-    {% for record in student.attendence_records.all %}
-    {% if record.reason == 'P' %}
-    {{ record.reason }},  {{ record.absent }}<br />
+    <h3>Attendence record</h3> 
+    {% for record in student.attendance_records.all %}
+    {% if record.reason == '0' %}
+    {{ record.session.date }}, {{ record.session.name }}, {{ record.get_reason_display }}<br />
+    {% else %}
+    {{ record.session.date }}, {{ record.session.subject.name }}, {{ record.get_reason_display }},  {{ record.get_absent_display }}<br />
     {% endif %}
     {% endfor %}
 </div>

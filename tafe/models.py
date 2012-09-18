@@ -368,7 +368,7 @@ class Attendance(models.Model):
     
     session = models.ForeignKey(Session, related_name='attendance_records')
     student = models.ForeignKey(Student, related_name='attendance_records')
-    reason = models.CharField(max_length=1, choices=REASON_CHOICES, default='P')
+    reason = models.CharField(max_length=1, choices=REASON_CHOICES, default='0')
     absent = models.CharField(max_length=1, choices=ABSENCE_CHOICES, blank=True)
     slug = models.SlugField(blank=True)
 
@@ -440,7 +440,6 @@ class Grade(models.Model):
         '''Can't use prepopulated_fields due to function's restrictions
         using the unique combination of student, subject and year they started
         the class'''
-        year_started = self.date_started.year
         slug_temp = str(self.student) + ' ' +str(self.subject)
         self.slug = slugify(slug_temp)
         super(Grade, self).save() 

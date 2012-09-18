@@ -31,6 +31,7 @@ class EnrolmentInline(admin.TabularInline):
 class SessionInline(admin.TabularInline):
     model = Session
     extra = 1
+    fields = ('date', 'session_number',)
     template = 'admin/collapsed_tabular_inline.html'
 
 class EnrolmentAdmin(admin.ModelAdmin):
