@@ -1,28 +1,33 @@
 # Create your views here.
 
-from tafe.models import Subject, Timetable, Session, Course
+from tafe.models import Timetable, Session, Course
 from tafe.forms import SessionRecurringForm
 from django.shortcuts import render_to_response, get_object_or_404
 from django.http import HttpResponseRedirect
 from django.contrib.auth.decorators import login_required
 from django.template import RequestContext
 import datetime
+today = datetime.date.today()
 
 @login_required
-def index(request, date):
+def index(request):
     """ 
     If users are authenticated, direct them to the main page. Otherwise,
     take them to the login page.
     """
-    todays_subject_list = Subject.today.all()
-    return render_to_response('tafe/index.html', {'todays_subject_list': todays_subject_list})
+    daily_sessions = []
+
+    for session in range(4):
+        daily_sessions.append([])
+        daily_sessions[session] = Session.objects.filter(date=today).filter(session_number=session)
+
+    return render_to_response('tafe/timetable_today_detail.html',{'daily_sessions':daily_sessions})
 
 @login_required
 def timetable_weekly_view(request, slug):
     timetable = get_object_or_404(Timetable, slug=slug)
     all_sessions = []
-
-    today = datetime.date.today()
+    
     last_monday = today - datetime.timedelta(days=today.weekday())
 
     ''' For each day of the week '''

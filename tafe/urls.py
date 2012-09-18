@@ -4,8 +4,8 @@ from tafe.models import Student, Subject, Enrolment, Course, Grade, Timetable, A
 from tafe.views import session_create, session_view, timetable_daily_view, units_by_qualifications_view
 
 urlpatterns = patterns('tafe.views',
-    #url(r'^$', 'index'),
-    url(r'^$', ListView.as_view(queryset=Subject.objects.all())),
+    url(r'^$', 'index'),
+    #url(r'^$', ListView.as_view(queryset=Subject.objects.all())),
     
     url(r'^students/$', ListView.as_view(queryset=Student.objects.all().order_by('surname'))),
     url(r'^student/(?P<slug>[-\w]+)/$', DetailView.as_view(model=Student), name='student_view'),

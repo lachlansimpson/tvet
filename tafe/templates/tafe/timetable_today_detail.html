@@ -1,0 +1,34 @@
+{% extends "tafe/base_site.html" %}
+
+{% comment %}
+Timetable detail page of the portal.
+{% endcomment %}
+
+{% block title %}
+Timetable detail
+{% endblock %}
+{% block coltype %}colMS{% endblock %}
+
+{% block content %}
+{{ block.super }}
+<div id="content-left">
+    <h3>Today's Timetable: {{ date|date:"l, d F Y" }}</h3>
+    <table> 
+        <tr>
+            <td>Session</td>
+            <td>Classes</td>
+        </tr>
+        {% for session_number in daily_sessions %}
+        <tr>
+            <td>{{ session_number.0.get_session_number_display }}</td>
+            <td>
+            {% for session in session_number %}
+            <a href="{{ session.get_absolute_url }}">{{ session.subject.name }}</a><br />
+            {% endfor %}
+            </td>
+        </tr>
+        {% endfor %}
+    
+    </table>
+</div>
+{% endblock %}
