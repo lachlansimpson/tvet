@@ -1,4 +1,4 @@
-from tafe.models import Student, Course, Subject, Enrolment, Grade, Attendance, SubjectResults, Session, Timetable, Applicant, Person
+from tafe.models import Student, Course, Subject, Enrolment, Grade, Attendance, SubjectResults, Session, Timetable, Applicant
 from django.contrib import admin
 from django.forms import ModelForm
 from django.forms.extras.widgets import SelectDateWidget 
@@ -7,13 +7,26 @@ import datetime
 
 today = datetime.date.today()
 
+class StudentInline(admin.StackedInline):
+    model = Student
+
+class GradeInline(admin.TabularInline):
+    model = Grade
+
 class SubjectInline(admin.StackedInline):
     model = Subject
+
+class AttendanceInline(admin.TabularInline):
+    model = Attendance
+    template = 'admin/collapsed_tabular_inline.html'
+
+class SubjectResultsInline(admin.StackedInline):
+    model = SubjectResults
+    template = 'admin/collapsed_tabular_inline.html'
 
 class EnrolmentInline(admin.TabularInline):
     extra = 1    
     model = Enrolment
-
 
 class EnrolmentAdmin(admin.ModelAdmin):
     fieldsets = [
@@ -67,6 +80,9 @@ class SubjectAdmin(admin.ModelAdmin):
     list_filter = ('year', 'semester', 'name')
     model = Subject
     prepopulated_fields = {'slug': ('name','year')}
+    inlines = [
+        GradeInline,
+    ]
 
 class CourseAdmin(admin.ModelAdmin):
     inlines = (EnrolmentInline,)
@@ -78,14 +94,6 @@ class CourseAdmin(admin.ModelAdmin):
     list_display = ('name', 'count_students', 'count_males', 'count_females', 'subjects_available')
     model = Course 
     prepopulated_fields = {'slug': ('name',)}
-
-class AttendanceInline(admin.StackedInline):
-    model = Attendance
-    template = 'admin/collapsed_tabular_inline.html'
-
-class SubjectResultsInline(admin.StackedInline):
-    model = SubjectResults
-    template = 'admin/collapsed_tabular_inline.html'
 
 class GradeAdmin(admin.ModelAdmin):
     fieldsets = [
@@ -99,6 +107,9 @@ class TimetableAdmin(admin.ModelAdmin):
 class SessionAdmin(admin.ModelAdmin):
     list_display = ('day_of_week','date','timetable','subject','get_session_number_display')
     list_filter = ('date','session_number')
+    inlines = [
+        AttendanceInline,
+    ]
     model = Session
 
 admin.site.register(Session, SessionAdmin)
