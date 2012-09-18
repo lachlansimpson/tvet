@@ -28,6 +28,11 @@ class EnrolmentInline(admin.TabularInline):
     extra = 1    
     model = Enrolment
 
+class SessionInline(admin.TabularInline):
+    model = Session
+    extra = 1
+    template = 'admin/collapsed_tabular_inline.html'
+
 class EnrolmentAdmin(admin.ModelAdmin):
     fieldsets = [
         ('',{'fields':['student','course','date_started','date_ended','mark']}),
@@ -81,6 +86,7 @@ class SubjectAdmin(admin.ModelAdmin):
     model = Subject
     prepopulated_fields = {'slug': ('name','year')}
     inlines = [
+        SessionInline,
         GradeInline,
     ]
 

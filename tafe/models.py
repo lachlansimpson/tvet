@@ -440,7 +440,7 @@ class Grade(models.Model):
         '''Can't use prepopulated_fields due to function's restrictions
         using the unique combination of student, subject and year they started
         the class'''
-        year_started = self.date_started.year()
-        slug_temp = self.student + self.subject + str(year_started)
+        year_started = self.date_started.year
+        slug_temp = str(self.student) + ' ' +str(self.subject)
         self.slug = slugify(slug_temp)
         super(Grade, self).save() 
