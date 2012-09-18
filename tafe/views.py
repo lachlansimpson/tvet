@@ -115,3 +115,8 @@ def course_enrolment(request, slug):
         form = EnrollCourseForm()
    
         return render_to_response('tafe/course_enroll_date_request.html',{'form':form,'course':course}, RequestContext(request))
+
+@login_required
+def units_by_qualifications_view(request):
+    courses = Course.objects.all().order_by('name')
+    return render_to_response('tafe/units_by_qualifications.html',{'courses':courses})

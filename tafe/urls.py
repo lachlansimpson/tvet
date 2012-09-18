@@ -1,7 +1,7 @@
 from django.conf.urls import patterns, url
 from django.views.generic import DetailView, ListView
 from tafe.models import Student, Subject, Enrolment, Course, Grade, Timetable, Applicant, Attendance
-from tafe.views import session_create, session_view, timetable_daily_view
+from tafe.views import session_create, session_view, timetable_daily_view, units_by_qualifications_view
 
 urlpatterns = patterns('tafe.views',
     #url(r'^$', 'index'),
@@ -13,10 +13,11 @@ urlpatterns = patterns('tafe.views',
     url(r'^applicants/$', ListView.as_view(queryset=Applicant.objects.all().order_by('surname'))),
     url(r'^applicant/(?P<slug>[-\w]+)/$', DetailView.as_view(model=Applicant), name='applicant_view'),
 
-    url(r'^courses/$', ListView.as_view(queryset=Course.objects.all())),
-    url(r'^course/(?P<slug>[-\w]+)/$', DetailView.as_view(model=Course), name='course_view'),
+    url(r'^qualifications/$', ListView.as_view(queryset=Course.objects.all())),
+    url(r'^qualification/(?P<slug>[-\w]+)/$', DetailView.as_view(model=Course), name='course_view'),
 
     url(r'^units/$', ListView.as_view(queryset=Subject.objects.all())),
+    url(r'^units/qualifications/$', units_by_qualifications_view, name='units_by_qualifications_view'),
     url(r'^unit/(?P<slug>[-\w]+)/$', DetailView.as_view(model=Subject), name='subject_view'),
     
     url(r'^enrolments/$', ListView.as_view(queryset=Enrolment.objects.all())),
@@ -34,8 +35,8 @@ urlpatterns = patterns('tafe.views',
     url(r'^session/create/$', session_create), 
     url(r'^session/(?P<year>\d{4})/(?P<month>\d{1,2})/(?P<day>\d{1,2})/(?P<slug>[-\w]+)/$', session_view, name='session_view'), 
 
-    url(r'^attendances/$', ListView.as_view(queryset=Attendance.objects.all())),
+    url(r'^attendance/all/$', ListView.as_view(queryset=Attendance.objects.all())),
+    url(r'^attendance/today/$', ListView.as_view(queryset=Attendance.objects.all())),
     url(r'^attendance/(?P<slug>[-\w]+)/$', DetailView.as_view(model=Attendance), name='attendance_view'),
-                      
 
 )

@@ -1,0 +1,23 @@
+{% extends "tafe/base_site.html" %}
+{% comment %}
+
+Course list page of the portal.
+
+{% endcomment %}
+
+{% block title %}
+   Units by Qualifications 
+{% endblock %}
+{% block coltype %}colMS{% endblock %}
+{% block content %}
+    {{ block.super }}
+<h3>Units Available by Qualification</h3>    
+{% for course in courses %}
+    <h3><a href="{{ course.get_absolute_url }}">{{ course.name }}</a></h3>
+    <ul>
+    {% for subject in course.subjects.all %}
+        <li><a href="{{ subject.get_absolute_url }}">{{ subject.name }}</a></li>
+    {% endfor %}
+    </ul>
+{% endfor %}
+{% endblock %}
