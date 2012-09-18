@@ -1,6 +1,6 @@
 from django.conf.urls import patterns, url
 from django.views.generic import DetailView, ListView
-from tafe.models import Student, Subject, Enrolment, Course, Grade, Timetable, Applicant
+from tafe.models import Student, Subject, Enrolment, Course, Grade, Timetable, Applicant, Attendance
 from tafe.views import session_create, session_view, timetable_daily_view
 
 urlpatterns = patterns('tafe.views',
@@ -16,8 +16,8 @@ urlpatterns = patterns('tafe.views',
     url(r'^courses/$', ListView.as_view(queryset=Course.objects.all())),
     url(r'^course/(?P<slug>[-\w]+)/$', DetailView.as_view(model=Course), name='course_view'),
 
-    url(r'^subjects/$', ListView.as_view(queryset=Subject.objects.all())),
-    url(r'^subject/(?P<slug>[-\w]+)/$', DetailView.as_view(model=Subject), name='subject_view'),
+    url(r'^units/$', ListView.as_view(queryset=Subject.objects.all())),
+    url(r'^unit/(?P<slug>[-\w]+)/$', DetailView.as_view(model=Subject), name='subject_view'),
     
     url(r'^enrolments/$', ListView.as_view(queryset=Enrolment.objects.all())),
     url(r'^enrolment/(?P<slug>[-\w]+)/$', DetailView.as_view(model=Enrolment), name='enrolment_view'),
@@ -33,4 +33,9 @@ urlpatterns = patterns('tafe.views',
 
     url(r'^session/create/$', session_create), 
     url(r'^session/(?P<year>\d{4})/(?P<month>\d{1,2})/(?P<day>\d{1,2})/(?P<slug>[-\w]+)/$', session_view, name='session_view'), 
+
+    url(r'^attendances/$', ListView.as_view(queryset=Attendance.objects.all())),
+    url(r'^attendance/(?P<slug>[-\w]+)/$', DetailView.as_view(model=Attendance), name='attendance_view'),
+                      
+
 )

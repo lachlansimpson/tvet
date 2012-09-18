@@ -103,7 +103,7 @@ class Session(models.Model):
 
     def __unicode__(self):
         '''Session Reference: day of week, date, term/year (Timetable)'''
-        return self.day_of_week() + ', ' + self.get_session_number_display() + ', '+ str(self.subject.name)
+        return self.day_of_week() + ', ' + self.get_session_number_display() + ', '+ str(self.subject.name) + ' ' + str(self.date)
 
     def timetable_listing(self):
         ''' returns date-free name for session to be put into timetable '''
@@ -302,6 +302,9 @@ class Subject(models.Model):
     def get_absolute_url(self):
         return ('subject_view', [str(self.slug)])
 
+    def first_letter(self):
+        return self.name and self.name[0] or ''
+
 class Course(models.Model):
     '''Represents Courses - a collection of subjects leading to a degree'''
     class Meta:
@@ -367,11 +370,17 @@ class Attendance(models.Model):
     student = models.ForeignKey(Student, related_name='attendance_records')
     reason = models.CharField(max_length=1, choices=REASON_CHOICES, default='P')
     absent = models.CharField(max_length=1, choices=ABSENCE_CHOICES, blank=True)
+    slug = models.SlugField(blank=True)
 
     def __unicode__(self):
         '''Attendance reference: returns date, session and reason'''
-        return self.session + ', ' + self.get_reason_display()
+        return str(self.session) + ', ' + self.get_reason_display()
 
+    def save(self):
+        slug_temp = self.session.slug + ' ' + self.student.slug
+        self.slug = slugify(slug_temp)
+        super(Attendance, self).save()
+    
     @models.permalink	
     def get_absolute_url(self):
         return ('attendance_view', [str(self.slug)])
