@@ -1,0 +1,24 @@
+{% extends "tafe/base_site.html" %}
+
+{% comment %}
+Course detail page of the portal.
+{% endcomment %}
+
+{% block title %}
+   Enrolment Record
+{% endblock %}
+
+{% block content %}
+<div id="content-left">
+    <h3>{{ enrolment.student }} - {{ enrolment.course }}</h3>
+
+    Date started: {{ enrolment.date_started }}<br />
+    {% if enrolment.date_ended %}
+    Date ended: {{ enrolment.date_ended }}<br />
+    {% endif %}
+    {% if enrolment.mark %}
+    Mark: {{ enrolment.mark }}<br />
+    {% endif %}
+
+</div>
+{% endblock %}
