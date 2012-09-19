@@ -176,6 +176,7 @@ class NewStudentManager(models.Manager):
 class Student(Person):
     '''Represents each student '''
     education_level = models.CharField(max_length=50, blank=True)
+    #application = models.ForeignKey(Applicant)
     
     objects = models.Manager()
     new_students = NewStudentManager()
@@ -203,7 +204,7 @@ class Student(Person):
 class Applicant(Person):
     applied_for = models.ForeignKey('Course', related_name='applicants')
     education_level = models.CharField(max_length=50, blank=True)
-    successful = models.BooleanField()
+    successful = models.NullBooleanField()
     short_listed = models.BooleanField()
     test_ap = models.IntegerField('AP test result', blank=True, null=True)
     test_ma = models.IntegerField('MA test result', blank=True, null=True)

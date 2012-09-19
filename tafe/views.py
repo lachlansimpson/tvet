@@ -95,9 +95,9 @@ def session_create(request):
 
             return HttpResponseRedirect('')
 
-        else:
-            form = SessionRecurringForm()
-            return render_to_response('tafe/session_create.html',{'form':form}, RequestContext(request))
+    else:
+        form = SessionRecurringForm()
+    return render_to_response('tafe/session_create.html',{'form':form}, RequestContext(request))
 
 @login_required
 def session_view(request, year, month, day, slug):

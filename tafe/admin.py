@@ -6,6 +6,8 @@ from django.forms.widgets import RadioSelect
 import datetime
 
 today = datetime.date.today()
+this_year = datetime.date.today().year
+BIRTH_YEARS = range(this_year-51, this_year-16)
 
 class StudentInline(admin.StackedInline):
     model = Student
@@ -34,6 +36,9 @@ class SessionInline(admin.TabularInline):
     fields = ('date', 'session_number',)
     template = 'admin/collapsed_tabular_inline.html'
 
+class CourseInline(admin.TabularInline):
+    model = Course
+
 class EnrolmentAdmin(admin.ModelAdmin):
     fieldsets = [
         ('',{'fields':['student','course','date_started','date_ended','mark']}),
@@ -43,7 +48,7 @@ class ApplicantAdminForm(ModelForm):
     class Meta:
         model = Applicant 
         widgets = {
-            'dob': SelectDateWidget(),
+            'dob': SelectDateWidget(years=BIRTH_YEARS),
             'gender': RadioSelect(),
         }            
 
@@ -51,7 +56,7 @@ class StudentAdminForm(ModelForm):
     class Meta:
         model = Student
         widgets = {
-            'dob': SelectDateWidget(),
+            'dob': SelectDateWidget(years=BIRTH_YEARS),
             'gender': RadioSelect(),
         }            
 

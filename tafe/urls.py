@@ -38,5 +38,4 @@ urlpatterns = patterns('tafe.views',
     url(r'^attendance/all/$', ListView.as_view(queryset=Attendance.objects.all())),
     url(r'^attendance/today/$', ListView.as_view(queryset=Attendance.objects.all())),
     url(r'^attendance/(?P<slug>[-\w]+)/$', DetailView.as_view(model=Attendance), name='attendance_view'),
-
 )
