@@ -1,6 +1,6 @@
 # Create your views here.
 
-from tafe.models import Timetable, Session, Course
+from tafe.models import Timetable, Session, Course, Applicant
 from tafe.forms import SessionRecurringForm
 from django.shortcuts import render_to_response, get_object_or_404
 from django.http import HttpResponseRedirect
@@ -74,7 +74,7 @@ def session_create(request):
             if not recurring:  
                 s.date = form.cleaned_data['first_date']
                 s.save()
-                return HttpResponseRedirect('/')
+                return HttpResponseRedirect('/tafe/')
 
             first_date = form.cleaned_data['first_date'] 
             for_semester = form.cleaned_data['for_semester'] 
@@ -93,7 +93,7 @@ def session_create(request):
                 new_s.save()
                 date += datetime.timedelta(7)
 
-            return HttpResponseRedirect('')
+            return HttpResponseRedirect('/tafe/')
 
     else:
         form = SessionRecurringForm()
@@ -125,3 +125,8 @@ def course_enrolment(request, slug):
 def units_by_qualifications_view(request):
     courses = Course.objects.all().order_by('name')
     return render_to_response('tafe/units_by_qualifications.html',{'courses':courses})
+
+@login_required
+def applicant_success(request):
+    applicants = Applicant.objects.all()#.filter(successful='Unknown')
+    return render_to_response('tafe/applicant_success.html', {'applicants':applicants})

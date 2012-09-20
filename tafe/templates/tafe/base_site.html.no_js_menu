@@ -1,0 +1,28 @@
+{% extends "tafe/base.html" %}
+{% load admin_static %}
+
+{% block title %}{{ title }}KIT Student Management System{% endblock %}
+
+{% block branding %}{{ block.super }}
+<a href="/"><h1 id="site-name">KIT Student Management System</h1></a>
+{% endblock %}
+
+{% block breadcrumbs %}
+<ul class="sf-menu">
+    <li class="current">
+        <a href="/tafe/">Home</a> |
+    {% if title %} &rsaquo; {{ title }}{% endif %}
+    <a href="/tafe/students/">Students</a> |
+    <a href="/tafe/qualifications/">Qualifications</a> |
+    <a href="/tafe/units/">Units</a> |
+    <a href="/tafe/enrolments/">Enrolments</a> |
+    <a href="/tafe/grades/">Grades</a> |
+    <a href="/tafe/attendance/all/">Attendance</a> |
+    <a href="/tafe/timetables/">Timetables</a> |
+    <a href="/search/">Search</a> |
+    
+    
+    {{ block.super }}
+    
+    
+    {% endblock %}

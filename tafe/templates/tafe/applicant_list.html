@@ -10,7 +10,8 @@ List of applicants enrolled
 {% endblock %}
 {% block coltype %}colMS{% endblock %}
 {% block content %}
-{{ block.super }}<h3>Student register</h3>
+{{ block.super }}<h3>Applicant register</h3>
+<p><a href="/tafe/applicants/successful/">Mark applicants as successful here</a></p>
 {% if applicant_list %}
     {% regroup applicant_list by first_letter as letter_list %} 
     {% for letter in letter_list %}

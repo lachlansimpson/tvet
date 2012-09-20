@@ -4,19 +4,42 @@
 {% block title %}{{ title }}KIT Student Management System{% endblock %}
 
 {% block branding %}{{ block.super }}
-<a href="/"><h1 id="site-name">KIT Student Management System</h1></a>
+<a href="/tafe/"><h1 id="site-name">KIT Student Management System</h1></a>
 {% endblock %}
 
+
 {% block breadcrumbs %}
-    | <a href="/tafe/">Home</a> |
+<ul class="sf-menu clear">
+    <li class="current">
+    <a href="/tafe/">Home</a>
+    </li>
     {% if title %} &rsaquo; {{ title }}{% endif %}
-    <a href="/tafe/students/">Students</a> |
-    <a href="/tafe/qualifications/">Qualifications</a> |
-    <a href="/tafe/units/">Units</a> |
-    <a href="/tafe/enrolments/">Enrolments</a> |
-    <a href="/tafe/grades/">Grades</a> |
-    <a href="/tafe/attendance/all/">Attendance</a> |
-    <a href="/tafe/timetables/">Timetables</a> |
-    <a href="/search/">Search</a> |
-    {{ block.super }}
+    <li><a href="/tafe/students/">Students</a>
+        <ul>
+            <li><a href="/tafe/students/">List all enrolled students</a></li>
+            <li><a href="/tafe/students/all/">List all students</a></li>
+            <li><a href="/admin/tafe/student/add/">Add a new Student</a></li>
+        </ul>        
+    </li>
+    <li>
+    <a href="/tafe/qualifications/">Qualifications</a>
+    <ul>
+        <li><a href="/admin/tafe/qualification/add/">Add a new Qualification</a></li>
+    </ul></li>
+    <li>
+    <a href="/tafe/units/">Units</a>
+        <ul>
+            <li><a href="/tafe/session/create/">Create a new recurring session</a>
+            </li>
+        </ul>
+        </li>
+    <li><a href="/tafe/enrolments/">Enrolments</a></li>
+    <li><a href="/tafe/grades/">Grades</a></li>
+    <li><a href="/tafe/attendance/all/">Attendance</a></li>
+    <li><a href="/tafe/timetables/">Timetables</a></li>
+    <li><a href="/search/">Search</a></li>
+    {% if user.is_active and user.is_staff %}
+    <li><a href="/admin/">Admin</a></li>
+                {% endif %}
+</ul>  
 {% endblock %}

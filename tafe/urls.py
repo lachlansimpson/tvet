@@ -11,6 +11,7 @@ urlpatterns = patterns('tafe.views',
     url(r'^student/(?P<slug>[-\w]+)/$', DetailView.as_view(model=Student), name='student_view'),
 
     url(r'^applicants/$', ListView.as_view(queryset=Applicant.objects.all().order_by('surname'))),
+    url(r'^applicants/successful/', 'applicant_success'),
     url(r'^applicant/(?P<slug>[-\w]+)/$', DetailView.as_view(model=Applicant), name='applicant_view'),
 
     url(r'^qualifications/$', ListView.as_view(queryset=Course.objects.all())),
