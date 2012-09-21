@@ -21,7 +21,7 @@ def index(request):
         daily_sessions.append([])
         daily_sessions[session] = Session.objects.filter(date=today).filter(session_number=session)
 
-    return render_to_response('tafe/timetable_today_detail.html',{'daily_sessions':daily_sessions})
+    return render_to_response('tafe/timetable_today_detail.html',{'daily_sessions':daily_sessions}, RequestContext(request))
 
 @login_required
 def timetable_weekly_view(request, slug):
@@ -45,9 +45,9 @@ def timetable_weekly_view(request, slug):
             for session in sessions:
                 weekdays[session_choice].append(session)
                 ''' add the just completed day of four sessions to the all_sessions list '''
-                all_sessions[day].append(weekdays)
+            all_sessions[day].append(weekdays)
 
-    return render_to_response('tafe/timetable_weekly_detail.html',{'timetable':timetable,'all_sessions':all_sessions})
+    return render_to_response('tafe/timetable_weekly_detail.html',{'timetable':timetable,'all_sessions':all_sessions}, RequestContext(request))
 
 @login_required
 def timetable_daily_view(request, year, month, day):

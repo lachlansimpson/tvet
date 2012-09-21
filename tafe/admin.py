@@ -61,7 +61,10 @@ class StudentAdminForm(ModelForm):
         }            
 
 class StudentAdmin(admin.ModelAdmin):
-    inlines = (EnrolmentInline,)
+    inlines = (EnrolmentInline,
+               GradeInline,
+               AttendanceInline,
+              )
     fieldsets = (
         ('Bio', { 'fields':(('first_name','surname'),('dob','gender'), ('island', 'slug'))}),
         ('Contact Information', { 'fields':(('phone','email'),)}),

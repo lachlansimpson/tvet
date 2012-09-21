@@ -21,13 +21,14 @@ Timetable detail
             <td>Other</td>
         </tr>
         {% for day in all_sessions %}
+
         <tr>
             <td>{{ day.0.0.0.day_of_week }}</td>
             {% for sessions in day %}
                 {% for session in sessions %}
                     <td>
                     {% for class in session %}
-                    <a href="{{ class.get_absolute_url }}">{{ class.subject.name }}</a><br />
+                        <a href="{{ class.get_absolute_url }}">{{ class.subject.name }}</a><br />
                     {% endfor %}
                     </td>    
                 {% endfor %}
