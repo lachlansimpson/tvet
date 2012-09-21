@@ -75,6 +75,11 @@ COURSE_RESULTS = (
     (u'F',u'Fail'),
 )
 
+CLASSIFICATION_CHOICES = (
+    ('T', 'Trainer'),
+    ('M', 'Manager'),
+)
+
 class Timetable(models.Model):
     class Meta:
         unique_together = ('year','term')
@@ -145,7 +150,7 @@ class Person(models.Model):
     phone = models.CharField(max_length=12, blank=True)
     email = models.EmailField(blank=True)
     
-    disability = models.BooleanField()
+    disability = models.NullBooleanField()
     disability_description = models.CharField('Description', max_length=50, blank=True)
 
     added = models.DateTimeField(auto_now_add=True)
@@ -205,12 +210,12 @@ class Applicant(Person):
     applied_for = models.ForeignKey('Course', related_name='applicants')
     education_level = models.CharField(max_length=50, blank=True)
     successful = models.NullBooleanField()
-    short_listed = models.BooleanField()
+    short_listed = models.NullBooleanField()
     test_ap = models.IntegerField('AP test result', blank=True, null=True)
     test_ma = models.IntegerField('MA test result', blank=True, null=True)
     test_eng = models.IntegerField('English test result', blank=True, null=True)
     ranking = models.IntegerField(blank=True, null=True)
-    eligibility = models.BooleanField()
+    eligibility = models.NullBooleanField()
     date_offer_sent = models.DateField(blank=True, null=True)
     date_offer_accepted = models.DateField(blank=True, null=True)
     objects = models.Manager()
@@ -272,6 +277,10 @@ class Applicant(Person):
 
 class Staff(Person):
     '''Respresents each Staff member'''
+    classification = models.CharField(max_length=2, choices=CLASSIFICATION_CHOICES)
+    
+    
+    
     def get_id(self):
         return self
 

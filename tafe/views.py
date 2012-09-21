@@ -1,7 +1,7 @@
 # Create your views here.
 
-from tafe.models import Timetable, Session, Course, Applicant
-from tafe.forms import SessionRecurringForm
+from tafe.models import Timetable, Session, Course
+from tafe.forms import SessionRecurringForm, ApplicantSuccessForm
 from django.shortcuts import render_to_response, get_object_or_404
 from django.http import HttpResponseRedirect
 from django.contrib.auth.decorators import login_required
@@ -108,21 +108,6 @@ def session_view(request, year, month, day, slug):
 
     return render_to_response('tafe/session_detail.html',{'session':session}, RequestContext(request))
 
-
-# VIEWS for the student enrollment, split into two. Get date, then get students
-@login_required
-def course_enrolment(request, slug):
-    course = get_object_or_404(Course, slug=slug)
-    if request.method=='POST':
-        form = EnrollCourseForm(request.POST)
-        if form.is_valid:
-            enroll_date = form.cleaned_data['enrol_date']
-    
-    else:
-        form = EnrollCourseForm()
-   
-        return render_to_response('tafe/course_enroll_date_request.html',{'form':form,'course':course}, RequestContext(request))
-
 @login_required
 def units_by_qualifications_view(request):
     courses = Course.objects.all().order_by('name')
@@ -130,5 +115,10 @@ def units_by_qualifications_view(request):
 
 @login_required
 def applicant_success(request):
-    applicants = Applicant.objects.all()#.filter(successful='Unknown')
-    return render_to_response('tafe/applicant_success.html', {'applicants':applicants})
+    if request.method=='POST':
+        pass
+
+    else:
+        form = ApplicantSuccessForm()
+
+    return render_to_response('tafe/applicant_success.html', {'form':form}, RequestContext(request))

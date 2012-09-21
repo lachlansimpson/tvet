@@ -9,6 +9,11 @@ today = datetime.date.today()
 this_year = datetime.date.today().year
 BIRTH_YEARS = range(this_year-51, this_year-16)
 
+#class StudentInlineAttendance(admin.TabularInline):
+class ApplicantSuccess(admin.TabularInline):
+    model = Student
+    fields = ('__unicode__','successful')
+
 class StudentInline(admin.StackedInline):
     model = Student
 

@@ -30,7 +30,6 @@ urlpatterns = patterns('tafe.views',
     url(r'^timetables/$', ListView.as_view(queryset=Timetable.objects.all().order_by('-year'))),
     url(r'^timetable/(?P<slug>[-\w]+)/$', 'timetable_weekly_view', name='timetable_view'),
     #url(r'^timetable/(?P<slug>[-\w]+)/?P<day>[-\w]+/$', 'timetable_day_view'),
-    #url(r'^timetable/(?P<year>\d{4})/$','timetable'), 
     url(r'^timetable/(?P<year>\d{4})/(?P<month>\d{1,2})/(?P<day>\d{1,2})/$', timetable_daily_view),
 
     url(r'^session/create/$', session_create), 
