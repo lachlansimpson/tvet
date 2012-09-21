@@ -104,7 +104,7 @@ def session_view(request, year, month, day, slug):
     req_date = datetime.date(int(year), int(month), int(day))
     session = get_object_or_404(Session, slug=slug, date=req_date)
 
-    return render_to_response('tafe/session_detail.html',{'session':session})
+    return render_to_response('tafe/session_detail.html',{'session':session}, RequestContext(request))
 
 
 # VIEWS for the student enrollment, split into two. Get date, then get students
