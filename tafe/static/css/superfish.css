@@ -1,9 +1,9 @@
 
 /*** ESSENTIAL STYLES ***/
-ul.clear {
-    clear:both;
-}
 
+.colMS {
+    clear: both;
+}
 .sf-menu, .sf-menu * {
 	margin:			0;
 	padding:		0;
