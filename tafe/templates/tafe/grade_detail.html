@@ -11,6 +11,15 @@ Course detail page of the portal.
 {% block content %}
 <div id="content-left">
     <h3>{{ grade.student }} - {{ grade.subject }}</h3>
+    Date started: {{ grade.date_started }} <br />
 
+    <h4>Results</h4>
+    {% if grade.results.all.count %}
+        {% for result in grade.results.all %}
+        {{ result.date }}: <a href="{{ result.get_absolute_url }}">{{ result.name }}, {{ result.mark }}</a><br />   
+        {% endfor %}
+    {% else %}
+        No results recorded yet
+    {% endif %}
 </div>
 {% endblock %}

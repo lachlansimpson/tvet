@@ -32,7 +32,9 @@ def timetable_weekly_view(request, slug):
 
     ''' For each day of the week '''
     for day in range(5):
+        ''' show the timetable for this week '''        
         weekday = last_monday + datetime.timedelta(day)
+        ''' all sessions is returned to the template - this is the complete data set'''
         all_sessions.append([])
         ''' weekdays is the daily list of sessions '''
         weekdays = []
@@ -44,8 +46,8 @@ def timetable_weekly_view(request, slug):
             ''' add each session in the list to the daily schedule list for that session'''
             for session in sessions:
                 weekdays[session_choice].append(session)
-                ''' add the just completed day of four sessions to the all_sessions list '''
-            all_sessions[day].append(weekdays)
+        ''' add the just completed day of four sessions to the all_sessions list '''
+        all_sessions[day].append(weekdays)
 
     return render_to_response('tafe/timetable_weekly_detail.html',{'timetable':timetable,'all_sessions':all_sessions}, RequestContext(request))
 
