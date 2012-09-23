@@ -1,0 +1,32 @@
+{% extends "tafe/base_site.html" %}
+{% comment %}
+
+Applicants turned to Students page of the portal.
+
+{% endcomment %}
+
+{% block title %}
+Succesful applicants are now enrolled
+{% endblock %}
+{% block coltype %}colMS{% endblock %}
+{% block content %}
+{{ block.super }}<h3>New Students:</h3>
+{% if applicants %}
+    {% regroup applicants by first_letter as letter_list %} 
+    {% for letter in letter_list %}
+        <a href="#{{ letter.grouper }}">{{ letter.grouper }}</a>
+    {% endfor %}
+        
+    {% for letter in letter_list %}
+        <h3 id="{{ letter.grouper }}">{{ letter.grouper }}</h3>
+        <ul>
+            {% for applicant in letter.list %}
+                <li><a href="{{ applicant.get_absolute_url }}">{{ applicant }}</a></li>
+            {% endfor %}
+        </ul>
+        </li>
+    {% endfor %}
+{% else %}
+    <p>No applicants are available.</p>
+{% endif %}
+{% endblock %}

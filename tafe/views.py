@@ -1,6 +1,6 @@
 # Create your views here.
 
-from tafe.models import Timetable, Session, Course, Student
+from tafe.models import Timetable, Session, Course
 from tafe.forms import SessionRecurringForm, ApplicantSuccessForm
 from django.shortcuts import render_to_response, get_object_or_404
 from django.http import HttpResponseRedirect
@@ -127,11 +127,11 @@ def applicant_success(request):
         form = ApplicantSuccessForm(request.POST)
         if form.is_valid():
             '''for each applicant, transfer the data across to a Student model'''
-            for applicant in form.cleaned_data['applicants']:
+            applicants = form.cleaned_data['applicants']
+            for applicant in applicants:
                 applicant.convert_to_student()
-            ''' TODO put in a "thanks for adding these people as students" page '''
-            return HttpResponseRedirect('/tafe/')
             
+            return render_to_response('tafe/applicants_to_students.html', {'applicants':applicants}, RequestContext(request))
         else:
             pass
     else:
