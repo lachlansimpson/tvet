@@ -15,4 +15,4 @@ class SessionRecurringForm(forms.Form):
     second_date = forms.DateField(help_text="End date", required=False, widget = SelectDateWidget)
     
 class ApplicantSuccessForm(forms.Form):
-    applicants = forms.ModelMultipleChoiceField(queryset=Applicant.objects.all(), widget=CheckboxSelectMultiple)
+    applicants = forms.ModelMultipleChoiceField(queryset=Applicant.objects.filter(eligibility='Yes').exclude(successful='Yes'), widget=CheckboxSelectMultiple)

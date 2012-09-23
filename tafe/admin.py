@@ -91,8 +91,8 @@ class ApplicantAdmin(admin.ModelAdmin):
         ('Offer details', {'fields':(('date_offer_sent','date_offer_accepted'),)}),
     )
     form = ApplicantAdminForm
-    list_display = ('__unicode__', 'gender', 'disability', 'applied_for')
-    list_filter = ('gender', 'disability', 'applied_for')
+    list_display = ('__unicode__', 'gender', 'disability', 'applied_for', 'eligibility', 'successful')
+    list_filter = ('gender', 'disability', 'applied_for', 'eligibility', 'successful')
 
 class SubjectAdmin(admin.ModelAdmin):
     list_display = ('name','year','semester')
