@@ -1,4 +1,4 @@
-from tafe.models import Student, Course, Subject, Enrolment, Grade, Attendance, SubjectResults, Session, Timetable, Applicant, Staff
+from tafe.models import Student, Course, Subject, Enrolment, Grade, Attendance, Result, Session, Timetable, Applicant, Staff
 from django.contrib import admin
 from django.forms import ModelForm
 from django.forms.extras.widgets import SelectDateWidget 
@@ -27,8 +27,8 @@ class AttendanceInline(admin.TabularInline):
     model = Attendance
     template = 'admin/collapsed_tabular_inline.html'
 
-class SubjectResultsInline(admin.StackedInline):
-    model = SubjectResults
+class ResultInline(admin.StackedInline):
+    model = Result
     template = 'admin/collapsed_tabular_inline.html'
 
 class EnrolmentInline(admin.TabularInline):
@@ -145,4 +145,4 @@ admin.site.register(Subject, SubjectAdmin)
 admin.site.register(Staff, StaffAdmin)
 admin.site.register(Enrolment, EnrolmentAdmin)
 admin.site.register(Grade, GradeAdmin)
-admin.site.register(SubjectResults)
+admin.site.register(Result)

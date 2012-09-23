@@ -406,7 +406,7 @@ class Grade(models.Model):
     student = models.ForeignKey(Student, related_name='grades')
     subject = models.ForeignKey(Subject, related_name='grades')
     date_started = models.DateField()
-    results = models.ForeignKey('SubjectResults', related_name='grades', blank=True, null=True)
+    results = models.ForeignKey('Result', related_name='grades', blank=True, null=True)
     slug = models.SlugField(max_length=60)
 
     def __unicode__(self):
@@ -425,7 +425,7 @@ class Grade(models.Model):
         self.slug = slugify(slug_temp)
         super(Grade, self).save() 
 
-class SubjectResults(models.Model):
+class Result(models.Model):
     '''Represents an Assignment and it's results'''
     class Meta:
         verbose_name='Result'
@@ -436,12 +436,12 @@ class SubjectResults(models.Model):
     mark = models.CharField(max_length=2, choices=SUBJECT_RESULTS)    
 
     def __unicode__(self):
-        '''SubjectResults reference: the assignment name, due date and grade given'''
+        '''Result reference: the assignment name, due date and grade given'''
         return self.name + ', ' + str(self.date) + ', ' + str(self.grade)
 
     @models.permalink	
     def get_absolute_url(self):
-        return ('subjectresults_view', [str(self.slug)])
+        return ('result_view', [str(self.slug)])
 
 class Timetable(models.Model):
     class Meta:
