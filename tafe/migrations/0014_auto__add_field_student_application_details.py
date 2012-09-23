@@ -8,46 +8,16 @@ from django.db import models
 class Migration(SchemaMigration):
 
     def forwards(self, orm):
-
-        # Changing field 'Applicant.disability'
-        db.alter_column('tafe_applicant', 'disability', self.gf('django.db.models.fields.NullBooleanField')(null=True))
-
-        # Changing field 'Applicant.eligibility'
-        db.alter_column('tafe_applicant', 'eligibility', self.gf('django.db.models.fields.NullBooleanField')(null=True))
-
-        # Changing field 'Applicant.short_listed'
-        db.alter_column('tafe_applicant', 'short_listed', self.gf('django.db.models.fields.NullBooleanField')(null=True))
-
-        # Changing field 'Student.disability'
-        db.alter_column('tafe_student', 'disability', self.gf('django.db.models.fields.NullBooleanField')(null=True))
-        # Adding field 'Staff.classification'
-        db.add_column('tafe_staff', 'classification',
-                      self.gf('django.db.models.fields.CharField')(default='T', max_length=2),
+        # Adding field 'Student.application_details'
+        db.add_column('tafe_student', 'application_details',
+                      self.gf('django.db.models.fields.related.ForeignKey')(default='1', to=orm['tafe.Applicant']),
                       keep_default=False)
 
 
-        # Changing field 'Staff.disability'
-        db.alter_column('tafe_staff', 'disability', self.gf('django.db.models.fields.NullBooleanField')(null=True))
-
     def backwards(self, orm):
+        # Deleting field 'Student.application_details'
+        db.delete_column('tafe_student', 'application_details_id')
 
-        # Changing field 'Applicant.disability'
-        db.alter_column('tafe_applicant', 'disability', self.gf('django.db.models.fields.BooleanField')())
-
-        # Changing field 'Applicant.eligibility'
-        db.alter_column('tafe_applicant', 'eligibility', self.gf('django.db.models.fields.BooleanField')())
-
-        # Changing field 'Applicant.short_listed'
-        db.alter_column('tafe_applicant', 'short_listed', self.gf('django.db.models.fields.BooleanField')())
-
-        # Changing field 'Student.disability'
-        db.alter_column('tafe_student', 'disability', self.gf('django.db.models.fields.BooleanField')())
-        # Deleting field 'Staff.classification'
-        db.delete_column('tafe_staff', 'classification')
-
-
-        # Changing field 'Staff.disability'
-        db.alter_column('tafe_staff', 'disability', self.gf('django.db.models.fields.BooleanField')())
 
     models = {
         'tafe.applicant': {
@@ -143,6 +113,7 @@ class Migration(SchemaMigration):
         'tafe.student': {
             'Meta': {'object_name': 'Student'},
             'added': ('django.db.models.fields.DateTimeField', [], {'auto_now_add': 'True', 'blank': 'True'}),
+            'application_details': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['tafe.Applicant']"}),
             'disability': ('django.db.models.fields.NullBooleanField', [], {'null': 'True', 'blank': 'True'}),
             'disability_description': ('django.db.models.fields.CharField', [], {'max_length': '50', 'blank': 'True'}),
             'dob': ('django.db.models.fields.DateField', [], {}),

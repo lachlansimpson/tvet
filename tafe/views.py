@@ -126,6 +126,7 @@ def applicant_success(request):
     if request.method=='POST':
         form = ApplicantSuccessForm(request.POST)
         if form.is_valid():
+            '''for each applicant, transfer the data across to a Student model'''
             for applicant in form.cleaned_data['applicants']:
                 S = Student()
                 S.first_name = applicant.first_name
@@ -133,6 +134,10 @@ def applicant_success(request):
                 S.dob = applicant.dob
                 S.gender = applicant.gender
                 S.save()
+       
+            ''' TODO put in a "thanks for adding these people as students" page '''
+            return HttpResponseRedirect('/tafe/')
+            
         else:
             pass
     else:

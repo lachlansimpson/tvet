@@ -181,7 +181,7 @@ class NewStudentManager(models.Manager):
 class Student(Person):
     '''Represents each student '''
     education_level = models.CharField(max_length=50, blank=True)
-    #application = models.ForeignKey(Applicant)
+    application_details = models.ForeignKey('Applicant')
     
     objects = models.Manager()
     new_students = NewStudentManager()
@@ -277,9 +277,11 @@ class Applicant(Person):
 
 class Staff(Person):
     '''Respresents each Staff member'''
+    class Meta:
+        verbose_name='Staff'
+        verbose_name_plural='Staff'
+    
     classification = models.CharField(max_length=2, choices=CLASSIFICATION_CHOICES)
-    
-    
     
     def get_id(self):
         return self
