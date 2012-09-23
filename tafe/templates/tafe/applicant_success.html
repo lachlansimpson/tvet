@@ -1,7 +1,7 @@
 {% extends "tafe/base_site.html" %}
 {% comment %}
 
-Student list page of the portal.
+Applicant Success page of the portal: where applicants are turned into Students
 
 {% endcomment %}
 
@@ -11,9 +11,8 @@ List of applicants enrolled
 {% block coltype %}colMS{% endblock %}
 {% block content %}
 {{ block.super }}<h3>Applicant register</h3>
-<form action='.' method='POST'>
+<form action='.' method='POST'>{% csrf_token %}
     {{ form.as_p }}
-    
     <input type="submit" value="Submit">
 </form>
 
