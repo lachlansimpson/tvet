@@ -160,11 +160,12 @@ class Applicant(Person):
             new_student.dob = self.dob
             new_student.gender = self.gender
             new_student.education_level = self.education_level
+            new_student.application_details_id = self.pk
             new_student.save()
 
             '''Create the Enrolment record for the Student and the Course they applied for'''
             new_enrolment = Enrolment()
-            new_enrolment.student = self
+            new_enrolment.student = new_student
             new_enrolment.course = self.applied_for
             new_enrolment.save()
             
@@ -172,9 +173,9 @@ class Applicant(Person):
             this method will need to change for greater flexibility in the future'''
             ''' Create the Grade object for each unit in the course, related to the 
             student object'''
-            for unit in self.applied_for.subjects:
+            for unit in self.applied_for.subjects.all():
                 new_grade = Grade()
-                new_grade.student = self
+                new_grade.student = new_student
                 new_grade.subject = unit
                 new_grade.date_started = today
                 new_grade.save()
@@ -182,14 +183,15 @@ class Applicant(Person):
                 ''' For each grade, there is a session object per date
                 To which is attached an attendance record per student
                 Create all attendance records in advance'''
-                for session in unit.sessions:
+                for session in unit.sessions.all():
                     new_attendance_record = Attendance()
-                    new_attendance_record.student = self
-                    new_attendance_record.subject = unit
+                    new_attendance_record.student = new_student
+                    new_attendance_record.session = session 
                     new_attendance_record.save()
 
             '''Converted successfully, move along'''
             self.successful='True'
+            self.save()
 
 #TODO Check how to filter by reverse FK
 class NewStudentManager(models.Manager):
