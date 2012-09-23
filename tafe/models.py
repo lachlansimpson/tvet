@@ -80,57 +80,6 @@ CLASSIFICATION_CHOICES = (
     ('M', 'Manager'),
 )
 
-class Timetable(models.Model):
-    class Meta:
-        unique_together = ('year','term')
-
-    year = models.IntegerField()
-    term = models.IntegerField()
-    start_date = models.DateField()
-    end_date = models.DateField()
-    slug = models.SlugField(max_length=12)
-    
-    def __unicode__(self):
-        '''Timetable reference: year and term number'''
-        return str(self.year) + ', Term ' + str(self.term)
-    
-    @models.permalink	
-    def get_absolute_url(self):
-        return ('timetable_view', [str(self.slug)])
-
-class Session(models.Model):
-    session_number = models.CharField(max_length=1,choices=SESSION_CHOICES)
-    subject = models.ForeignKey('Subject', related_name='sessions')
-    timetable = models.ForeignKey(Timetable, related_name='sessions')
-    date = models.DateField()
-    slug = models.SlugField(max_length=50,blank=True)
-    students = models.ManyToManyField('Student', through='Attendance', blank=True, null=True)
-
-    def __unicode__(self):
-        '''Session Reference: day of week, date, term/year (Timetable)'''
-        return self.day_of_week() + ', ' + self.get_session_number_display() + ', '+ str(self.subject.name) + ' ' + str(self.date)
-
-    def timetable_listing(self):
-        ''' returns date-free name for session to be put into timetable '''
-        return str(self.subject.name)
-
-    def day_of_week(self):
-        day_names = ['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday']
-        return day_names[self.date.weekday()] 
-
-    @models.permalink
-    def get_absolute_url(self):
-        return ('session_view', (), {
-            'year': self.date.year,
-            'month': self.date.month,
-            'day': self.date.day,
-            'slug': self.slug})
-    
-    def save(self):
-        slug_temp = str(self.subject.name) + " " + self.get_session_number_display()
-        self.slug = slugify(slug_temp)
-        super(Session, self).save() 
-
 class FemaleManager(models.Manager):
     def get_query_set(self):
         return super(FemaleManager, self).get_query_set().filter(gender='F')
@@ -172,39 +121,6 @@ class Person(models.Model):
 
     def age_today(self):
         return today.year() - self.dob.year()
-
-#TODO Check how to filter by reverse FK
-class NewStudentManager(models.Manager):
-    def get_query_set(self):
-        return super(NewStudentManager, self).get_query_set().filter(enrolment__student__isnull=True)
-
-class Student(Person):
-    '''Represents each student '''
-    education_level = models.CharField(max_length=50, blank=True)
-    application_details = models.ForeignKey('Applicant')
-    
-    objects = models.Manager()
-    new_students = NewStudentManager()
-
-    def get_id(self):
-        ''' 
-        This returns the student's DB reference number, or "student number"
-        Not kept in the database as it would be extraneous
-        The 100000 is added for aesthetic reasons only
-        '''
-        return self.pk + 100000
-
-    def save(self):
-        '''Can't use prepopulated_fields due to function's restrictions
-        Set the Slug to student ID number''' 
-        if not self.pk:
-            super(Student, self).save() # Call the first save() method to get pk
-            self.slug = slugify(self.get_id())
-        super(Student, self).save() # Call the "real" save() method.
-
-    @models.permalink	
-    def get_absolute_url(self):
-        return ('student_view', [str(self.slug)])
 
 class Applicant(Person):
     applied_for = models.ForeignKey('Course', related_name='applicants')
@@ -275,6 +191,39 @@ class Applicant(Person):
             '''Converted successfully, move along'''
             self.successful='True'
 
+#TODO Check how to filter by reverse FK
+class NewStudentManager(models.Manager):
+    def get_query_set(self):
+        return super(NewStudentManager, self).get_query_set().filter(enrolment__student__isnull=True)
+
+class Student(Person):
+    '''Represents each student '''
+    education_level = models.CharField(max_length=50, blank=True)
+    application_details = models.ForeignKey('Applicant')
+    
+    objects = models.Manager()
+    new_students = NewStudentManager()
+
+    def get_id(self):
+        ''' 
+        This returns the student's DB reference number, or "student number"
+        Not kept in the database as it would be extraneous
+        The 100000 is added for aesthetic reasons only
+        '''
+        return self.pk + 100000
+
+    def save(self):
+        '''Can't use prepopulated_fields due to function's restrictions
+        Set the Slug to student ID number''' 
+        if not self.pk:
+            super(Student, self).save() # Call the first save() method to get pk
+            self.slug = slugify(self.get_id())
+        super(Student, self).save() # Call the "real" save() method.
+
+    @models.permalink	
+    def get_absolute_url(self):
+        return ('student_view', [str(self.slug)])
+
 class Staff(Person):
     '''Respresents each Staff member'''
     class Meta:
@@ -282,7 +231,8 @@ class Staff(Person):
         verbose_name_plural='Staff'
     
     classification = models.CharField(max_length=2, choices=CLASSIFICATION_CHOICES)
-    
+    qualifications_achieved = models.ForeignKey('QualificationGraduated')
+
     def get_id(self):
         return self
 
@@ -294,28 +244,9 @@ class Staff(Person):
     def get_absolute_url(self):
         return ('staff_view', [str(self.slug)])
 
-class Subject(models.Model):
-    '''Represents individual subjects, classes, cohorts'''
-    class Meta:
-        verbose_name='Unit of Competence'
-        verbose_name_plural='Units of Competence'
-    
-    name = models.CharField(max_length=30)
-    slug = models.SlugField(max_length=40)
-    semester = models.CharField(max_length=1, blank=True, choices=SEMESTER_CHOICES)
-    year = models.IntegerField()
-    members = models.ManyToManyField(Student, through='Grade', blank=True, null=True)
-
-    def __unicode__(self):
-        '''Subject reference: subject name and the year given'''
-        return self.name + ', ' + str(self.year) 
-
-    @models.permalink	
-    def get_absolute_url(self):
-        return ('subject_view', [str(self.slug)])
-
-    def first_letter(self):
-        return self.name and self.name[0] or ''
+class QualificationGraduated(models.Model):
+    ''' This is the class of objects to represent what qualifications the staff have'''
+    name = models.CharField(max_length=50)
 
 class Course(models.Model):
     '''Represents Courses - a collection of subjects leading to a degree'''
@@ -326,7 +257,7 @@ class Course(models.Model):
     name = models.CharField(max_length=30)
     slug = models.SlugField(max_length=40)
     students = models.ManyToManyField(Student, through='Enrolment', blank=True, null=True)
-    subjects = models.ManyToManyField(Subject, related_name='courses', blank=True, null=True)
+    subjects = models.ManyToManyField('Subject', related_name='courses', blank=True, null=True)
 
     def __unicode__(self):
         '''Course Reference: name of the course'''
@@ -353,49 +284,6 @@ class Course(models.Model):
             else:
                 list += ', ' + subject.name
         return list 
-
-class SubjectResults(models.Model):
-    '''Represents an Assignment and it's results'''
-    class Meta:
-        verbose_name='Result'
-        verbose_name_plural='Results'
-    
-    name = models.CharField(max_length=30)
-    date = models.DateField()
-    mark = models.CharField(max_length=2, choices=SUBJECT_RESULTS)    
-
-    def __unicode__(self):
-        '''SubjectResults reference: the assignment name, due date and grade given'''
-        return self.name + ', ' + str(self.date) + ', ' + str(self.grade)
-
-    @models.permalink	
-    def get_absolute_url(self):
-        return ('subjectresults_view', [str(self.slug)])
-
-class Attendance(models.Model):
-    '''Represents the "roll call" or attendance record'''
-    class Meta:
-        verbose_name='Attendence Record'
-        verbose_name_plural='Attendence Records'
-    
-    session = models.ForeignKey(Session, related_name='attendance_records')
-    student = models.ForeignKey(Student, related_name='attendance_records')
-    reason = models.CharField(max_length=1, choices=REASON_CHOICES, default='0')
-    absent = models.CharField(max_length=1, choices=ABSENCE_CHOICES, blank=True)
-    slug = models.SlugField(blank=True)
-
-    def __unicode__(self):
-        '''Attendance reference: returns date, session and reason'''
-        return str(self.session) + ', ' + self.get_reason_display()
-
-    def save(self):
-        slug_temp = self.session.slug + ' ' + self.student.slug
-        self.slug = slugify(slug_temp)
-        super(Attendance, self).save()
-    
-    @models.permalink	
-    def get_absolute_url(self):
-        return ('attendance_view', [str(self.slug)])
 
 class Enrolment(models.Model):
     '''Represents a Student's enrolment in a Course'''
@@ -432,12 +320,93 @@ class Enrolment(models.Model):
         self.slug = slugify(slug_str)
         super(Enrolment, self).save() 
 
+class Subject(models.Model):
+    '''Represents individual subjects, classes, cohorts'''
+    class Meta:
+        verbose_name='Unit of Competence'
+        verbose_name_plural='Units of Competence'
+    
+    name = models.CharField(max_length=30)
+    slug = models.SlugField(max_length=40)
+    semester = models.CharField(max_length=1, blank=True, choices=SEMESTER_CHOICES)
+    year = models.IntegerField()
+    members = models.ManyToManyField(Student, through='Grade', blank=True, null=True)
+
+    def __unicode__(self):
+        '''Subject reference: subject name and the year given'''
+        return self.name + ', ' + str(self.year) 
+
+    @models.permalink	
+    def get_absolute_url(self):
+        return ('subject_view', [str(self.slug)])
+
+    def first_letter(self):
+        return self.name and self.name[0] or ''
+
+class Session(models.Model):
+    session_number = models.CharField(max_length=1,choices=SESSION_CHOICES)
+    subject = models.ForeignKey('Subject', related_name='sessions')
+    timetable = models.ForeignKey('Timetable', related_name='sessions')
+    date = models.DateField()
+    slug = models.SlugField(max_length=50,blank=True)
+    students = models.ManyToManyField('Student', through='Attendance', blank=True, null=True)
+
+    def __unicode__(self):
+        '''Session Reference: day of week, date, term/year (Timetable)'''
+        return self.day_of_week() + ', ' + self.get_session_number_display() + ', '+ str(self.subject.name) + ' ' + str(self.date)
+
+    def timetable_listing(self):
+        ''' returns date-free name for session to be put into timetable '''
+        return str(self.subject.name)
+
+    def day_of_week(self):
+        day_names = ['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday']
+        return day_names[self.date.weekday()] 
+
+    @models.permalink
+    def get_absolute_url(self):
+        return ('session_view', (), {
+            'year': self.date.year,
+            'month': self.date.month,
+            'day': self.date.day,
+            'slug': self.slug})
+    
+    def save(self):
+        slug_temp = str(self.subject.name) + " " + self.get_session_number_display()
+        self.slug = slugify(slug_temp)
+        super(Session, self).save() 
+
+class Attendance(models.Model):
+    '''Represents the "roll call" or attendance record'''
+    class Meta:
+        verbose_name='Attendence Record'
+        verbose_name_plural='Attendence Records'
+    
+    session = models.ForeignKey(Session, related_name='attendance_records')
+    student = models.ForeignKey(Student, related_name='attendance_records')
+    reason = models.CharField(max_length=1, choices=REASON_CHOICES, default='0')
+    absent = models.CharField(max_length=1, choices=ABSENCE_CHOICES, blank=True)
+    slug = models.SlugField(blank=True)
+
+    def __unicode__(self):
+        '''Attendance reference: returns date, session and reason'''
+        return str(self.session) + ', ' + self.get_reason_display()
+
+    def save(self):
+        slug_temp = self.session.slug + ' ' + self.student.slug
+        self.slug = slugify(slug_temp)
+        super(Attendance, self).save()
+    
+    @models.permalink	
+    def get_absolute_url(self):
+        return ('attendance_view', [str(self.slug)])
+
 class Grade(models.Model):
     '''Represents a Student's interactions with a Subject. ie, being in a class.'''
     student = models.ForeignKey(Student, related_name='grades')
     subject = models.ForeignKey(Subject, related_name='grades')
     date_started = models.DateField()
-    results = models.ForeignKey(SubjectResults, related_name='grades', blank=True, null=True)
+    results = models.ForeignKey('SubjectResults', related_name='grades', blank=True, null=True)
     slug = models.SlugField(max_length=60)
 
     def __unicode__(self):
@@ -455,3 +424,39 @@ class Grade(models.Model):
         slug_temp = str(self.student) + ' ' +str(self.subject)
         self.slug = slugify(slug_temp)
         super(Grade, self).save() 
+
+class SubjectResults(models.Model):
+    '''Represents an Assignment and it's results'''
+    class Meta:
+        verbose_name='Result'
+        verbose_name_plural='Results'
+    
+    name = models.CharField(max_length=30)
+    date = models.DateField()
+    mark = models.CharField(max_length=2, choices=SUBJECT_RESULTS)    
+
+    def __unicode__(self):
+        '''SubjectResults reference: the assignment name, due date and grade given'''
+        return self.name + ', ' + str(self.date) + ', ' + str(self.grade)
+
+    @models.permalink	
+    def get_absolute_url(self):
+        return ('subjectresults_view', [str(self.slug)])
+
+class Timetable(models.Model):
+    class Meta:
+        unique_together = ('year','term')
+
+    year = models.IntegerField()
+    term = models.IntegerField()
+    start_date = models.DateField()
+    end_date = models.DateField()
+    slug = models.SlugField(max_length=12)
+    
+    def __unicode__(self):
+        '''Timetable reference: year and term number'''
+        return str(self.year) + ', Term ' + str(self.term)
+    
+    @models.permalink	
+    def get_absolute_url(self):
+        return ('timetable_view', [str(self.slug)])

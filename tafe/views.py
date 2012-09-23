@@ -127,6 +127,7 @@ def applicant_success(request):
         form = ApplicantSuccessForm(request.POST)
         if form.is_valid():
             '''for each applicant, transfer the data across to a Student model'''
+            ''' TODO: replace this guff with the method on the applicant model '''
             for applicant in form.cleaned_data['applicants']:
                 S = Student()
                 S.first_name = applicant.first_name
