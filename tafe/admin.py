@@ -111,7 +111,8 @@ class StaffAdmin(admin.ModelAdmin):
     fieldsets = (
         ('Bio', { 'fields':(('first_name','surname'),('dob','gender'), ('island',))}),
         ('Contact Information', { 'fields':(('phone','email'),)}),
-        ('Other Information', { 'fields':(('disability','disability_description'),('islpr_level'),)}),
+        ('Other Information', { 'fields':(('disability','disability_description'),)}),
+        ('ISLPR', { 'fields':(('ISLPR_level'),)}),
     )
     form = StaffAdminForm
     list_display = ('__unicode__', 'gender', 'disability')
