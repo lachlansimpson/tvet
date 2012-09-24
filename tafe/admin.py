@@ -9,7 +9,6 @@ today = datetime.date.today()
 this_year = datetime.date.today().year
 BIRTH_YEARS = range(this_year-51, this_year-16)
 
-#class StudentInlineAttendance(admin.TabularInline):
 class ApplicantSuccess(admin.TabularInline):
     model = Student
     fields = ('__unicode__','successful')
@@ -68,6 +67,14 @@ class StudentAdminForm(ModelForm):
             'gender': RadioSelect(),
         }            
 
+class StaffAdminForm(ModelForm):
+    class Meta:
+        model = Staff
+        widgets = {
+            'dob': SelectDateWidget(years=BIRTH_YEARS),
+            'gender': RadioSelect(),
+        }            
+
 class StudentAdmin(admin.ModelAdmin):
     inlines = (EnrolmentInline,
                GradeInline,
@@ -96,6 +103,18 @@ class ApplicantAdmin(admin.ModelAdmin):
     form = ApplicantAdminForm
     list_display = ('__unicode__', 'gender', 'disability', 'applied_for', 'eligibility', 'successful')
     list_filter = ('gender', 'disability', 'applied_for', 'eligibility', 'successful')
+
+class StaffAdmin(admin.ModelAdmin):
+    fieldsets = (
+        ('Bio', { 'fields':(('first_name','surname'),('dob','gender'), ('island', 'slug'))}),
+        ('Contact Information', { 'fields':(('phone','email'),)}),
+        ('Other Information', { 'fields':(('disability','disability_description'), )}),)
+    form = StaffAdminForm
+    list_display = ('__unicode__', 'slug', 'gender', 'disability')
+    list_filter = ('gender', 'disability')
+    ordering = ('-slug',)
+    prepopulated_fields = {'slug': ('first_name','surname')}
+    #readonly_fields = ('slug',)
 
 class SubjectAdmin(admin.ModelAdmin):
     list_display = ('name','year','semester')
@@ -136,9 +155,6 @@ class SessionAdmin(admin.ModelAdmin):
         AttendanceInline,
     ]
     model = Session
-
-class StaffAdmin(admin.ModelAdmin):
-    model = Staff
 
 class AttendanceAdmin(admin.ModelAdmin):
     model = Attendance

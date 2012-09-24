@@ -272,6 +272,7 @@ class Staff(Person):
     
     classification = models.CharField(max_length=2, choices=CLASSIFICATION_CHOICES)
     credential = models.ManyToManyField('Credential', blank=True, null=True)
+    islpr_level = models.ForeignKey('ISLPRLevel', blank=True, null=True)
 
     def get_id(self):
         return self
