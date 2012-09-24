@@ -233,7 +233,7 @@ class Staff(Person):
         verbose_name_plural='Staff'
     
     classification = models.CharField(max_length=2, choices=CLASSIFICATION_CHOICES)
-    qualifications_achieved = models.ForeignKey('QualificationGraduated')
+    qualifications_achieved = models.ForeignKey('QualificationGraduated', blank=True, null=True)
 
     def get_id(self):
         return self
