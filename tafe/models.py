@@ -80,6 +80,44 @@ CLASSIFICATION_CHOICES = (
     ('M', 'Manager'),
 )
 
+AQF_LEVEL_CHOICES = (
+    ('BH','Bachelor Honors'),
+    ('GC','Graduate Certificate'),
+    ('GC','Graduate Diploma'), 
+    ('B','Bachelor'),
+    ('AD','Advanced Diploma'),
+    ('AE','Associate Degree'),
+    ('D','Diploma'),
+    ('4','IV'),
+    ('3','III'),
+    ('2','II'),
+    ('1','I'),
+    ('D','Doctoral'),
+    ('M','Masters'),
+)
+
+CREDENTIAL_TYPE_CHOICES = (
+    ('E','Education'),
+    ('T','Training'),
+    ('V','Vocational'),
+    ('L','English'),
+)
+
+ISLPR_CHOICES = (
+    ('0','0 Zero Proficiency'),
+    ('0+','0+ Formulaic Proficiency'),
+    ('1-','1- Minimum Proficiency'),
+    ('1','1 Basic Proficiency'),
+    ('1+','1+ Transactional Proficiency'),
+    ('2','2 Basic Social Proficiency'),
+    ('2+','2+ Social Proficiency'),
+    ('3','3 Basic Vocational Proficiency'),
+    ('3+','3+ Basic Vocational Proficiency Plus'),
+    ('4', '4 Vocational Proficiency'),
+    ('4+','4+ Advanced Vocational Proficiency'),
+    ('5','5 Native Proficiency'),
+)
+
 class FemaleManager(models.Manager):
     def get_query_set(self):
         return super(FemaleManager, self).get_query_set().filter(gender='F')
@@ -233,7 +271,7 @@ class Staff(Person):
         verbose_name_plural='Staff'
     
     classification = models.CharField(max_length=2, choices=CLASSIFICATION_CHOICES)
-    credential = models.ForeignKey('Credential', blank=True, null=True)
+    credential = models.ManyToManyField('Credential', blank=True, null=True)
 
     def get_id(self):
         return self
@@ -249,6 +287,18 @@ class Staff(Person):
 class Credential(models.Model):
     ''' This is the class of objects to represent what qualifications the staff have'''
     name = models.CharField(max_length=50)
+    aqf_level = models.CharField(max_length=2, choices=AQF_LEVEL_CHOICES)
+    institution = models.CharField(max_length=40)
+    year = models.CharField(max_length=4)
+    type = models.CharField(max_length=1, choices=CREDENTIAL_TYPE_CHOICES)
+
+class ISLPRLevel(models.Model):
+    '''This is the class of objects to represent English Language Levels'''
+    reading = models.CharField(max_length=2, choices=ISLPR_CHOICES)
+    writing = models.CharField(max_length=2, choices=ISLPR_CHOICES)
+    speaking = models.CharField(max_length=2, choices=ISLPR_CHOICES)
+    listening = models.CharField(max_length=2, choices=ISLPR_CHOICES)
+    overall = models.CharField(max_length=2, choices=ISLPR_CHOICES)
 
 class Course(models.Model):
     '''Represents Courses - a collection of subjects leading to a degree'''
