@@ -10,6 +10,12 @@ Subject detail page of the portal.
 {% block coltype %}colMS{% endblock %}
 {% block content %}
 <div id="content-left">
-    {{ attendance }}
+    {{ attendance.session.subject.name }}<br />
+    {{ attendance.session.date }}<br />
+    {{ attendance.student }}<br />
+    {{ attendance.get_reason_display }}<br />
+    {% if attendance.absent %}
+        {{ attendance.get_absent_display }}
+    {% endif %}
 </div>
 {% endblock %}
