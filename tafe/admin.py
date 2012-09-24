@@ -1,4 +1,4 @@
-from tafe.models import Student, Course, Subject, Enrolment, Grade, Attendance, Result, Session, Timetable, Applicant, Staff
+from tafe.models import Student, Course, Subject, Enrolment, Grade, Attendance, Result, Session, Timetable, Applicant, Staff, ISLPRLevel, Credential
 from django.contrib import admin
 from django.forms import ModelForm
 from django.forms.extras.widgets import SelectDateWidget 
@@ -8,6 +8,9 @@ import datetime
 today = datetime.date.today()
 this_year = datetime.date.today().year
 BIRTH_YEARS = range(this_year-51, this_year-16)
+
+class CredentialInline(admin.TabularInline):
+    model = Staff.credential.through
 
 class ApplicantSuccess(admin.TabularInline):
     model = Student
@@ -67,14 +70,6 @@ class StudentAdminForm(ModelForm):
             'gender': RadioSelect(),
         }            
 
-class StaffAdminForm(ModelForm):
-    class Meta:
-        model = Staff
-        widgets = {
-            'dob': SelectDateWidget(years=BIRTH_YEARS),
-            'gender': RadioSelect(),
-        }            
-
 class StudentAdmin(admin.ModelAdmin):
     inlines = (EnrolmentInline,
                GradeInline,
@@ -104,17 +99,25 @@ class ApplicantAdmin(admin.ModelAdmin):
     list_display = ('__unicode__', 'gender', 'disability', 'applied_for', 'eligibility', 'successful')
     list_filter = ('gender', 'disability', 'applied_for', 'eligibility', 'successful')
 
+class StaffAdminForm(ModelForm):
+    class Meta:
+        model = Staff
+        widgets = {
+            'dob': SelectDateWidget(years=BIRTH_YEARS),
+            'gender': RadioSelect(),
+        }            
+
 class StaffAdmin(admin.ModelAdmin):
     fieldsets = (
         ('Bio', { 'fields':(('first_name','surname'),('dob','gender'), ('island',))}),
         ('Contact Information', { 'fields':(('phone','email'),)}),
-        ('Other Information', { 'fields':(('disability','disability_description'), )}),)
+        ('Other Information', { 'fields':(('disability','disability_description'),('islpr_level'),)}),
+    )
     form = StaffAdminForm
-    list_display = ('__unicode__', 'slug', 'gender', 'disability')
+    list_display = ('__unicode__', 'gender', 'disability')
     list_filter = ('gender', 'disability')
-    ordering = ('-slug',)
-    prepopulated_fields = {'slug': ('first_name','surname')}
-    #readonly_fields = ('slug',)
+    inlines = (CredentialInline,
+              )
 
 class SubjectAdmin(admin.ModelAdmin):
     list_display = ('name','year','semester')
@@ -160,7 +163,6 @@ class AttendanceAdmin(admin.ModelAdmin):
     model = Attendance
     list_display = ('student','session','reason','absent')
     list_filter = ('reason','absent')
-#    radio_fields = {'absent':admin.HORIZONTAL}
 
 admin.site.register(Session, SessionAdmin)
 admin.site.register(Timetable, TimetableAdmin)
@@ -173,3 +175,5 @@ admin.site.register(Staff, StaffAdmin)
 admin.site.register(Enrolment, EnrolmentAdmin)
 admin.site.register(Grade, GradeAdmin)
 admin.site.register(Result)
+admin.site.register(Credential)
+admin.site.register(ISLPRLevel)

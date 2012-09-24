@@ -127,7 +127,7 @@ class MaleManager(models.Manager):
         return super(MaleManager, self).get_query_set().filter(gender='M')
 
 class Person(models.Model):
-    '''Abstract Class under Student and Staff'''
+    '''Abstract Class under Applicant, Student and Staff'''
     first_name = models.CharField(max_length=30)
     surname = models.CharField(max_length=30)
     slug = models.SlugField('ID number', max_length=40, editable=False, blank=True)
@@ -269,11 +269,14 @@ class Staff(Person):
     class Meta:
         verbose_name='Staff'
         verbose_name_plural='Staff'
-    
-    classification = models.CharField(max_length=2, choices=CLASSIFICATION_CHOICES)
-    credential = models.ManyToManyField('Credential', blank=True, null=True)
-    islpr_level = models.ForeignKey('ISLPRLevel', blank=True, null=True)
 
+    classification = models.CharField(max_length=2, choices=CLASSIFICATION_CHOICES)
+    credential = models.ManyToManyField('Credential', blank=True, null=True, related_name='credentials')
+    ISLPR_level = models.ForeignKey('ISLPRLevel', blank=True, null=True, related_name='staff_levels')
+
+    def __unicode__(self):
+        return self.first_name +' ' + self.surname
+    
     def get_id(self):
         return self
 
@@ -287,19 +290,32 @@ class Staff(Person):
 
 class Credential(models.Model):
     ''' This is the class of objects to represent what qualifications the staff have'''
+    class Meta:
+        verbose_name_plural='Credentials'
+    
     name = models.CharField(max_length=50)
     aqf_level = models.CharField(max_length=2, choices=AQF_LEVEL_CHOICES)
     institution = models.CharField(max_length=40)
     year = models.CharField(max_length=4)
     type = models.CharField(max_length=1, choices=CREDENTIAL_TYPE_CHOICES)
 
+    def __unicode__(self):
+        return str(self.get_aqf_level_display()) +', '+self.name+', '+self.institution
+
 class ISLPRLevel(models.Model):
     '''This is the class of objects to represent English Language Levels'''
+    class Meta:
+        verbose_name='ISPLR Level'
+        verbose_name_plural='ISPLR Levels'
+
     reading = models.CharField(max_length=2, choices=ISLPR_CHOICES)
     writing = models.CharField(max_length=2, choices=ISLPR_CHOICES)
     speaking = models.CharField(max_length=2, choices=ISLPR_CHOICES)
     listening = models.CharField(max_length=2, choices=ISLPR_CHOICES)
     overall = models.CharField(max_length=2, choices=ISLPR_CHOICES)
+
+    def __unicode__(self):
+        return self.reading+self.writing+self.speaking+self.listening+self.overall
 
 class Course(models.Model):
     '''Represents Courses - a collection of subjects leading to a degree'''
