@@ -1,0 +1,32 @@
+{% extends "tafe/base_site.html" %}
+
+{% comment %}
+Staff detail page of the portal.
+{% endcomment %}
+
+{% block title %}
+Staff detail
+{% endblock %}
+{% block coltype %}colMS{% endblock %}
+{% block content %}
+<div id="content-left">
+    <div id="bio">
+    <h2>{{ staff }}</h2>
+    Date of birth: {{ staff.dob }}    Age: {{ staff.age_today }}<br />
+    Gender: {{ staff.get_gender_display }}<br />
+    Island: {{ staff.get_island_display }}<br />
+    {% if staff.phone %}
+    Phone: {{ staff.phone }}<br />
+    {% endif %}
+    {% if staff.email %}
+    Email: {{ staff.email }}<br /> 
+    {% endif %}
+    {% if staff.disability %}
+    Disability: {{ staff.disbility_description }}<br />
+    {% endif %}
+    </div>
+    <h5>Admin</h5>
+    Date added: {{ staff.added }}<br />
+    Date last changed: {{ staff.updated }}
+</div>
+{% endblock %}

@@ -1,0 +1,32 @@
+{% extends "tafe/base_site.html" %}
+{% comment %}
+
+Staff list page of the portal.
+
+{% endcomment %}
+
+{% block title %}
+List of Staff 
+{% endblock %}
+{% block coltype %}colMS{% endblock %}
+{% block content %}
+{{ block.super }}<h3>Student register</h3>
+{% if staff_list %}
+    {% regroup staff_list by first_letter as letter_list %} 
+    {% for letter in letter_list %}
+        <a href="#{{ letter.grouper }}">{{ letter.grouper }}</a>
+    {% endfor %}
+        
+    {% for letter in letter_list %}
+        <h3 id="{{ letter.grouper }}">{{ letter.grouper }}</h3>
+        <ul>
+            {% for staff in letter.list %}
+                <li><a href="{{ staff.get_absolute_url }}">{{ staff }}</a></li>
+            {% endfor %}
+        </ul>
+        </li>
+    {% endfor %}
+{% else %}
+    <p>No staffs are available.</p>
+{% endif %}
+{% endblock %}
