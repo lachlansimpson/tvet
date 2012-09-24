@@ -233,7 +233,7 @@ class Staff(Person):
         verbose_name_plural='Staff'
     
     classification = models.CharField(max_length=2, choices=CLASSIFICATION_CHOICES)
-    qualifications_achieved = models.ForeignKey('QualificationGraduated', blank=True, null=True)
+    credential = models.ForeignKey('Credential', blank=True, null=True)
 
     def get_id(self):
         return self
@@ -246,7 +246,7 @@ class Staff(Person):
     def get_absolute_url(self):
         return ('staff_view', [str(self.slug)])
 
-class QualificationGraduated(models.Model):
+class Credential(models.Model):
     ''' This is the class of objects to represent what qualifications the staff have'''
     name = models.CharField(max_length=50)
 
