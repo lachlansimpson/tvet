@@ -25,6 +25,7 @@ class SubjectInline(admin.StackedInline):
 
 class AttendanceInline(admin.TabularInline):
     model = Attendance
+    exclude = ('slug',)
     template = 'admin/collapsed_tabular_inline.html'
 
 class ResultInline(admin.StackedInline):
@@ -48,6 +49,8 @@ class EnrolmentAdmin(admin.ModelAdmin):
     fieldsets = [
         ('',{'fields':['student','course','date_started','date_ended','mark']}),
     ]
+    list_display = ('student', 'course', 'date_started')
+    list_filter = ('course', 'date_started')
 
 class ApplicantAdminForm(ModelForm):
     class Meta:
@@ -119,6 +122,8 @@ class GradeAdmin(admin.ModelAdmin):
     fieldsets = [
         ('',{'fields':['student','subject','date_started','results']}),
     ]
+    list_display = ('student','subject','date_started','results')
+    list_filter = ('subject','date_started','results')
 
 class TimetableAdmin(admin.ModelAdmin):
     model = Timetable
@@ -135,9 +140,15 @@ class SessionAdmin(admin.ModelAdmin):
 class StaffAdmin(admin.ModelAdmin):
     model = Staff
 
+class AttendanceAdmin(admin.ModelAdmin):
+    model = Attendance
+    list_display = ('student','session','reason','absent')
+    list_filter = ('reason','absent')
+#    radio_fields = {'absent':admin.HORIZONTAL}
+
 admin.site.register(Session, SessionAdmin)
 admin.site.register(Timetable, TimetableAdmin)
-admin.site.register(Attendance)
+admin.site.register(Attendance, AttendanceAdmin)
 admin.site.register(Applicant, ApplicantAdmin)
 admin.site.register(Student, StudentAdmin)
 admin.site.register(Course, CourseAdmin)

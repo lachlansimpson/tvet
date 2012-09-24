@@ -1,6 +1,6 @@
 ''' forms.py holds the new forms for creating objects '''
 from django import forms
-from tafe.models import Timetable, Subject, Applicant
+from tafe.models import Timetable, Subject, Applicant, Attendance
 from tafe.models import SESSION_CHOICES
 from django.forms.extras.widgets import SelectDateWidget
 from django.forms.widgets import CheckboxSelectMultiple
@@ -16,3 +16,7 @@ class SessionRecurringForm(forms.Form):
     
 class ApplicantSuccessForm(forms.Form):
     applicants = forms.ModelMultipleChoiceField(queryset=Applicant.objects.filter(eligibility='Yes').exclude(successful='Yes'), widget=CheckboxSelectMultiple)
+
+class AttendanceForm(forms.Form):
+    attendance_records = forms.ModelMultipleChoiceField(queryset=Attendance.objects.all(), widget=CheckboxSelectMultiple)
+    

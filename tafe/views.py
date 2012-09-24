@@ -1,6 +1,6 @@
 # Create your views here.
 
-from tafe.models import Timetable, Session, Course
+from tafe.models import Timetable, Session, Course, Attendance
 from tafe.forms import SessionRecurringForm, ApplicantSuccessForm
 from django.shortcuts import render_to_response, get_object_or_404
 from django.http import HttpResponseRedirect
@@ -111,8 +111,17 @@ def session_view(request, year, month, day, slug):
     ''' Show the details of the session '''
     req_date = datetime.date(int(year), int(month), int(day))
     session = get_object_or_404(Session, slug=slug, date=req_date)
+    attendance = Attendance.objects.filter(session=session)
+    
+    return render_to_response('tafe/session_detail.html',{'session':session, 'attendance':attendance}, RequestContext(request))
 
-    return render_to_response('tafe/session_detail.html',{'session':session}, RequestContext(request))
+@login_required
+def attendance_view(request, year, month, day, slug):
+    '''show the attendance record requested'''
+    req_date = datetime.date(int(year), int(month), int(day))
+    attendance = get_object_or_404(Attendance, slug=slug, session__date=req_date)
+
+    return render_to_response('tafe/attendance_detail.html', {'attendance':attendance}, RequestContext(request))
 
 @login_required
 def units_by_qualifications_view(request):
