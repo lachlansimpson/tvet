@@ -106,7 +106,7 @@ class ApplicantAdmin(admin.ModelAdmin):
 
 class StaffAdmin(admin.ModelAdmin):
     fieldsets = (
-        ('Bio', { 'fields':(('first_name','surname'),('dob','gender'), ('island', 'slug'))}),
+        ('Bio', { 'fields':(('first_name','surname'),('dob','gender'), ('island',))}),
         ('Contact Information', { 'fields':(('phone','email'),)}),
         ('Other Information', { 'fields':(('disability','disability_description'), )}),)
     form = StaffAdminForm
