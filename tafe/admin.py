@@ -1,4 +1,4 @@
-from tafe.models import Student, Course, Subject, Enrolment, Grade, Attendance, Result, Session, Timetable, Applicant, Staff, ISLPRLevel, Credential
+from tafe.models import Student, Course, Subject, Enrolment, Grade, Attendance, Result, Session, Timetable, Applicant, Staff, Credential
 from django.contrib import admin
 from django.forms import ModelForm
 from django.forms.extras.widgets import SelectDateWidget 
@@ -111,8 +111,8 @@ class StaffAdmin(admin.ModelAdmin):
     fieldsets = (
         ('Bio', { 'fields':(('first_name','surname'),('dob','gender'), ('island',))}),
         ('Contact Information', { 'fields':(('phone','email'),)}),
-        ('Other Information', { 'fields':(('disability','disability_description'),)}),
-        ('ISLPR', { 'fields':(('ISLPR_level'),)}),
+        ('Other Information', { 'fields':(('disability','disability_description'),('classification'))}),
+        ('ISLPR', { 'fields':(('islpr_reading', 'islpr_writing', 'islpr_speaking', 'islpr_listening', 'islpr_overall'),)}),
     )
     form = StaffAdminForm
     list_display = ('__unicode__', 'gender', 'disability')
@@ -177,4 +177,3 @@ admin.site.register(Enrolment, EnrolmentAdmin)
 admin.site.register(Grade, GradeAdmin)
 admin.site.register(Result)
 admin.site.register(Credential)
-admin.site.register(ISLPRLevel)

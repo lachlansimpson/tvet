@@ -158,7 +158,7 @@ class Person(models.Model):
         return self.surname and self.surname[0] or ''
 
     def age_today(self):
-        return today.year() - self.dob.year()
+        return today.year - self.dob.year
 
 class Applicant(Person):
     applied_for = models.ForeignKey('Course', related_name='applicants')
@@ -170,6 +170,7 @@ class Applicant(Person):
     test_eng = models.IntegerField('English test result', blank=True, null=True)
     ranking = models.IntegerField(blank=True, null=True)
     eligibility = models.NullBooleanField()
+    date_of_application = models.DateField(blank=True, null=True)
     date_offer_sent = models.DateField(blank=True, null=True)
     date_offer_accepted = models.DateField(blank=True, null=True)
     objects = models.Manager()
@@ -184,6 +185,13 @@ class Applicant(Person):
             self.slug = slugify(str(self))
         super(Applicant, self).save() # Call the "real" save() method.
 
+    def age_group(self):
+        if self.age_today < 25:
+            return '16-24'
+        elif self.age_today < 36:
+            return '25-35'
+        return '35+'
+    
     def convert_to_student(self):
         '''Turn an applicant into a student, create all required associated objects'''
         if self.successful:
@@ -272,7 +280,11 @@ class Staff(Person):
 
     classification = models.CharField(max_length=2, choices=CLASSIFICATION_CHOICES)
     credential = models.ManyToManyField('Credential', blank=True, null=True, related_name='credentials')
-    ISLPR_level = models.ForeignKey('ISLPRLevel', blank=True, null=True, related_name='staff_levels')
+    islpr_reading = models.CharField('ISLPR Level Reading', max_length=2, choices=ISLPR_CHOICES)
+    islpr_writing = models.CharField('ISLPR Level Writing', max_length=2, choices=ISLPR_CHOICES)
+    islpr_speaking = models.CharField('ISLPR Level Speaking', max_length=2, choices=ISLPR_CHOICES)
+    islpr_listening = models.CharField('ISLPR Level Listening', max_length=2, choices=ISLPR_CHOICES)
+    islpr_overall = models.CharField('ISLPR Level Overall', max_length=2, choices=ISLPR_CHOICES)
 
     def __unicode__(self):
         return self.first_name +' ' + self.surname
@@ -301,21 +313,6 @@ class Credential(models.Model):
 
     def __unicode__(self):
         return str(self.get_aqf_level_display()) +', '+self.name+', '+self.institution
-
-class ISLPRLevel(models.Model):
-    '''This is the class of objects to represent English Language Levels'''
-    class Meta:
-        verbose_name='ISPLR Level'
-        verbose_name_plural='ISPLR Levels'
-
-    reading = models.CharField(max_length=2, choices=ISLPR_CHOICES)
-    writing = models.CharField(max_length=2, choices=ISLPR_CHOICES)
-    speaking = models.CharField(max_length=2, choices=ISLPR_CHOICES)
-    listening = models.CharField(max_length=2, choices=ISLPR_CHOICES)
-    overall = models.CharField(max_length=2, choices=ISLPR_CHOICES)
-
-    def __unicode__(self):
-        return self.reading+self.writing+self.speaking+self.listening+self.overall
 
 class Course(models.Model):
     '''Represents Courses - a collection of subjects leading to a degree'''

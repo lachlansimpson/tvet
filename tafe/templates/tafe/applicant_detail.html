@@ -12,9 +12,10 @@ Applicant detail
 <div id="content-left">
     <div id="bio">
     <h2>{{ applicant }} - {{ applicant.applied_for }}</h2>
-    Date of birth: {{ applicant.dob }}    Age: {{ applicant.age_today }}<br />
+    Date of birth: {{ applicant.dob }}<br />
     Gender: {{ applicant.get_gender_display }}<br />
     Island: {{ applicant.get_island_display }}<br />
+    Age: {{ applicant.age_today }}    Age Group: {{ applicant.age_group }}<br />
     {% if applicant.phone %}
     Phone: {{ applicant.phone }}<br />
     {% endif %}
@@ -26,16 +27,23 @@ Applicant detail
     {% endif %}
     Highest Education level: {{ applicant.education_level }}<br />
     </div>
-
-    
-    {% if applicant.short_listed %}
-    <div id="shortlist">
-    <h4>Test Results</h4>
-    English Test: {{ applicant.test_eng }}<br />
-    AP Test: {{ applicant.test_ap }}<br />
-    MA Test: {{ applicant.test_ma }}<br />
+    <div id="application-details">
+        Date Applied: {{ applicant.date_of_application }} 
+        {% if applicant.short_listed %}
+        <div id="shortlist">
+            <h4>Test Results</h4>
+            English Test: {{ applicant.test_eng }}<br />
+            AP Test: {{ applicant.test_ap }}<br />
+            MA Test: {{ applicant.test_ma }}<br />
+            
+            <p>Ranking: {{ applicant.ranking }}<br />
+            Eligibility for Enrolment: {{ applicant.eligibility }}
+            Date offer sent: {{ applicant.date_offer_sent }}
+            Date offer accepted: {{ applicant.date_offer_accepted }}
+        </div>
+        {% endif %}        
     </div>
-    {% endif %}
+
 
     <h5>Admin</h5>
     Date added: {{ applicant.added }}<br />
