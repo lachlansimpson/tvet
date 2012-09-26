@@ -1,0 +1,35 @@
+{% extends "tafe/base_site.html" %}
+
+{% comment %}
+Subject detail page of the portal.
+{% endcomment %}
+
+{% block title %}
+    Unit detail
+{% endblock %}
+{% block coltype %}colMS{% endblock %}
+{% block content %}
+<div id="content-left">
+    <h2>{{ unit.name }} - Semester {{ subject.semester }}, {{ subject.year }}</h2>
+
+    <h4>Student records</h4>
+    {% for grade in subject.grades.all %}
+    <a href="{{ grade.student.get_absolute_url}}">{{ grade.student }}</a>: <a href="{{ grade.get_absolute_url }}">{{ grade.subject }}</a><br />
+    {% endfor %}
+
+    <table>
+        <tr><td>Student Name</td>
+            {% for day in dates %}
+               <td>{{ day.0|date:"d/m" }} {{ day.1.0 }}</td>
+            {% endfor %}
+        </tr>
+        {% for student in unit_attendance_matrix %}
+        <tr>
+            {% for attendance in student %}
+            <td>{{ attendance }}</td>
+            {% endfor %}
+        </tr>
+        {% endfor %}
+    </table>
+</div>
+{% endblock %}

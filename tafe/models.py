@@ -404,7 +404,7 @@ class Subject(models.Model):
 
     @models.permalink	
     def get_absolute_url(self):
-        return ('subject_view', [str(self.slug)])
+        return ('unit_view', [str(self.slug)])
 
     def first_letter(self):
         return self.name and self.name[0] or ''
@@ -500,10 +500,10 @@ class Result(models.Model):
     name = models.CharField(max_length=30)
     date = models.DateField()
     mark = models.CharField(max_length=2, choices=SUBJECT_RESULTS)    
-
+    
     def __unicode__(self):
         '''Result reference: the assignment name, due date and grade given'''
-        return self.name + ', ' + str(self.date) + ', ' + str(self.grade)
+        return self.name + ', ' + str(self.date)
 
     @models.permalink	
     def get_absolute_url(self):

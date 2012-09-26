@@ -153,8 +153,8 @@ class TimetableAdmin(admin.ModelAdmin):
     prepopulated_fields = {'slug': ('year','term')}
 
 class SessionAdmin(admin.ModelAdmin):
-    list_display = ('day_of_week','date','timetable','subject','get_session_number_display')
-    list_filter = ('date','session_number')
+    list_display = ('subject', 'day_of_week','date','timetable','get_session_number_display')
+    list_filter = ('date','session_number','students')
     inlines = [
         AttendanceInline,
     ]

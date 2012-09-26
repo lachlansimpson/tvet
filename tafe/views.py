@@ -1,6 +1,6 @@
 # Create your views here.
 
-from tafe.models import Timetable, Session, Course, Attendance
+from tafe.models import Timetable, Session, Course, Attendance, Subject, Grade
 from tafe.forms import SessionRecurringForm, ApplicantSuccessForm
 from django.shortcuts import render_to_response, get_object_or_404
 from django.http import HttpResponseRedirect
@@ -22,49 +22,6 @@ def index(request):
         daily_sessions[session] = Session.objects.filter(date=today).filter(session_number=session)
 
     return render_to_response('tafe/timetable_today_detail.html',{'daily_sessions':daily_sessions}, RequestContext(request))
-
-@login_required
-def timetable_weekly_view(request, slug):
-    '''
-    View of this week's timetable. 
-    '''
-    timetable = get_object_or_404(Timetable, slug=slug)
-    all_sessions = []
-    
-    last_monday = today - datetime.timedelta(days=today.weekday())
-
-    ''' For each day of the week '''
-    for day in range(5):
-        ''' To show the timetable for this week we get the date of this week's  Monday '''        
-        weekday = last_monday + datetime.timedelta(day)
-        ''' all sessions is the dataset returned to the template'''
-        all_sessions.append([])
-        ''' weekdays is the daily list of sessions '''
-        weekdays = []
-        ''' for each session of the day '''
-        for session_choice in range(5):
-            weekdays.append([])
-            ''' retrieve what's on '''
-            sessions = timetable.sessions.filter(date=weekday).filter(session_number=session_choice)
-            ''' add each session in the list to the daily schedule list for that session'''
-            for session in sessions:
-                weekdays[session_choice].append(session)
-        ''' add the just completed day of four sessions to the all_sessions list '''
-        all_sessions[day].append(weekdays)
-
-    return render_to_response('tafe/timetable_weekly_detail.html',{'timetable':timetable,'all_sessions':all_sessions}, RequestContext(request))
-
-@login_required
-def timetable_daily_view(request, year, month, day):
-    ''' Today's timetable  '''
-    daily_sessions = []
-    date = datetime.date(int(year), int(month), int(day))
-
-    for session in range(4):
-        daily_sessions.append([])
-        daily_sessions[session] = Session.objects.filter(date=date).filter(session_number=session)
-
-    return render_to_response('tafe/timetable_daily_detail.html',{'daily_sessions':daily_sessions, 'date':date})
 
 @login_required
 def session_create(request):
@@ -147,3 +104,74 @@ def applicant_success(request):
         form = ApplicantSuccessForm()
 
     return render_to_response('tafe/applicant_success.html', {'form':form}, RequestContext(request))
+
+@login_required
+def timetable_daily_view(request, year, month, day):
+    ''' Today's timetable  '''
+    daily_sessions = []
+    date = datetime.date(int(year), int(month), int(day))
+
+    for session in range(4):
+        daily_sessions.append([])
+        daily_sessions[session] = Session.objects.filter(date=date).filter(session_number=session)
+
+    return render_to_response('tafe/timetable_daily_detail.html',{'daily_sessions':daily_sessions, 'date':date})
+
+@login_required
+def timetable_weekly_view(request, slug):
+    '''
+    View of this week's timetable. 
+    '''
+    timetable = get_object_or_404(Timetable, slug=slug)
+    all_sessions = []
+    
+    last_monday = today - datetime.timedelta(days=today.weekday())
+
+    ''' For each day of the week '''
+    for day in range(5):
+        ''' To show the timetable for this week we get the date of this week's  Monday '''        
+        weekday = last_monday + datetime.timedelta(day)
+        ''' all sessions is the dataset returned to the template'''
+        all_sessions.append([])
+        ''' weekdays is the daily list of sessions '''
+        weekdays = []
+        ''' for each session of the day '''
+        for session_choice in range(5):
+            weekdays.append([])
+            ''' retrieve what's on '''
+            sessions = timetable.sessions.filter(date=weekday).filter(session_number=session_choice)
+            ''' add each session in the list to the daily schedule list for that session'''
+            for session in sessions:
+                weekdays[session_choice].append(session)
+        ''' add the just completed day of four sessions to the all_sessions list '''
+        all_sessions[day].append(weekdays)
+
+    return render_to_response('tafe/timetable_weekly_detail.html',{'timetable':timetable,'all_sessions':all_sessions}, RequestContext(request))
+
+@login_required
+def unit_view(request, slug):
+    unit = get_object_or_404(Subject, slug=slug)
+    unit_students = unit.members.all()
+    unit_attendance_matrix = []
+    
+    dates = []
+    '''We need to get the headers for each session - date and session_number. Add it to the first entry in the matrix'''
+    for session in Session.objects.filter(subject=unit).order_by('date'):
+        date = session.date
+        session_number = session.get_session_number_display()
+        session_details = [date, session_number]
+        dates.append(session_details)
+    
+    '''Add each student and their attendance record, per session, to the matrix'''
+    for student in unit_students:
+        student_details = [student]
+
+        for session in Session.objects.filter(subject=unit, students=student).order_by('date'):
+            for attendance_record in Attendance.objects.filter(student=student, session=session).order_by('session'):   
+                if today < session.date:
+                    student_details.append('-')
+                else:
+                    student_details.append(attendance_record.get_reason_display()[0])
+        unit_attendance_matrix.append(student_details)
+    
+    return render_to_response('tafe/unit_detail.html', {'unit':unit,'unit_attendance_matrix':unit_attendance_matrix, 'dates':dates}, RequestContext(request))
