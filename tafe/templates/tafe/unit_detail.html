@@ -12,7 +12,12 @@ Subject detail page of the portal.
 <div id="content-left">
     <h2>{{ unit.name }} - Semester {{ subject.semester }}, {{ subject.year }}</h2>
 
-    <h4>Student records</h4>
+    This week's classes:<br />
+    {% for session in weekly_classes %}
+        <a href="{{ session.get_absolute_url }}">{{ session.day_of_week }}: {{ session.get_session_number_display }}</a><br />
+    {% endfor %}
+
+    <h4>Student attendance records</h4>
     {% for grade in subject.grades.all %}
     <a href="{{ grade.student.get_absolute_url}}">{{ grade.student }}</a>: <a href="{{ grade.get_absolute_url }}">{{ grade.subject }}</a><br />
     {% endfor %}
