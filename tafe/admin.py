@@ -87,10 +87,10 @@ class StudentAdmin(admin.ModelAdmin):
 
 class ApplicantAdmin(admin.ModelAdmin):
     fieldsets = (
-        ('Bio', { 'fields':(('first_name','surname'),('dob','gender', 'island'))}),
-                ('Contact Information', { 'fields':(('phone','email'),)}),
-                ('Other Information', { 'fields':(('disability','disability_description'), 'education_level')}),
-                ('Course Applied For', { 'fields':(('applied_for', 'short_listed'),)}),
+        ('Bio', {'fields':(('first_name','surname'),('dob','gender', 'island'))}),
+        ('Contact Information', { 'fields':(('phone','email'),)}),
+        ('Other Information', { 'fields':(('disability','disability_description'), 'education_level')}),
+        ('Course Applied For', { 'fields':(('applied_for', 'date_of_application', 'short_listed'),)}),
         ('Test Results', {'fields':(('test_ap','test_ma','test_eng'),)}),
         ('Ranking, Eligibility and Success', {'fields':(('ranking','eligibility','successful'),)}),
         ('Offer details', {'fields':(('date_offer_sent','date_offer_accepted'),)}),

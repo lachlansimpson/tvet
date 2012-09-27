@@ -118,6 +118,12 @@ ISLPR_CHOICES = (
     ('5','5 Native Proficiency'),
 )
 
+EDUCATION_LEVEL_CHOICES = (
+    ('0','Primary School'),
+    ('1','Some High School'),
+    ('2','High School'),
+)
+
 class FemaleManager(models.Manager):
     def get_query_set(self):
         return super(FemaleManager, self).get_query_set().filter(gender='F')
@@ -162,7 +168,7 @@ class Person(models.Model):
 
 class Applicant(Person):
     applied_for = models.ForeignKey('Course', related_name='applicants')
-    education_level = models.CharField(max_length=50, blank=True)
+    education_level = models.CharField(max_length=2, blank=True, choices=EDUCATION_LEVEL_CHOICES)
     successful = models.NullBooleanField()
     short_listed = models.NullBooleanField()
     test_ap = models.IntegerField('AP test result', blank=True, null=True)
