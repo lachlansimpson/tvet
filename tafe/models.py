@@ -409,6 +409,16 @@ class Subject(models.Model):
     def first_letter(self):
         return self.name and self.name[0] or ''
 
+    def this_weeks_sessions(self):
+        '''These are used to return this week's sessions'''
+        last_monday = today - datetime.timedelta(days=today.weekday())
+        this_friday = today + datetime.timedelta( (4-today.weekday()) % 7 )
+        this_weeks_sessions = []
+        for session in self.sessions.all(): 
+            if session.date > last_monday and session.date < this_friday:
+                this_weeks_sessions.append(session)
+        return this_weeks_sessions
+
 class Session(models.Model):
     session_number = models.CharField(max_length=1,choices=SESSION_CHOICES)
     subject = models.ForeignKey('Subject', related_name='sessions')

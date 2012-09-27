@@ -155,23 +155,19 @@ def unit_view(request, slug):
     unit_attendance_matrix = []
     weekly_classes = [] 
     dates = []
-
-    last_monday = today - datetime.timedelta(days=today.weekday())
-    this_friday = today + datetime.timedelta( (4-today.weekday()) % 7 )
-
+    
     '''We need to get the headers for each session - date and session_number for the attendance record header row'''
     for session in Session.objects.filter(subject=unit).order_by('date'):
         date = session.date
         session_number = session.get_session_number_display()
         session_details = [date, session_number]
         dates.append(session_details)
-        if date > last_monday and date < this_friday:
-             weekly_classes.append(session)
 
     '''Add each student and their attendance record, per session, to the matrix'''
     for student in unit_students:
+        '''the student is the first item in the list'''
         student_details = [student]
-        
+        '''then add the attendance reason from each session in date order'''
         for session in Session.objects.filter(subject=unit, students=student).order_by('date'):
             for attendance_record in Attendance.objects.filter(student=student, session=session).order_by('session'):   
                 if today < session.date:

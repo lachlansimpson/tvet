@@ -1,7 +1,7 @@
 {% extends "tafe/base_site.html" %}
 
 {% comment %}
-Subject detail page of the portal.
+Subject/Unit detail page of the portal.
 {% endcomment %}
 
 {% block title %}
@@ -13,7 +13,7 @@ Subject detail page of the portal.
     <h2>{{ unit.name }} - Semester {{ subject.semester }}, {{ subject.year }}</h2>
 
     This week's classes:<br />
-    {% for session in weekly_classes %}
+    {% for session in unit.this_weeks_sessions %}
         <a href="{{ session.get_absolute_url }}">{{ session.day_of_week }}: {{ session.get_session_number_display }}</a><br />
     {% endfor %}
 
