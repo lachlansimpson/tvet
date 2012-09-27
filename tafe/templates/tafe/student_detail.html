@@ -58,7 +58,7 @@ Student detail
     </div>
     <div id="attendance">
     <h3>Attendence record</h3> 
-    {% for record in student.attendance_records.all %}
+    {% for record in student.attendance_before_today %}
     {% if record.reason == '0' %}
     {{ record.session.date }}, {{ record.session.name }}, {{ record.get_reason_display }}<br />
     {% else %}

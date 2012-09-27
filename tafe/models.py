@@ -278,6 +278,10 @@ class Student(Person):
     def get_absolute_url(self):
         return ('student_view', [str(self.slug)])
 
+    def attendance_before_today(self):
+        l = self.attendance_records.exclude(session__date__gte =today).order_by('-session__date')
+        return l
+
 class Staff(Person):
     '''Respresents each Staff member'''
     class Meta:
@@ -458,6 +462,11 @@ class Session(models.Model):
         self.slug = slugify(slug_temp)
         super(Session, self).save() 
 
+class AttendanceBeforeTodayManager(models.Manager):
+    def get_query_set(self):
+        attendance_list = super(AttendanceBeforeTodayManager, self).get_query_set().filter(session_date__gte=today)
+        return attendance_list
+
 class Attendance(models.Model):
     '''Represents the "roll call" or attendance record'''
     class Meta:
@@ -470,19 +479,22 @@ class Attendance(models.Model):
     absent = models.CharField(max_length=1, choices=ABSENCE_CHOICES, blank=True)
     slug = models.SlugField(blank=True)
 
+    objects = models.Manager()
+    attendance_before_today = AttendanceBeforeTodayManager()
+
     def __unicode__(self):
         '''Attendance reference: returns date, session and reason'''
         return str(self.session) + ', ' + self.get_reason_display()
+
+    @models.permalink	
+    def get_absolute_url(self):
+        return ('attendance_view', [str(self.slug)])
 
     def save(self):
         slug_temp = self.session.slug + ' ' + self.student.slug
         self.slug = slugify(slug_temp)
         super(Attendance, self).save()
     
-    @models.permalink	
-    def get_absolute_url(self):
-        return ('attendance_view', [str(self.slug)])
-
 class Grade(models.Model):
     '''Represents a Student's interactions with a Subject. ie, being in a class.'''
     student = models.ForeignKey(Student, related_name='grades')
