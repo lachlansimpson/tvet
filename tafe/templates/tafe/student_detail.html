@@ -11,61 +11,60 @@ Student detail
 {% block content %}
 <div id="content-left">
     <div id="bio">
-    <h2>{{ student }} - {{ student.get_id}}</h2>
-    Date of birth: {{ student.dob }}    Age: {{ student.age_today }}<br />
-    Gender: {{ student.get_gender_display }}<br />
-    Island: {{ student.get_island_display }}<br />
-    {% if student.phone %}
-    Phone: {{ student.phone }}<br />
-    {% endif %}
-    {% if student.email %}
-    Email: {{ student.email }}<br /> 
-    {% endif %}
-    {% if student.disability %}
-    Disability: {{ student.disbility_description }}<br />
-    {% endif %}
-    Highest Education level: {{ student.education_level }}<br />
+        <h2>{{ student }} - {{ student.get_id}}</h2>
+        Date of birth: {{ student.dob }}    Age: {{ student.age_today }}<br />
+        Gender: {{ student.get_gender_display }}<br />
+        Island: {{ student.get_island_display }}<br />
+        {% if student.phone %}
+            Phone: {{ student.phone }}<br />
+        {% endif %}
+        {% if student.email %}
+            Email: {{ student.email }}<br /> 
+        {% endif %}
+        {% if student.disability %}
+            Disability: {{ student.disbility_description }}<br />
+        {% endif %}
+        Highest Education level: {{ student.education_level }}<br />
     </div>
     <div id="enrolment">
-    <h3>Enrolment details</h3>
-    {% for enrolment in student.enrolments.all %}
-    <p><a href="{{ enrolment.course.get_absolute_url }}">{{ enrolment.course.name }}</a><br />
-    Date started: {{ enrolment.date_started }}<br />
+        <h3>Enrolment details</h3>
+        {% for enrolment in student.enrolments.all %}
+            <p><a href="{{ enrolment.course.get_absolute_url }}">{{ enrolment.course.name }}</a><br />
+            Date started: {{ enrolment.date_started }}<br />
 
-    {% if enrolment.date_ended %}
-    Date ended: {{ enrolment.date_ended }}<br />
-    {% endif %}
+            {% if enrolment.date_ended %}
+                Date ended: {{ enrolment.date_ended }}<br />
+            {% endif %}
 
-    {% if enrolment.mark %}
-    Mark received: {{ enrolment.mark }}<br />
-    {% endif %}
-    </p>
-    {% endfor %}
+            {% if enrolment.mark %}
+                Mark received: {{ enrolment.mark }}<br />
+            {% endif %}
+            </p>
+        {% endfor %}
     </div>
     <div id="units">
-    <h3>Units of Competence</h3>
-
-    {% for unit in student.grades.all %}
-    <p>Subject: <a href="{{unit.subject.get_absolute_url}}">{{ unit.subject.name }}</a>, {{ unit.subject.year }}, semester: {{ unit.subject.semester }}<br />
-    Date Started: {{ unit.date_started }}<br /> 
-    {% if unit.results.count != 0 %}
-    {% for result in unit.results.all %}
-    {{ result }}
-    {% endfor %}
-    {% endif %} 
-    </p>
-    {% endfor %}
+        <h3>Units of Competence</h3>
+        {% for unit in student.grades.all %}
+            <p>Subject: <a href="{{unit.subject.get_absolute_url}}">{{ unit.subject.name }}</a>, {{ unit.subject.year }}, semester: {{ unit.subject.semester }}<br />
+            Date Started: {{ unit.date_started }}<br /> 
+            {% if unit.results.count != 0 %}
+                {% for result in unit.results.all %}
+                    {{ result }}
+                {% endfor %}
+            {% endif %} 
+            </p>
+        {% endfor %}
     </div>
     <div id="attendance">
-    <h3>Attendence record</h3> 
-    {% for record in student.attendance_before_today %}
-    {% if record.reason == '0' %}
-    {{ record.session.date }}, {{ record.session.name }}, {{ record.get_reason_display }}<br />
-    {% else %}
-    {{ record.session.date }}, {{ record.session.subject.name }}, {{ record.get_reason_display }},  {{ record.get_absent_display }}<br />
-    {% endif %}
-    {% endfor %}
-</div>
+        <h3>Attendence record</h3> 
+        {% for record in student.attendance_before_today %}
+            {% if record.reason == '0' %}
+                {{ record.session.date|date:"d/m" }}, {{ record.session.subject.name }}, {{ record.get_reason_display }}<br />
+            {% else %}
+                {{ record.session.date|date:"d/m" }}, {{ record.session.subject.name }}, {{ record.get_reason_display }},  {{ record.get_absent_display }}<br />
+            {% endif %}
+        {% endfor %}
+    </div>
     <h5>Admin</h5>
     Date added: {{ student.added }}<br />
     Date last changed: {{ student.updated }}
