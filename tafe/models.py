@@ -466,7 +466,7 @@ class Attendance(models.Model):
     
     session = models.ForeignKey(Session, related_name='attendance_records')
     student = models.ForeignKey(Student, related_name='attendance_records')
-    reason = models.CharField(max_length=1, choices=REASON_CHOICES, default='0')
+    reason = models.CharField(max_length=1, choices=REASON_CHOICES, blank=True)
     absent = models.CharField(max_length=1, choices=ABSENCE_CHOICES, blank=True)
     slug = models.SlugField(blank=True)
 
