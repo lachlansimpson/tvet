@@ -16,7 +16,7 @@ Course detail page of the portal.
         <a href="{{ subject.get_absolute_url}}">{{ subject.name }}</a><br />
     {% endfor %}
     <h4>Enrolled Students</h4>
-    Total Students: {{ course.count_students }} | Female Students: {{ course.count_female }} | Male Students: {{ course.count_male }}<br />
+    Total Students: {{ course.count_students }} | Female Students: {{ course.count_females }} | Male Students: {{ course.count_males }}<br />
     <br />
     {% for student in course.students.all %}
         <a href="{{ student.get_absolute_url}}">{{ student }}</a><br />

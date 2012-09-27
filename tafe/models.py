@@ -337,10 +337,10 @@ class Course(models.Model):
         return self.students.count()
 
     def count_males(self):
-        return self.students.men().count()
+        return self.students.filter(gender='M').count()
 
     def count_females(self):
-        return self.students.women().count()
+        return self.students.filter(gender='F').count()
 
     def subjects_available(self):
         list = ''
