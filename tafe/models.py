@@ -170,11 +170,11 @@ class Person(models.Model):
         """Person reference: full name """
         return self.first_name + ' ' + self.surname
 
-    def first_letter(self):
-        return self.surname and self.surname[0] or ''
-
     def age_today(self):
         return today.year - self.dob.year
+
+    def first_letter(self):
+        return self.surname and self.surname[0] or ''
 
 class Applicant(Person):
     applied_for = models.ForeignKey('Course', related_name='applicants')

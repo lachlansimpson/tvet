@@ -9,43 +9,81 @@ today = datetime.date.today()
 this_year = datetime.date.today().year
 BIRTH_YEARS = range(this_year-51, this_year-16)
 
-class CredentialInline(admin.TabularInline):
-    model = Staff.credential.through
+class ApplicantAdminForm(ModelForm):
+    class Meta:
+        model = Applicant 
+        widgets = {
+            'dob': SelectDateWidget(years=BIRTH_YEARS),
+            'gender': RadioSelect(),
+        }            
+
+class ApplicantAdmin(admin.ModelAdmin):
+    fieldsets = (
+        ('Bio', {'fields':(('first_name','surname'),('dob','gender', 'island'))}),
+        ('Contact Information', { 'fields':(('phone','email'),)}),
+        ('Other Information', { 'fields':(('disability','disability_description'), 'education_level')}),
+        ('Course Applied For', { 'fields':(('applied_for', 'date_of_application', 'short_listed'),)}),
+        ('Test Results', {'fields':(('test_ap','test_ma','test_eng'),)}),
+        ('Ranking, Eligibility and Success', {'fields':(('ranking','eligibility','successful'),)}),
+        ('Offer details', {'fields':(('date_offer_sent','date_offer_accepted'),)}),
+    )
+    form = ApplicantAdminForm
+    list_display = ('__unicode__', 'gender', 'disability', 'applied_for', 'eligibility', 'successful')
+    list_filter = ('gender', 'disability', 'applied_for', 'eligibility', 'successful')
+    
+    def save_model(self, request, obj, form, change): 
+        if obj.last_changed_by:
+            obj.penultimate_change_by = obj.last_changed_by
+        obj.last_changed_by = request.user
+        obj.save()
 
 class ApplicantSuccess(admin.TabularInline):
     model = Student
     fields = ('__unicode__','successful')
-
-class StudentInline(admin.StackedInline):
-    model = Student
-
-class GradeInline(admin.TabularInline):
-    model = Grade
-
-class SubjectInline(admin.StackedInline):
-    model = Subject
 
 class AttendanceInline(admin.TabularInline):
     model = Attendance
     exclude = ('slug',)
     template = 'admin/collapsed_tabular_inline.html'
 
-class ResultInline(admin.StackedInline):
-    model = Result
-    template = 'admin/collapsed_tabular_inline.html'
-
-class EnrolmentInline(admin.TabularInline):
-    extra = 1    
-    model = Enrolment
-
-class SessionInline(admin.TabularInline):
-    model = Session
-    extra = 1
-    fields = ('date', 'session_number',)
-    template = 'admin/collapsed_tabular_inline.html'
+class AttendanceAdmin(admin.ModelAdmin):
+    model = Attendance
+    list_display = ('student','session','reason','absent')
+    list_filter = ('reason','absent')
+    
+    def save_model(self, request, obj, form, change): 
+        if obj.last_changed_by:
+            obj.penultimate_change_by = obj.last_changed_by
+        obj.last_changed_by = request.user
+        obj.save()
 
 class CourseInline(admin.TabularInline):
     model = Course
+
+class CourseAdmin(admin.ModelAdmin):
+    inlines = ('EnrolmentInline',)
+    filter_horizontal = ('subjects',)
+    fieldsets = (
+        ('', { 'fields':(('name','slug'),)}),
+        ('Subjects', { 'fields':('subjects',)}),
+    )
+    list_display = ('name', 'count_students', 'count_males', 'count_females', 'subjects_available')
+    model = Course 
+    prepopulated_fields = {'slug': ('name',)}
+
+    def save_formset(self, request, form, formset, change): 
+        if formset.model == Enrolment:
+            instances = formset.save(commit=False)
+            for instance in instances:
+                if instance.last_changed_by:
+                    instance.penultimate_change_by = instance.last_changed_by
+                instance.last_changed_by = request.user
+                instance.save()
+        else:
+            formset.save()
+
+class CredentialInline(admin.TabularInline):
+    model = Staff.credential.through
 
 class EnrolmentAdmin(admin.ModelAdmin):
     fieldsets = [
@@ -59,15 +97,96 @@ class EnrolmentAdmin(admin.ModelAdmin):
             obj.penultimate_change_by = obj.last_changed_by
         obj.last_changed_by = request.user
         obj.save()
-    
 
-class ApplicantAdminForm(ModelForm):
+class EnrolmentInline(admin.TabularInline):
+    extra = 1    
+    model = Enrolment
+
+class GradeInline(admin.TabularInline):
+    model = Grade
+
+class GradeAdmin(admin.ModelAdmin):
+    fieldsets = [
+        ('',{'fields':['student','subject','date_started','results', 'last_change_by']}),
+    ]
+    list_display = ('student','subject','date_started','results')
+    list_filter = ('subject','date_started','results')
+    
+    def save_model(self, request, obj, form, change): 
+        if obj.last_changed_by:
+            obj.penultimate_change_by = obj.last_changed_by
+        obj.last_changed_by = request.user
+        obj.save()
+    
+class ResultInline(admin.StackedInline):
+    model = Result
+    template = 'admin/collapsed_tabular_inline.html'
+
+class SessionInline(admin.TabularInline):
+    model = Session
+    extra = 1
+    fields = ('date', 'session_number',)
+    template = 'admin/collapsed_tabular_inline.html'
+
+class SessionAdmin(admin.ModelAdmin):
+    list_display = ('subject', 'day_of_week','date','timetable','get_session_number_display')
+    list_filter = ('date','session_number','students')
+    inlines = [
+        AttendanceInline,
+    ]
+    model = Session
+    
+    def save_formset(self, request, form, formset, change): 
+        if formset.model == Attendance:
+            instances = formset.save(commit=False)
+            for instance in instances:
+                if instance.last_changed_by:
+                    instance.penultimate_change_by = instance.last_changed_by
+                instance.last_changed_by = request.user
+                instance.save()
+        else:
+            formset.save()
+    
+class StaffAdminForm(ModelForm):
     class Meta:
-        model = Applicant 
+        model = Staff
         widgets = {
             'dob': SelectDateWidget(years=BIRTH_YEARS),
             'gender': RadioSelect(),
         }            
+
+class StaffAdmin(admin.ModelAdmin):
+    fieldsets = (
+        ('Bio', { 'fields':(('first_name','surname'),('dob','gender'), ('island',))}),
+        ('Contact Information', { 'fields':(('phone','email'),)}),
+        ('Other Information', { 'fields':(('disability','disability_description'),('classification'))}),
+        ('ISLPR', { 'fields':(('islpr_reading', 'islpr_writing', 'islpr_speaking', 'islpr_listening', 'islpr_overall'),)}),
+    )
+    form = StaffAdminForm
+    list_display = ('__unicode__', 'gender', 'disability')
+    list_filter = ('gender', 'disability')
+    inlines = (CredentialInline,
+              )
+    
+    def save_model(self, request, obj, form, change): 
+        if obj.last_changed_by:
+            obj.penultimate_change_by = obj.last_changed_by
+        obj.last_changed_by = request.user
+        obj.save()
+
+    def save_formset(self, request, form, formset, change): 
+        if formset.model == Credential:
+            instances = formset.save(commit=False)
+            for instance in instances:
+                if instance.last_changed_by:
+                    instance.penultimate_change_by = instance.last_changed_by
+                instance.last_changed_by = request.user
+                instance.save()
+        else:
+            formset.save()
+
+class StudentInline(admin.StackedInline):
+    model = Student
 
 class StudentAdminForm(ModelForm):
     class Meta:
@@ -99,7 +218,8 @@ class StudentAdmin(admin.ModelAdmin):
         obj.save()
 
     def save_formset(self, request, form, formset, change): 
-        if formset.model == Enrolment or formset.model == Attendance:
+        '''note that the following if isn't needed since all inlines use this, but is left as a bookmark'''
+        if formset.model == Grade or formset.model == Enrolment or formset.model == Attendance:
             instances = formset.save(commit=False)
             for instance in instances:
                 if instance.last_changed_by:
@@ -109,52 +229,8 @@ class StudentAdmin(admin.ModelAdmin):
         else:
             formset.save()
 
-class ApplicantAdmin(admin.ModelAdmin):
-    fieldsets = (
-        ('Bio', {'fields':(('first_name','surname'),('dob','gender', 'island'))}),
-        ('Contact Information', { 'fields':(('phone','email'),)}),
-        ('Other Information', { 'fields':(('disability','disability_description'), 'education_level')}),
-        ('Course Applied For', { 'fields':(('applied_for', 'date_of_application', 'short_listed'),)}),
-        ('Test Results', {'fields':(('test_ap','test_ma','test_eng'),)}),
-        ('Ranking, Eligibility and Success', {'fields':(('ranking','eligibility','successful'),)}),
-        ('Offer details', {'fields':(('date_offer_sent','date_offer_accepted'),)}),
-    )
-    form = ApplicantAdminForm
-    list_display = ('__unicode__', 'gender', 'disability', 'applied_for', 'eligibility', 'successful')
-    list_filter = ('gender', 'disability', 'applied_for', 'eligibility', 'successful')
-    
-    def save_model(self, request, obj, form, change): 
-        if obj.last_changed_by:
-            obj.penultimate_change_by = obj.last_changed_by
-        obj.last_changed_by = request.user
-        obj.save()
-
-class StaffAdminForm(ModelForm):
-    class Meta:
-        model = Staff
-        widgets = {
-            'dob': SelectDateWidget(years=BIRTH_YEARS),
-            'gender': RadioSelect(),
-        }            
-
-class StaffAdmin(admin.ModelAdmin):
-    fieldsets = (
-        ('Bio', { 'fields':(('first_name','surname'),('dob','gender'), ('island',))}),
-        ('Contact Information', { 'fields':(('phone','email'),)}),
-        ('Other Information', { 'fields':(('disability','disability_description'),('classification'))}),
-        ('ISLPR', { 'fields':(('islpr_reading', 'islpr_writing', 'islpr_speaking', 'islpr_listening', 'islpr_overall'),)}),
-    )
-    form = StaffAdminForm
-    list_display = ('__unicode__', 'gender', 'disability')
-    list_filter = ('gender', 'disability')
-    inlines = (CredentialInline,
-              )
-    
-    def save_model(self, request, obj, form, change): 
-        if obj.last_changed_by:
-            obj.penultimate_change_by = obj.last_changed_by
-        obj.last_changed_by = request.user
-        obj.save()
+class SubjectInline(admin.StackedInline):
+    model = Subject
 
 class SubjectAdmin(admin.ModelAdmin):
     list_display = ('name','year','semester')
@@ -165,39 +241,9 @@ class SubjectAdmin(admin.ModelAdmin):
         SessionInline,
         GradeInline,
     ]
-
-class CourseAdmin(admin.ModelAdmin):
-    inlines = (EnrolmentInline,)
-    filter_horizontal = ('subjects',)
-    fieldsets = (
-        ('', { 'fields':(('name','slug'),)}),
-        ('Subjects', { 'fields':('subjects',)}),
-    )
-    list_display = ('name', 'count_students', 'count_males', 'count_females', 'subjects_available')
-    model = Course 
-    prepopulated_fields = {'slug': ('name',)}
-
-class GradeAdmin(admin.ModelAdmin):
-    fieldsets = [
-        ('',{'fields':['student','subject','date_started','results']}),
-    ]
-    list_display = ('student','subject','date_started','results')
-    list_filter = ('subject','date_started','results')
-
-class TimetableAdmin(admin.ModelAdmin):
-    model = Timetable
-    prepopulated_fields = {'slug': ('year','term')}
-
-class SessionAdmin(admin.ModelAdmin):
-    list_display = ('subject', 'day_of_week','date','timetable','get_session_number_display')
-    list_filter = ('date','session_number','students')
-    inlines = [
-        AttendanceInline,
-    ]
-    model = Session
     
     def save_formset(self, request, form, formset, change): 
-        if formset.model == Attendance:
+        if formset.model == Grade:
             instances = formset.save(commit=False)
             for instance in instances:
                 if instance.last_changed_by:
@@ -206,17 +252,10 @@ class SessionAdmin(admin.ModelAdmin):
                 instance.save()
         else:
             formset.save()
-    
-class AttendanceAdmin(admin.ModelAdmin):
-    model = Attendance
-    list_display = ('student','session','reason','absent')
-    list_filter = ('reason','absent')
-    
-    def save_model(self, request, obj, form, change): 
-        if obj.last_changed_by:
-            obj.penultimate_change_by = obj.last_changed_by
-        obj.last_changed_by = request.user
-        obj.save()
+
+class TimetableAdmin(admin.ModelAdmin):
+    model = Timetable
+    prepopulated_fields = {'slug': ('year','term')}
 
 admin.site.register(Session, SessionAdmin)
 admin.site.register(Timetable, TimetableAdmin)
