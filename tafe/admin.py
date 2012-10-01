@@ -62,8 +62,13 @@ class AttendanceAdmin(admin.ModelAdmin):
 class CourseInline(admin.TabularInline):
     model = Course
 
+class EnrolmentInline(admin.TabularInline):
+    extra = 1    
+    model = Enrolment
+
 class CourseAdmin(admin.ModelAdmin):
-    #inlines = ('EnrolmentInline',)
+    inlines = (EnrolmentInline,
+        )
     filter_horizontal = ('subjects',)
     fieldsets = (
         ('', { 'fields':(('name','slug'),)}),
@@ -101,10 +106,6 @@ class EnrolmentAdmin(admin.ModelAdmin):
             obj.penultimate_change_by = obj.last_changed_by
         obj.last_changed_by = request.user
         obj.save()
-
-class EnrolmentInline(admin.TabularInline):
-    extra = 1    
-    model = Enrolment
 
 class GradeInline(admin.TabularInline):
     model = Grade
