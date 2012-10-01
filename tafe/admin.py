@@ -26,11 +26,13 @@ class ApplicantAdmin(admin.ModelAdmin):
         ('Test Results', {'fields':(('test_ap','test_ma','test_eng'),)}),
         ('Ranking, Eligibility and Success', {'fields':(('ranking','eligibility','successful'),)}),
         ('Offer details', {'fields':(('date_offer_sent','date_offer_accepted'),)}),
+        ('Admin (non editable)', {'fields':(('added', 'updated','last_change_by','penultimate_change_by'),)}),
     )
     form = ApplicantAdminForm
     list_display = ('__unicode__', 'gender', 'disability', 'applied_for', 'eligibility', 'successful')
     list_filter = ('gender', 'disability', 'applied_for', 'eligibility', 'successful')
-    
+    readonly_fields = ('added', 'updated','last_change_by','penultimate_change_by')
+
     def save_model(self, request, obj, form, change): 
         if obj.last_changed_by:
             obj.penultimate_change_by = obj.last_changed_by
@@ -61,7 +63,7 @@ class CourseInline(admin.TabularInline):
     model = Course
 
 class CourseAdmin(admin.ModelAdmin):
-    inlines = ('EnrolmentInline',)
+    #inlines = ('EnrolmentInline',)
     filter_horizontal = ('subjects',)
     fieldsets = (
         ('', { 'fields':(('name','slug'),)}),
@@ -75,9 +77,9 @@ class CourseAdmin(admin.ModelAdmin):
         if formset.model == Enrolment:
             instances = formset.save(commit=False)
             for instance in instances:
-                if instance.last_changed_by:
-                    instance.penultimate_change_by = instance.last_changed_by
-                instance.last_changed_by = request.user
+                if instance.last_change_by:
+                    instance.penultimate_change_by = instance.last_change_by
+                instance.last_change_by = request.user
                 instance.save()
         else:
             formset.save()
@@ -88,9 +90,11 @@ class CredentialInline(admin.TabularInline):
 class EnrolmentAdmin(admin.ModelAdmin):
     fieldsets = [
         ('',{'fields':['student','course','date_started','date_ended','mark']}),
+        ('Admin (non editable)', {'fields':(('last_change_by','penultimate_change_by'),)}),
     ]
     list_display = ('student', 'course', 'date_started')
     list_filter = ('course', 'date_started')
+    readonly_fields = ('last_change_by','penultimate_change_by')
     
     def save_model(self, request, obj, form, change): 
         if obj.last_changed_by:
@@ -107,10 +111,12 @@ class GradeInline(admin.TabularInline):
 
 class GradeAdmin(admin.ModelAdmin):
     fieldsets = [
-        ('',{'fields':['student','subject','date_started','results', 'last_change_by']}),
+        ('',{'fields':['student','subject','date_started','results',]}),
+        ('Admin (non editable)', {'fields':(('last_change_by','penultimate_change_by'),)}),
     ]
     list_display = ('student','subject','date_started','results')
     list_filter = ('subject','date_started','results')
+    readonly_fields = ('last_change_by','penultimate_change_by')
     
     def save_model(self, request, obj, form, change): 
         if obj.last_changed_by:
@@ -161,10 +167,12 @@ class StaffAdmin(admin.ModelAdmin):
         ('Contact Information', { 'fields':(('phone','email'),)}),
         ('Other Information', { 'fields':(('disability','disability_description'),('classification'))}),
         ('ISLPR', { 'fields':(('islpr_reading', 'islpr_writing', 'islpr_speaking', 'islpr_listening', 'islpr_overall'),)}),
+        ('Admin (non editable)', {'fields':(('added', 'updated','last_change_by','penultimate_change_by'),)}),
     )
     form = StaffAdminForm
     list_display = ('__unicode__', 'gender', 'disability')
     list_filter = ('gender', 'disability')
+    readonly_fields = ('added', 'updated','last_change_by','penultimate_change_by')
     inlines = (CredentialInline,
               )
     
@@ -204,17 +212,19 @@ class StudentAdmin(admin.ModelAdmin):
     fieldsets = (
         ('Bio', { 'fields':(('first_name','surname'),('dob','gender'), ('island', 'slug'))}),
         ('Contact Information', { 'fields':(('phone','email'),)}),
-        ('Other Information', { 'fields':(('disability','disability_description'), 'education_level')}),)
+        ('Other Information', { 'fields':(('disability','disability_description'), 'education_level')}),
+        ('Admin (non editable)', {'fields':(('added', 'updated','last_change_by','penultimate_change_by'),)}),
+    )
     form = StudentAdminForm
     list_display = ('__unicode__', 'slug', 'gender', 'disability')
     list_filter = ('gender', 'disability')
     ordering = ('-slug',) 
-    readonly_fields = ('slug',)
+    readonly_fields = ('slug','added', 'updated','last_change_by','penultimate_change_by',)
     
     def save_model(self, request, obj, form, change): 
-        if obj.last_changed_by:
-            obj.penultimate_change_by = obj.last_changed_by
-        obj.last_changed_by = request.user
+        if obj.last_change_by:
+            obj.penultimate_change_by = obj.last_change_by
+        obj.last_change_by = request.user
         obj.save()
 
     def save_formset(self, request, form, formset, change): 
@@ -246,9 +256,9 @@ class SubjectAdmin(admin.ModelAdmin):
         if formset.model == Grade:
             instances = formset.save(commit=False)
             for instance in instances:
-                if instance.last_changed_by:
-                    instance.penultimate_change_by = instance.last_changed_by
-                instance.last_changed_by = request.user
+                if instance.last_change_by:
+                    instance.penultimate_change_by = instance.last_change_by
+                instance.last_change_by = request.user
                 instance.save()
         else:
             formset.save()

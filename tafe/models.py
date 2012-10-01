@@ -156,8 +156,8 @@ class Person(models.Model):
 
     added = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
-    last_change_by = models.ForeignKey(User, related_name='%(class)s_last_change_by')
-    penultimate_change_by = models.ForeignKey(User, related_name='%(class)s_penultimate_change_by', blank=True, null=True)
+    last_change_by = models.ForeignKey(User, related_name='%(class)s_last_change_by', editable=False)
+    penultimate_change_by = models.ForeignKey(User, related_name='%(class)s_penultimate_change_by', blank=True, null=True, editable=False)
 
     people = models.Manager()
     men = MaleManager()
@@ -331,8 +331,8 @@ class Credential(models.Model):
     year = models.CharField(max_length=4)
     type = models.CharField(max_length=1, choices=CREDENTIAL_TYPE_CHOICES)
 
-    last_change_by = models.ForeignKey(User, related_name='%(class)s_last_change_by')
-    penultimate_change_by = models.ForeignKey(User, related_name='%(class)s_penultimate_change_by')
+    last_change_by = models.ForeignKey(User, related_name='%(class)s_last_change_by', editable=False)
+    penultimate_change_by = models.ForeignKey(User, related_name='%(class)s_penultimate_change_by', editable=False)
 
     def __unicode__(self):
         return str(self.get_aqf_level_display()) +', '+self.name+', '+self.institution
@@ -384,8 +384,8 @@ class Enrolment(models.Model):
     withdrawn_reason = models.CharField(max_length=200, blank=True)
     slug = models.SlugField(max_length=40, blank=True)
 
-    last_change_by = models.ForeignKey(User, related_name='%(class)s_last_change_by')
-    penultimate_change_by = models.ForeignKey(User, related_name='%(class)s_penultimate_change_by', blank=True, null=True)
+    last_change_by = models.ForeignKey(User, related_name='%(class)s_last_change_by', editable=False)
+    penultimate_change_by = models.ForeignKey(User, related_name='%(class)s_penultimate_change_by', blank=True, null=True, editable=False)
     
     def __unicode__(self):
         '''
@@ -503,8 +503,8 @@ class Attendance(models.Model):
     absent = models.CharField(max_length=1, choices=ABSENCE_CHOICES, blank=True)
     slug = models.SlugField(blank=True)
 
-    last_change_by = models.ForeignKey(User, related_name='%(class)s_last_change_by')
-    penultimate_change_by = models.ForeignKey(User, related_name='%(class)s_penultimate_change_by')
+    last_change_by = models.ForeignKey(User, related_name='%(class)s_last_change_by', editable=False)
+    penultimate_change_by = models.ForeignKey(User, related_name='%(class)s_penultimate_change_by', editable=False)
     objects = models.Manager()
     attendance_before_today = AttendanceBeforeTodayManager()
 
@@ -529,8 +529,8 @@ class Grade(models.Model):
     results = models.ForeignKey('Result', related_name='grades', blank=True, null=True)
     slug = models.SlugField(max_length=60)
 
-    last_change_by = models.ForeignKey(User, related_name='%(class)s_last_change_by')
-    penultimate_change_by = models.ForeignKey(User, related_name='%(class)s_penultimate_change_by')
+    last_change_by = models.ForeignKey(User, related_name='%(class)s_last_change_by', editable=False)
+    penultimate_change_by = models.ForeignKey(User, related_name='%(class)s_penultimate_change_by', editable=False)
     
     def __unicode__(self):
         '''Grade reference: student's name and subject '''
@@ -558,8 +558,8 @@ class Result(models.Model):
     date = models.DateField()
     mark = models.CharField(max_length=2, choices=SUBJECT_RESULTS)    
     
-    last_change_by = models.ForeignKey(User, related_name='%(class)s_last_change_by')
-    penultimate_change_by = models.ForeignKey(User, related_name='%(class)s_penultimate_change_by')
+    last_change_by = models.ForeignKey(User, related_name='%(class)s_last_change_by', editable=False)
+    penultimate_change_by = models.ForeignKey(User, related_name='%(class)s_penultimate_change_by', editable=False)
     
     def __unicode__(self):
         '''Result reference: the assignment name, due date and grade given'''
