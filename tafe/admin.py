@@ -53,6 +53,13 @@ class EnrolmentAdmin(admin.ModelAdmin):
     ]
     list_display = ('student', 'course', 'date_started')
     list_filter = ('course', 'date_started')
+    
+    def save_model(self, request, obj, form, change): 
+        if obj.last_changed_by:
+            obj.penultimate_change_by = obj.last_changed_by
+        obj.last_changed_by = request.user
+        obj.save()
+    
 
 class ApplicantAdminForm(ModelForm):
     class Meta:
@@ -84,6 +91,23 @@ class StudentAdmin(admin.ModelAdmin):
     list_filter = ('gender', 'disability')
     ordering = ('-slug',) 
     readonly_fields = ('slug',)
+    
+    def save_model(self, request, obj, form, change): 
+        if obj.last_changed_by:
+            obj.penultimate_change_by = obj.last_changed_by
+        obj.last_changed_by = request.user
+        obj.save()
+
+    def save_formset(self, request, form, formset, change): 
+        if formset.model == Enrolment or formset.model == Attendance:
+            instances = formset.save(commit=False)
+            for instance in instances:
+                if instance.last_changed_by:
+                    instance.penultimate_change_by = instance.last_changed_by
+                instance.last_changed_by = request.user
+                instance.save()
+        else:
+            formset.save()
 
 class ApplicantAdmin(admin.ModelAdmin):
     fieldsets = (
@@ -98,6 +122,12 @@ class ApplicantAdmin(admin.ModelAdmin):
     form = ApplicantAdminForm
     list_display = ('__unicode__', 'gender', 'disability', 'applied_for', 'eligibility', 'successful')
     list_filter = ('gender', 'disability', 'applied_for', 'eligibility', 'successful')
+    
+    def save_model(self, request, obj, form, change): 
+        if obj.last_changed_by:
+            obj.penultimate_change_by = obj.last_changed_by
+        obj.last_changed_by = request.user
+        obj.save()
 
 class StaffAdminForm(ModelForm):
     class Meta:
@@ -119,6 +149,12 @@ class StaffAdmin(admin.ModelAdmin):
     list_filter = ('gender', 'disability')
     inlines = (CredentialInline,
               )
+    
+    def save_model(self, request, obj, form, change): 
+        if obj.last_changed_by:
+            obj.penultimate_change_by = obj.last_changed_by
+        obj.last_changed_by = request.user
+        obj.save()
 
 class SubjectAdmin(admin.ModelAdmin):
     list_display = ('name','year','semester')
@@ -159,11 +195,28 @@ class SessionAdmin(admin.ModelAdmin):
         AttendanceInline,
     ]
     model = Session
-
+    
+    def save_formset(self, request, form, formset, change): 
+        if formset.model == Attendance:
+            instances = formset.save(commit=False)
+            for instance in instances:
+                if instance.last_changed_by:
+                    instance.penultimate_change_by = instance.last_changed_by
+                instance.last_changed_by = request.user
+                instance.save()
+        else:
+            formset.save()
+    
 class AttendanceAdmin(admin.ModelAdmin):
     model = Attendance
     list_display = ('student','session','reason','absent')
     list_filter = ('reason','absent')
+    
+    def save_model(self, request, obj, form, change): 
+        if obj.last_changed_by:
+            obj.penultimate_change_by = obj.last_changed_by
+        obj.last_changed_by = request.user
+        obj.save()
 
 admin.site.register(Session, SessionAdmin)
 admin.site.register(Timetable, TimetableAdmin)

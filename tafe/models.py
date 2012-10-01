@@ -1,5 +1,6 @@
 from django.db import models
 from django.template.defaultfilters import slugify
+from django.contrib.auth.models import User
 import datetime
 
 today = datetime.date.today() # used by the Attendance record
@@ -73,6 +74,7 @@ SUBJECT_RESULTS = (
 COURSE_RESULTS = (
     (u'P',u'Pass'),
     (u'F',u'Fail'),
+    (u'W',u'Withdrawn'),
 )
 
 CLASSIFICATION_CHOICES = (
@@ -119,9 +121,15 @@ ISLPR_CHOICES = (
 )
 
 EDUCATION_LEVEL_CHOICES = (
-    ('0','Primary School'),
-    ('1','Some High School'),
-    ('2','High School'),
+    ('0','PSSC - Post Secondary School Certificate'),
+    ('1','KNC - Kiribati National certificate'),
+    ('2','USP - University of South Pacific - Extension; Degree; Post Graduate'),
+    ('3','JSSC - Junior School Certificate - Form 3'), 
+    ('4','Form 4'),
+    ('5','Form 5'),
+    ('6','Form 6'),
+    ('7','Form 7'),
+    ('8','SPFSC - Fiji School Certificate'),
 )
 
 class FemaleManager(models.Manager):
@@ -148,6 +156,8 @@ class Person(models.Model):
 
     added = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
+    last_change_by = models.ForeignKey(User, related_name='%(class)s_last_change_by')
+    penultimate_change_by = models.ForeignKey(User, related_name='%(class)s_penultimate_change_by', blank=True, null=True)
 
     people = models.Manager()
     men = MaleManager()
@@ -321,6 +331,9 @@ class Credential(models.Model):
     year = models.CharField(max_length=4)
     type = models.CharField(max_length=1, choices=CREDENTIAL_TYPE_CHOICES)
 
+    last_change_by = models.ForeignKey(User, related_name='%(class)s_last_change_by')
+    penultimate_change_by = models.ForeignKey(User, related_name='%(class)s_penultimate_change_by')
+
     def __unicode__(self):
         return str(self.get_aqf_level_display()) +', '+self.name+', '+self.institution
 
@@ -368,8 +381,12 @@ class Enrolment(models.Model):
     date_started = models.DateField(default=today)
     date_ended = models.DateField(blank=True, null=True)
     mark = models.CharField(max_length=1, choices=COURSE_RESULTS, blank=True)
+    withdrawn_reason = models.CharField(max_length=200, blank=True)
     slug = models.SlugField(max_length=40, blank=True)
 
+    last_change_by = models.ForeignKey(User, related_name='%(class)s_last_change_by')
+    penultimate_change_by = models.ForeignKey(User, related_name='%(class)s_penultimate_change_by', blank=True, null=True)
+    
     def __unicode__(self):
         '''
         Enrolment reference: return the student's name, the course name, the date started
@@ -388,13 +405,20 @@ class Enrolment(models.Model):
         return ('enrolment_view', [str(self.slug)])
 
     def save(self):
-        '''Can't use prepopulated_fields due to function's restrictions
+        '''SLUG:Can't use prepopulated_fields due to function's restrictions
         using the unique combination of student, course and year started
         '''
         year_started = self.date_started.year
         slug_str = str(self.student) + ' ' + str(self.course) + ' ' + str(year_started)
         self.slug = slugify(slug_str)
         super(Enrolment, self).save() 
+#        if self.mark == 'W':
+#            pass
+    
+#    def is_valid(self):
+#        if self.mark == 'W':
+#
+#        super(Enrolment, self)
 
 class Subject(models.Model):
     '''Represents individual subjects, classes, cohorts'''
@@ -479,6 +503,8 @@ class Attendance(models.Model):
     absent = models.CharField(max_length=1, choices=ABSENCE_CHOICES, blank=True)
     slug = models.SlugField(blank=True)
 
+    last_change_by = models.ForeignKey(User, related_name='%(class)s_last_change_by')
+    penultimate_change_by = models.ForeignKey(User, related_name='%(class)s_penultimate_change_by')
     objects = models.Manager()
     attendance_before_today = AttendanceBeforeTodayManager()
 
@@ -503,6 +529,9 @@ class Grade(models.Model):
     results = models.ForeignKey('Result', related_name='grades', blank=True, null=True)
     slug = models.SlugField(max_length=60)
 
+    last_change_by = models.ForeignKey(User, related_name='%(class)s_last_change_by')
+    penultimate_change_by = models.ForeignKey(User, related_name='%(class)s_penultimate_change_by')
+    
     def __unicode__(self):
         '''Grade reference: student's name and subject '''
         return str(self.student) + ', ' + str(self.subject)
@@ -528,6 +557,9 @@ class Result(models.Model):
     name = models.CharField(max_length=30)
     date = models.DateField()
     mark = models.CharField(max_length=2, choices=SUBJECT_RESULTS)    
+    
+    last_change_by = models.ForeignKey(User, related_name='%(class)s_last_change_by')
+    penultimate_change_by = models.ForeignKey(User, related_name='%(class)s_penultimate_change_by')
     
     def __unicode__(self):
         '''Result reference: the assignment name, due date and grade given'''
