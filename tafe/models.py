@@ -463,7 +463,7 @@ class Session(models.Model):
 
     def __unicode__(self):
         '''Session Reference: day of week, date, term/year (Timetable)'''
-        return self.day_of_week() + ', ' + self.get_session_number_display() + ', '+ str(self.subject.name) + ' ' + str(self.date)
+        return str(self.subject.name) + ', ' + self.day_of_week() + ', ' + self.get_session_number_display() + ', '+ ' ' + str(self.date)
 
     def timetable_listing(self):
         ''' returns date-free name for session to be put into timetable '''

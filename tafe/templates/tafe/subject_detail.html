@@ -10,7 +10,8 @@ Subject detail page of the portal.
 {% block coltype %}colMS{% endblock %}
 {% block content %}
 <div id="content-left">
-    <h2>{{ subject.name }} - Semester {{ subject.semester }}, {{ subject.year }}</h2>
+    {{ subject }}
+    <h2>{{ subject.name }} - Semester {{ subject.get_semester_display }}, {{ subject.year }}</h2>
 
     <h4>Student records</h4>
     {% for grade in subject.grades.all %}

@@ -24,7 +24,7 @@ Student detail
         {% if student.disability %}
             Disability: {{ student.disbility_description }}<br />
         {% endif %}
-        Highest Education level: {{ student.education_level }}<br />
+        Highest Education level: {{ student.get_education_level_display }}<br />
     </div>
     <div id="enrolment">
         <h3>Enrolment details</h3>

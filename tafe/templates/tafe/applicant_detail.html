@@ -25,7 +25,7 @@ Applicant detail
     {% if applicant.disability %}
     Disability: {{ applicant.disbility_description }}<br />
     {% endif %}
-    Highest Education level: {{ applicant.education_level }}<br />
+    Highest Education level: {{ applicant.get_education_level_display }}<br />
     </div>
     <div id="application-details">
         Date Applied: {{ applicant.date_of_application }} 

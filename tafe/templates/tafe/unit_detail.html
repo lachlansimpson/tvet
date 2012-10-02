@@ -10,7 +10,7 @@ Subject/Unit detail page of the portal.
 {% block coltype %}colMS{% endblock %}
 {% block content %}
 <div id="content-left">
-    <h2>{{ unit.name }} - Semester {{ subject.semester }}, {{ subject.year }}</h2>
+    <h2>{{ unit.name }} - Semester: {{ unit.get_semester_display }}, {{ unit.year }}</h2>
 
     This week's classes:<br />
     {% for session in unit.this_weeks_sessions %}
@@ -18,7 +18,7 @@ Subject/Unit detail page of the portal.
     {% endfor %}
 
     <h4>Student attendance records</h4>
-    {% for grade in subject.grades.all %}
+    {% for grade in unit.grades.all %}
     <a href="{{ grade.student.get_absolute_url}}">{{ grade.student }}</a>: <a href="{{ grade.get_absolute_url }}">{{ grade.subject }}</a><br />
     {% endfor %}
 
