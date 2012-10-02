@@ -6,6 +6,7 @@ from django.shortcuts import render_to_response, get_object_or_404
 from django.http import HttpResponseRedirect
 from django.contrib.auth.decorators import login_required
 from django.template import RequestContext
+from django.forms.models import modelformset_factory
 import datetime
 today = datetime.date.today()
 
@@ -177,3 +178,16 @@ def unit_view(request, slug):
         unit_attendance_matrix.append(student_details)
     
     return render_to_response('tafe/unit_detail.html', {'unit':unit,'unit_attendance_matrix':unit_attendance_matrix, 'dates':dates, 'weekly_classes':weekly_classes}, RequestContext(request))
+
+@login_required
+def session_attendance_view(request, year, month, day, slug):
+    req_date = datetime.date(int(year), int(month), int(day))
+    session = get_object_or_404(Session, slug=slug, date=req_date)
+    AttendanceFormSet = modelformset_factory(Attendance, fields = ('student', 'reason', 'absent'))
+    if request.method == 'POST':
+        formset = AttendanceFormSet(request.POST, queryset=Attendance.objects.filter(session=session))
+        if formset.is_valid():
+            formset.save()
+    else:
+        formset = AttendanceFormSet(queryset=Attendance.objects.filter(session=session).order_by('student'))
+        return render_to_response('tafe/attendance_record.html',{'formset':formset, 'session':session,}, RequestContext(request))
