@@ -5,7 +5,7 @@
 {% block coltype %}colMS{% endblock %}
 {% block content %}
     {{ block.super }}
-    <form action="/session/create/" method="post">{% csrf_token %} 
+    <form action="/tafe/session/create/" method="post">{% csrf_token %} 
         {{ form.as_p }}
         <input type="submit" value="Submit">
     </form>

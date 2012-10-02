@@ -15,7 +15,9 @@ Subject detail page of the portal.
     {{ attendance.student }}<br />
     {{ attendance.get_reason_display }}<br />
     {% if attendance.absent %}
-        {{ attendance.get_absent_display }}
+        {{ attendance.get_absent_display }}<br />
     {% endif %}
+    <h5>Admin</h5>
+    {{ attendance.last_change_by }}
 </div>
 {% endblock %}

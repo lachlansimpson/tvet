@@ -19,4 +19,3 @@ class ApplicantSuccessForm(forms.Form):
 
 class AttendanceForm(forms.Form):
     attendance_records = forms.ModelMultipleChoiceField(queryset=Attendance.objects.all(), widget=CheckboxSelectMultiple)
-    
