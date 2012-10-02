@@ -262,7 +262,7 @@ class NewStudentManager(models.Manager):
 
 class Student(Person):
     '''Represents each student '''
-    education_level = models.CharField(max_length=50, blank=True)
+    education_level = models.CharField(max_length=2, blank=True, choices=EDUCATION_LEVEL_CHOICES)
     application_details = models.ForeignKey('Applicant')
     
     objects = models.Manager()
@@ -332,7 +332,7 @@ class Credential(models.Model):
     type = models.CharField(max_length=1, choices=CREDENTIAL_TYPE_CHOICES)
 
     last_change_by = models.ForeignKey(User, related_name='%(class)s_last_change_by', editable=False)
-    penultimate_change_by = models.ForeignKey(User, related_name='%(class)s_penultimate_change_by', editable=False)
+    penultimate_change_by = models.ForeignKey(User, related_name='%(class)s_penultimate_change_by', blank=True, null=True, editable=False)
 
     def __unicode__(self):
         return str(self.get_aqf_level_display()) +', '+self.name+', '+self.institution
@@ -504,7 +504,7 @@ class Attendance(models.Model):
     slug = models.SlugField(blank=True)
 
     last_change_by = models.ForeignKey(User, related_name='%(class)s_last_change_by', editable=False)
-    penultimate_change_by = models.ForeignKey(User, related_name='%(class)s_penultimate_change_by', editable=False)
+    penultimate_change_by = models.ForeignKey(User, related_name='%(class)s_penultimate_change_by', blank=True, null=True,editable=False)
     objects = models.Manager()
     attendance_before_today = AttendanceBeforeTodayManager()
 
@@ -530,7 +530,7 @@ class Grade(models.Model):
     slug = models.SlugField(max_length=60)
 
     last_change_by = models.ForeignKey(User, related_name='%(class)s_last_change_by', editable=False)
-    penultimate_change_by = models.ForeignKey(User, related_name='%(class)s_penultimate_change_by', editable=False)
+    penultimate_change_by = models.ForeignKey(User, related_name='%(class)s_penultimate_change_by', blank=True, null=True, editable=False)
     
     def __unicode__(self):
         '''Grade reference: student's name and subject '''
@@ -559,7 +559,7 @@ class Result(models.Model):
     mark = models.CharField(max_length=2, choices=SUBJECT_RESULTS)    
     
     last_change_by = models.ForeignKey(User, related_name='%(class)s_last_change_by', editable=False)
-    penultimate_change_by = models.ForeignKey(User, related_name='%(class)s_penultimate_change_by', editable=False)
+    penultimate_change_by = models.ForeignKey(User, related_name='%(class)s_penultimate_change_by', blank=True, null=True,editable=False)
     
     def __unicode__(self):
         '''Result reference: the assignment name, due date and grade given'''

@@ -9,6 +9,9 @@ today = datetime.date.today()
 this_year = datetime.date.today().year
 BIRTH_YEARS = range(this_year-51, this_year-16)
 
+class ApplicantInline(admin.TabularInline):
+    model = Applicant
+
 class ApplicantAdminForm(ModelForm):
     class Meta:
         model = Applicant 
@@ -34,9 +37,13 @@ class ApplicantAdmin(admin.ModelAdmin):
     readonly_fields = ('added', 'updated','last_change_by','penultimate_change_by')
 
     def save_model(self, request, obj, form, change): 
-        if obj.last_changed_by:
-            obj.penultimate_change_by = obj.last_changed_by
-        obj.last_changed_by = request.user
+        try:
+            obj.last_change_by
+        except:
+            pass
+        else:
+            obj.penultimate_change_by = obj.last_change_by 
+        obj.last_change_by = request.user 
         obj.save()
 
 class ApplicantSuccess(admin.TabularInline):
@@ -54,9 +61,13 @@ class AttendanceAdmin(admin.ModelAdmin):
     list_filter = ('reason','absent')
     
     def save_model(self, request, obj, form, change): 
-        if obj.last_changed_by:
-            obj.penultimate_change_by = obj.last_changed_by
-        obj.last_changed_by = request.user
+        try:
+            obj.last_change_by
+        except:
+            pass
+        else:
+            obj.penultimate_change_by = obj.last_change_by 
+        obj.last_change_by = request.user 
         obj.save()
 
 class CourseInline(admin.TabularInline):
@@ -82,7 +93,11 @@ class CourseAdmin(admin.ModelAdmin):
         if formset.model == Enrolment:
             instances = formset.save(commit=False)
             for instance in instances:
-                if instance.last_change_by:
+                try:
+                    instance.last_change_by
+                except:
+                    pass
+                else:   
                     instance.penultimate_change_by = instance.last_change_by
                 instance.last_change_by = request.user
                 instance.save()
@@ -91,6 +106,21 @@ class CourseAdmin(admin.ModelAdmin):
 
 class CredentialInline(admin.TabularInline):
     model = Staff.credential.through
+
+class CredentialAdmin(admin.ModelAdmin):
+    fieldsets = [
+        ('',{'fields':[('name','year'),('institution','aqf_level'),'type']}),
+    ]
+
+    def save_model(self, request, obj, form, change): 
+        try:
+            obj.last_change_by
+        except:
+            pass
+        else:
+            obj.penultimate_change_by = obj.last_change_by 
+        obj.last_change_by = request.user 
+        obj.save()
 
 class EnrolmentAdmin(admin.ModelAdmin):
     fieldsets = [
@@ -102,9 +132,13 @@ class EnrolmentAdmin(admin.ModelAdmin):
     readonly_fields = ('last_change_by','penultimate_change_by')
     
     def save_model(self, request, obj, form, change): 
-        if obj.last_changed_by:
-            obj.penultimate_change_by = obj.last_changed_by
-        obj.last_changed_by = request.user
+        try:
+            obj.last_change_by
+        except:
+            pass
+        else:
+            obj.penultimate_change_by = obj.last_change_by 
+        obj.last_change_by = request.user 
         obj.save()
 
 class GradeInline(admin.TabularInline):
@@ -118,21 +152,39 @@ class GradeAdmin(admin.ModelAdmin):
     list_display = ('student','subject','date_started','results')
     list_filter = ('subject','date_started','results')
     readonly_fields = ('last_change_by','penultimate_change_by')
-    
+     
     def save_model(self, request, obj, form, change): 
-        if obj.last_changed_by:
-            obj.penultimate_change_by = obj.last_changed_by
-        obj.last_changed_by = request.user
+        try:
+            obj.last_change_by
+        except:
+            pass
+        else:
+            obj.penultimate_change_by = obj.last_change_by 
+        obj.last_change_by = request.user 
         obj.save()
     
 class ResultInline(admin.StackedInline):
     model = Result
     template = 'admin/collapsed_tabular_inline.html'
 
+class ResultAdmin(admin.ModelAdmin):
+    model = Result
+
+    def save_model(self, request, obj, form, change): 
+        try:
+            obj.last_change_by
+        except:
+            pass
+        else:
+            obj.penultimate_change_by = obj.last_change_by 
+        obj.last_change_by = request.user 
+        obj.save()
+    
+        
 class SessionInline(admin.TabularInline):
     model = Session
     extra = 1
-    fields = ('date', 'session_number',)
+    fields = ('date', 'session_number','subject','timetable')
     template = 'admin/collapsed_tabular_inline.html'
 
 class SessionAdmin(admin.ModelAdmin):
@@ -147,13 +199,17 @@ class SessionAdmin(admin.ModelAdmin):
         if formset.model == Attendance:
             instances = formset.save(commit=False)
             for instance in instances:
-                if instance.last_changed_by:
-                    instance.penultimate_change_by = instance.last_changed_by
-                instance.last_changed_by = request.user
+                try:
+                    instance.last_change_by
+                except:
+                    pass
+                else:   
+                    instance.penultimate_change_by = instance.last_change_by
+                instance.last_change_by = request.user
                 instance.save()
         else:
             formset.save()
-    
+
 class StaffAdminForm(ModelForm):
     class Meta:
         model = Staff
@@ -178,18 +234,26 @@ class StaffAdmin(admin.ModelAdmin):
               )
     
     def save_model(self, request, obj, form, change): 
-        if obj.last_changed_by:
-            obj.penultimate_change_by = obj.last_changed_by
-        obj.last_changed_by = request.user
+        try:
+            obj.last_change_by
+        except:
+            pass
+        else:
+            obj.penultimate_change_by = obj.last_change_by 
+        obj.last_change_by = request.user 
         obj.save()
 
     def save_formset(self, request, form, formset, change): 
         if formset.model == Credential:
             instances = formset.save(commit=False)
             for instance in instances:
-                if instance.last_changed_by:
-                    instance.penultimate_change_by = instance.last_changed_by
-                instance.last_changed_by = request.user
+                try:
+                    instance.last_change_by
+                except:
+                    pass
+                else:   
+                    instance.penultimate_change_by = instance.last_change_by
+                instance.last_change_by = request.user
                 instance.save()
         else:
             formset.save()
@@ -213,7 +277,7 @@ class StudentAdmin(admin.ModelAdmin):
     fieldsets = (
         ('Bio', { 'fields':(('first_name','surname'),('dob','gender'), ('island', 'slug'))}),
         ('Contact Information', { 'fields':(('phone','email'),)}),
-        ('Other Information', { 'fields':(('disability','disability_description'), 'education_level')}),
+        ('Other Information', { 'fields':(('disability','disability_description'), 'education_level', 'application_details')}),
         ('Admin (non editable)', {'fields':(('added', 'updated','last_change_by','penultimate_change_by'),)}),
     )
     form = StudentAdminForm
@@ -223,9 +287,13 @@ class StudentAdmin(admin.ModelAdmin):
     readonly_fields = ('slug','added', 'updated','last_change_by','penultimate_change_by',)
     
     def save_model(self, request, obj, form, change): 
-        if obj.last_change_by:
-            obj.penultimate_change_by = obj.last_change_by
-        obj.last_change_by = request.user
+        try:
+            obj.last_change_by
+        except:
+            pass
+        else:
+            obj.penultimate_change_by = obj.last_change_by 
+        obj.last_change_by = request.user 
         obj.save()
 
     def save_formset(self, request, form, formset, change): 
@@ -233,9 +301,13 @@ class StudentAdmin(admin.ModelAdmin):
         if formset.model == Grade or formset.model == Enrolment or formset.model == Attendance:
             instances = formset.save(commit=False)
             for instance in instances:
-                if instance.last_changed_by:
-                    instance.penultimate_change_by = instance.last_changed_by
-                instance.last_changed_by = request.user
+                try:
+                    instance.last_change_by
+                except:
+                    pass
+                else:   
+                    instance.penultimate_change_by = instance.last_change_by
+                instance.last_change_by = request.user
                 instance.save()
         else:
             formset.save()
@@ -257,7 +329,11 @@ class SubjectAdmin(admin.ModelAdmin):
         if formset.model == Grade:
             instances = formset.save(commit=False)
             for instance in instances:
-                if instance.last_change_by:
+                try:
+                    instance.last_change_by
+                except:
+                    pass
+                else:   
                     instance.penultimate_change_by = instance.last_change_by
                 instance.last_change_by = request.user
                 instance.save()
@@ -268,15 +344,15 @@ class TimetableAdmin(admin.ModelAdmin):
     model = Timetable
     prepopulated_fields = {'slug': ('year','term')}
 
-admin.site.register(Session, SessionAdmin)
-admin.site.register(Timetable, TimetableAdmin)
-admin.site.register(Attendance, AttendanceAdmin)
 admin.site.register(Applicant, ApplicantAdmin)
-admin.site.register(Student, StudentAdmin)
+admin.site.register(Attendance, AttendanceAdmin)
 admin.site.register(Course, CourseAdmin)
-admin.site.register(Subject, SubjectAdmin)
-admin.site.register(Staff, StaffAdmin)
+admin.site.register(Credential, CredentialAdmin)
 admin.site.register(Enrolment, EnrolmentAdmin)
 admin.site.register(Grade, GradeAdmin)
-admin.site.register(Result)
-admin.site.register(Credential)
+admin.site.register(Result, ResultAdmin)
+admin.site.register(Session, SessionAdmin)
+admin.site.register(Student, StudentAdmin)
+admin.site.register(Subject, SubjectAdmin)
+admin.site.register(Staff, StaffAdmin)
+admin.site.register(Timetable, TimetableAdmin)
