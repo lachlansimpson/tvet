@@ -1,6 +1,5 @@
 # Django settings for tvet project.
 import os
-import sys
 
 PROJECT_PATH = os.path.realpath(os.path.dirname(__file__))
 
@@ -144,6 +143,6 @@ LOGGING = {
 }
 
 try:
-    from tvet.local_settings import *
+    from local_settings import *
 except ImportError:
-        pass
+    pass
