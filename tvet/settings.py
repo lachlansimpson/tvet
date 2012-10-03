@@ -1,5 +1,6 @@
 # Django settings for tvet project.
 import os
+import sys
 
 PROJECT_PATH = os.path.realpath(os.path.dirname(__file__))
 
@@ -7,22 +8,7 @@ ADMINS = (
      ('Lachlan Musiman', 'datakid@gmail.com'),
 )
 
-
-DEBUG = True
-TEMPLATE_DEBUG = DEBUG
-
 MANAGERS = ADMINS
-
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.mysql', # Add 'postgresql_psycopg2', 'mysql', 'sqlite3' or 'oracle'.
-        'NAME': 'tvet',                      # Or path to database file if using sqlite3.
-        'USER': 'tvetuser',                      # Not used with sqlite3.
-        'PASSWORD': 'tvetpassword',                  # Not used with sqlite3.
-        'HOST': '',                      # Set to empty string for localhost. Not used with sqlite3.
-        'PORT': '',                      # Set to empty string for default. Not used with sqlite3.
-    }
-}
 
 # Local time zone for this installation. Choices can be found here:
 # http://en.wikipedia.org/wiki/List_of_tz_zones_by_name
@@ -76,7 +62,6 @@ STATICFILES_DIRS = (
     # Don't forget to use absolute paths, not relative paths.
     os.path.join(PROJECT_PATH, '../tafe/static/'),
     
-    
 )
 
 # List of finder classes that know how to find static files in
@@ -126,7 +111,6 @@ INSTALLED_APPS = (
     'django.contrib.admin',
     'tafe',
     'south',
-    'crispy_forms',
     'django_extensions',
 )
 
@@ -158,3 +142,8 @@ LOGGING = {
         },
     }
 }
+
+try:
+    from tvet.local_settings import *
+except ImportError:
+        pass

@@ -1,0 +1,24 @@
+{% extends "tafe/base_site.html" %}
+
+{% comment %}
+Session detail page of the portal.
+{% endcomment %}
+
+{% block title %}
+    Session detail
+{% endblock %}
+{% block coltype %}colMS{% endblock %}
+{% block content %}
+<div id="content-left">
+    {{ session.get_session_number_display }}<br />
+
+    {{ session.subject.name }}<br />
+
+    {{ session.date }}<br />
+
+    <h4>Students and attendance</h4>
+    <form method="post" action="">
+            {{ formset }}
+    </form>
+</div>
+{% endblock %}
