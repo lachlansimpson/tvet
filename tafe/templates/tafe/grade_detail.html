@@ -14,7 +14,8 @@ Course detail page of the portal.
     Date started: {{ grade.date_started }} <br />
 
     <h4>Results</h4>
-    {% if grade.results.all.count %}
+    {% if grade.results|length > 0 %}
+        
         {% for result in grade.results.all %}
         {{ result.date }}: <a href="{{ result.get_absolute_url }}">{{ result.name }}, {{ result.mark }}</a><br />   
         {% endfor %}

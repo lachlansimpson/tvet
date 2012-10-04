@@ -586,3 +586,12 @@ class Timetable(models.Model):
     @models.permalink	
     def get_absolute_url(self):
         return ('timetable_view', [str(self.slug)])
+
+class Assessment(models.Model):
+    name = models.CharField(max_length=50)
+    date_given = models.DateField()
+    date_due = models.DateField()
+    subject = models.ForeignKey(Subject)
+
+    def get_year(self):
+        return self.date_due.year

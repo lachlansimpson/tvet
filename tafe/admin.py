@@ -1,4 +1,4 @@
-from tafe.models import Student, Course, Subject, Enrolment, Grade, Attendance, Result, Session, Timetable, Applicant, Staff, Credential
+from tafe.models import Student, Course, Subject, Enrolment, Grade, Attendance, Result, Session, Timetable, Applicant, Staff, Credential, Assessment
 from django.contrib import admin
 from django.forms import ModelForm
 from django.forms.extras.widgets import SelectDateWidget 
@@ -11,6 +11,43 @@ BIRTH_YEARS = range(this_year-51, this_year-16)
 
 class ApplicantInline(admin.TabularInline):
     model = Applicant
+
+class AssessmentInline(admin.TabularInline):
+    model = Assessment 
+
+class AttendanceInline(admin.TabularInline):
+    model = Attendance
+    exclude = ('slug',)
+    template = 'admin/collapsed_tabular_inline.html'
+
+class CourseInline(admin.TabularInline):
+    model = Course
+
+class CredentialInline(admin.TabularInline):
+    model = Staff.credential.through
+
+class EnrolmentInline(admin.TabularInline):
+    extra = 1    
+    model = Enrolment
+
+class GradeInline(admin.TabularInline):
+    model = Grade
+
+class ResultInline(admin.StackedInline):
+    model = Result
+    template = 'admin/collapsed_tabular_inline.html'
+
+class SessionInline(admin.TabularInline):
+    model = Session
+    extra = 1
+    fields = ('date', 'session_number','subject','timetable')
+    template = 'admin/collapsed_tabular_inline.html'
+
+class StudentInline(admin.StackedInline):
+    model = Student
+
+class SubjectInline(admin.StackedInline):
+    model = Subject
 
 class ApplicantAdminForm(ModelForm):
     class Meta:
@@ -50,10 +87,11 @@ class ApplicantSuccess(admin.TabularInline):
     model = Student
     fields = ('__unicode__','successful')
 
-class AttendanceInline(admin.TabularInline):
-    model = Attendance
-    exclude = ('slug',)
-    template = 'admin/collapsed_tabular_inline.html'
+class AssessmentAdmin(admin.ModelAdmin):
+    model = Assessment
+    fields = ('name','date_given','date_due','subject')
+    list_display = ('name','date_given','date_due','subject')
+    list_filter = ('name','subject')
 
 class AttendanceAdmin(admin.ModelAdmin):
     model = Attendance
@@ -69,13 +107,6 @@ class AttendanceAdmin(admin.ModelAdmin):
             obj.penultimate_change_by = obj.last_change_by 
         obj.last_change_by = request.user 
         obj.save()
-
-class CourseInline(admin.TabularInline):
-    model = Course
-
-class EnrolmentInline(admin.TabularInline):
-    extra = 1    
-    model = Enrolment
 
 class CourseAdmin(admin.ModelAdmin):
     inlines = (EnrolmentInline,
@@ -103,9 +134,6 @@ class CourseAdmin(admin.ModelAdmin):
                 instance.save()
         else:
             formset.save()
-
-class CredentialInline(admin.TabularInline):
-    model = Staff.credential.through
 
 class CredentialAdmin(admin.ModelAdmin):
     fieldsets = [
@@ -141,9 +169,6 @@ class EnrolmentAdmin(admin.ModelAdmin):
         obj.last_change_by = request.user 
         obj.save()
 
-class GradeInline(admin.TabularInline):
-    model = Grade
-
 class GradeAdmin(admin.ModelAdmin):
     fieldsets = [
         ('',{'fields':['student','subject','date_started','results',]}),
@@ -163,10 +188,6 @@ class GradeAdmin(admin.ModelAdmin):
         obj.last_change_by = request.user 
         obj.save()
     
-class ResultInline(admin.StackedInline):
-    model = Result
-    template = 'admin/collapsed_tabular_inline.html'
-
 class ResultAdmin(admin.ModelAdmin):
     model = Result
 
@@ -180,13 +201,6 @@ class ResultAdmin(admin.ModelAdmin):
         obj.last_change_by = request.user 
         obj.save()
     
-        
-class SessionInline(admin.TabularInline):
-    model = Session
-    extra = 1
-    fields = ('date', 'session_number','subject','timetable')
-    template = 'admin/collapsed_tabular_inline.html'
-
 class SessionAdmin(admin.ModelAdmin):
     list_display = ('subject', 'day_of_week','date','timetable','get_session_number_display')
     list_filter = ('date','session_number','students')
@@ -258,9 +272,6 @@ class StaffAdmin(admin.ModelAdmin):
         else:
             formset.save()
 
-class StudentInline(admin.StackedInline):
-    model = Student
-
 class StudentAdminForm(ModelForm):
     class Meta:
         model = Student
@@ -312,18 +323,16 @@ class StudentAdmin(admin.ModelAdmin):
         else:
             formset.save()
 
-class SubjectInline(admin.StackedInline):
-    model = Subject
-
 class SubjectAdmin(admin.ModelAdmin):
+    fieldsets = (
+        ('', { 'fields': (('name','slug'),('year','semester'))}),
+    )
+
     list_display = ('name','year','semester')
     list_filter = ('year', 'semester', 'name')
     model = Subject
     prepopulated_fields = {'slug': ('name','year')}
-    inlines = [
-        SessionInline,
-        GradeInline,
-    ]
+    inlines = [ AssessmentInline, SessionInline, GradeInline,]
     
     def save_formset(self, request, form, formset, change): 
         if formset.model == Grade:
@@ -345,6 +354,7 @@ class TimetableAdmin(admin.ModelAdmin):
     prepopulated_fields = {'slug': ('year','term')}
 
 admin.site.register(Applicant, ApplicantAdmin)
+admin.site.register(Assessment, AssessmentAdmin)
 admin.site.register(Attendance, AttendanceAdmin)
 admin.site.register(Course, CourseAdmin)
 admin.site.register(Credential, CredentialAdmin)
