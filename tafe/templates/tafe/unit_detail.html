@@ -17,6 +17,10 @@ Subject/Unit detail page of the portal.
         <a href="{{ session.get_absolute_url }}">{{ session.day_of_week }}: {{ session.get_session_number_display }}</a><br />
     {% endfor %}
 
+    <h4>Assessments</h4>
+    {% for test in unit.assessments.all %}
+    <a href="{{ test.get_absolute_url }}">{{ test }}</a><br />
+    {% endfor %} 
     <h4>Student attendance records</h4>
     {% for grade in unit.grades.all %}
     <a href="{{ grade.student.get_absolute_url}}">{{ grade.student }}</a>: <a href="{{ grade.get_absolute_url }}">{{ grade.subject }}</a><br />

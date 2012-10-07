@@ -1,6 +1,6 @@
 # Create your views here.
 
-from tafe.models import Timetable, Session, Course, Attendance, Subject#, Grade
+from tafe.models import Timetable, Session, Course, Attendance, Subject, Assessment#, Grade
 from tafe.forms import SessionRecurringForm, ApplicantSuccessForm
 from django.shortcuts import render_to_response, get_object_or_404
 from django.http import HttpResponseRedirect
@@ -191,3 +191,10 @@ def session_attendance_view(request, year, month, day, slug):
     else:
         formset = AttendanceFormSet(queryset=Attendance.objects.filter(session=session).order_by('student'))
         return render_to_response('tafe/attendance_record.html',{'formset':formset, 'session':session,}, RequestContext(request))
+
+@login_required
+def assessment_view(request, unit, slug):
+    subject = get_object_or_404(Subject, slug=unit)
+    assessment = get_object_or_404(Assessment, slug=slug, subject=subject) 
+
+    return render_to_response('tafe/assessment_detail.html',{'assessment':assessment,}, RequestContext(request))

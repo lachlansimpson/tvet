@@ -1,0 +1,18 @@
+{% extends "tafe/base_site.html" %}
+
+{% comment %}
+Assessment detail page of the portal.
+{% endcomment %}
+
+{% block title %}
+    Assessment detail
+{% endblock %}
+{% block coltype %}colMS{% endblock %}
+{% block content %}
+<div id="content-left">
+    {{ assessment.subject }}<br />
+    {{ assessment.name }}<br />
+    {{ assessment.date_given }}<br />
+    {{ assessment.date_due }}<br />
+</div>
+{% endblock %}

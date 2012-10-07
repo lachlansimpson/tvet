@@ -16,7 +16,8 @@ Session detail page of the portal.
 
     {{ session.date }}<br />
 
-    <h4>Students and attendance</h4>
+    <a href="{{ session.get_absolute_url }}attendance">Mark attendance for this class</a>
+    <h4>Students and attendance</h4> 
     {% for record in attendance.all %}
     <a href="/tafe/attendance/{{ session.date.year}}/{{ session.date.month }}/{{ session.date.day }}/{{ record.slug }}">{{ record.student }}, {{ record.get_reason_display }}</a><br />
     {% endfor %}

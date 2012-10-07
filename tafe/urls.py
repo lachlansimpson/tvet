@@ -1,7 +1,7 @@
 from django.conf.urls import patterns, url
 from django.views.generic import DetailView, ListView
 from tafe.models import Student, Subject, Enrolment, Course, Grade, Timetable, Applicant, Attendance, Staff
-from tafe.views import session_create, session_view, session_attendance_view, attendance_view, timetable_daily_view, units_by_qualifications_view, unit_view
+from tafe.views import session_create, session_view, session_attendance_view, attendance_view, timetable_daily_view, units_by_qualifications_view, unit_view, assessment_view
 
 urlpatterns = patterns('tafe.views',
     url(r'^$', 'index'),
@@ -22,6 +22,7 @@ urlpatterns = patterns('tafe.views',
     url(r'^units/$', ListView.as_view(queryset=Subject.objects.all())),
     url(r'^units/qualifications/$', units_by_qualifications_view, name='units_by_qualifications_view'),
     url(r'^unit/(?P<slug>[-\w]+)/$', unit_view, name='unit_view'),
+    url(r'^unit/(?P<unit>[-\w]+)/assessment/(?P<slug>[-\w]+)/$', assessment_view, name='assessment_view'),
     
     url(r'^enrolments/$', ListView.as_view(queryset=Enrolment.objects.all())),
     url(r'^enrolment/(?P<slug>[-\w]+)/$', DetailView.as_view(model=Enrolment), name='enrolment_view'),

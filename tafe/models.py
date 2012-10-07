@@ -514,8 +514,13 @@ class Attendance(models.Model):
 
     @models.permalink	
     def get_absolute_url(self):
-        return ('attendance_view', [str(self.slug)])
-
+        return ('attendance_view', (), {
+            'year': self.date.year,
+            'month': self.date.month,
+            'day': self.date.day,
+            'session': self.session.slug, 
+            'slug': self.slug})
+        
     def save(self):
         slug_temp = self.session.slug + ' ' + self.student.slug
         self.slug = slugify(slug_temp)
@@ -554,8 +559,8 @@ class Result(models.Model):
         verbose_name='Result'
         verbose_name_plural='Results'
     
-    name = models.CharField(max_length=30)
-    date = models.DateField()
+    assessment = models.ForeignKey('Assessment')
+    date_submitted = models.DateField()
     mark = models.CharField(max_length=2, choices=SUBJECT_RESULTS)    
     
     last_change_by = models.ForeignKey(User, related_name='%(class)s_last_change_by', editable=False)
@@ -563,7 +568,7 @@ class Result(models.Model):
     
     def __unicode__(self):
         '''Result reference: the assignment name, due date and grade given'''
-        return self.name + ', ' + str(self.date)
+        return self.assessment.name + ', ' + str(self.date_submitted)
 
     @models.permalink	
     def get_absolute_url(self):
@@ -591,7 +596,14 @@ class Assessment(models.Model):
     name = models.CharField(max_length=50)
     date_given = models.DateField()
     date_due = models.DateField()
-    subject = models.ForeignKey(Subject)
+    subject = models.ForeignKey(Subject, related_name="assessments")
+    slug = models.CharField(max_length=50)
+
+    def __unicode__(self):
+        return self.subject.name + ', ' + self.name + ', ' + str(self.date_due)
+
+    def get_absolute_url(self):
+        return self.subject.get_absolute_url() + "assessment/" + self.slug
 
     def get_year(self):
         return self.date_due.year

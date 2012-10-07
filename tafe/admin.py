@@ -89,9 +89,10 @@ class ApplicantSuccess(admin.TabularInline):
 
 class AssessmentAdmin(admin.ModelAdmin):
     model = Assessment
-    fields = ('name','date_given','date_due','subject')
-    list_display = ('name','date_given','date_due','subject')
+    fields = ('name','slug','subject','date_given','date_due')
+    list_display = ('name','subject','date_given','date_due')
     list_filter = ('name','subject')
+    prepopulated_fields = {'slug': ('name',)}
 
 class AttendanceAdmin(admin.ModelAdmin):
     model = Attendance
