@@ -132,7 +132,91 @@ EDUCATION_LEVEL_CHOICES = (
     ('8','SPFSC - Fiji School Certificate'),
 )
 
-class Applicant('Person'):
+class AttendanceBeforeTodayManager(models.Manager):
+    def get_query_set(self):
+        attendance_list = super(AttendanceBeforeTodayManager, self).get_query_set().filter(session_date__gte=today)
+        return attendance_list
+
+class Attendance(models.Model):
+    '''Represents the "roll call" or attendance record'''
+    class Meta:
+        abstract=True
+        verbose_name='Attendence Record'
+        verbose_name_plural='Attendence Records'
+    
+    session = models.ForeignKey('Session', related_name='%(class)s_attendance_records')
+    reason = models.CharField(max_length=1, choices=REASON_CHOICES, blank=True)
+    absent = models.CharField(max_length=1, choices=ABSENCE_CHOICES, blank=True)
+    slug = models.SlugField(blank=True)
+
+    last_change_by = models.ForeignKey(User, related_name='%(class)s_last_change_by', editable=False)
+    penultimate_change_by = models.ForeignKey(User, related_name='%(class)s_penultimate_change_by', blank=True, null=True,editable=False)
+    objects = models.Manager()
+    attendance_before_today = AttendanceBeforeTodayManager()
+
+    def __unicode__(self):
+        '''Attendance reference: returns date, session and reason'''
+        return str(self.session) + ', ' + self.get_reason_display()
+
+    @models.permalink	
+    def get_absolute_url(self):
+        return ('attendance_view', (), {
+            'year': self.date.year,
+            'month': self.date.month,
+            'day': self.date.day,
+            'session': self.session.slug, 
+            'slug': self.slug})
+        
+    def save(self):
+        slug_temp = self.session.slug + ' ' + self.student.slug
+        self.slug = slugify(slug_temp)
+        super(Attendance, self).save()
+    
+class FemaleManager(models.Manager):
+    def get_query_set(self):
+        return super(FemaleManager, self).get_query_set().filter(gender='F')
+
+class MaleManager(models.Manager):
+    def get_query_set(self):
+        return super(MaleManager, self).get_query_set().filter(gender='M')
+
+class Person(models.Model):
+    '''Abstract Class under Applicant, Student and Staff'''
+    first_name = models.CharField(max_length=30)
+    surname = models.CharField(max_length=30)
+    slug = models.SlugField('ID number', max_length=40, editable=False, blank=True)
+    dob = models.DateField('Date of Birth')  
+    gender = models.CharField(max_length='1', choices=GENDER_CHOICES, default='F')
+    island = models.CharField(max_length='2', choices=ISLAND_CHOICES, default='01', blank=True, null=True)
+    phone = models.CharField(max_length=12, blank=True)
+    email = models.EmailField(blank=True)
+    
+    disability = models.NullBooleanField()
+    disability_description = models.CharField('Description', max_length=50, blank=True)
+
+    added = models.DateTimeField(auto_now_add=True)
+    updated = models.DateTimeField(auto_now=True)
+    last_change_by = models.ForeignKey(User, related_name='%(class)s_last_change_by', editable=False)
+    penultimate_change_by = models.ForeignKey(User, related_name='%(class)s_penultimate_change_by', blank=True, null=True, editable=False)
+
+    people = models.Manager()
+    men = MaleManager()
+    women = FemaleManager()
+    
+    class Meta:
+        abstract = True
+
+    def __unicode__(self):
+        """Person reference: full name """
+        return self.first_name + ' ' + self.surname
+
+    def age_today(self):
+        return today.year - self.dob.year
+
+    def first_letter(self):
+        return self.surname and self.surname[0] or ''
+
+class Applicant(Person):
     applied_for = models.ForeignKey('Course', related_name='applicants')
     education_level = models.CharField(max_length=2, blank=True, choices=EDUCATION_LEVEL_CHOICES)
     successful = models.NullBooleanField()
@@ -227,46 +311,6 @@ class Assessment(models.Model):
     def get_year(self):
         return self.date_due.year
 
-class AttendanceBeforeTodayManager(models.Manager):
-    def get_query_set(self):
-        attendance_list = super(AttendanceBeforeTodayManager, self).get_query_set().filter(session_date__gte=today)
-        return attendance_list
-
-class Attendance(models.Model):
-    '''Represents the "roll call" or attendance record'''
-    class Meta:
-        abstract=True
-        verbose_name='Attendence Record'
-        verbose_name_plural='Attendence Records'
-    
-    session = models.ForeignKey('Session', related_name='attendance_records')
-    reason = models.CharField(max_length=1, choices=REASON_CHOICES, blank=True)
-    absent = models.CharField(max_length=1, choices=ABSENCE_CHOICES, blank=True)
-    slug = models.SlugField(blank=True)
-
-    last_change_by = models.ForeignKey(User, related_name='%(class)s_last_change_by', editable=False)
-    penultimate_change_by = models.ForeignKey(User, related_name='%(class)s_penultimate_change_by', blank=True, null=True,editable=False)
-    objects = models.Manager()
-    attendance_before_today = AttendanceBeforeTodayManager()
-
-    def __unicode__(self):
-        '''Attendance reference: returns date, session and reason'''
-        return str(self.session) + ', ' + self.get_reason_display()
-
-    @models.permalink	
-    def get_absolute_url(self):
-        return ('attendance_view', (), {
-            'year': self.date.year,
-            'month': self.date.month,
-            'day': self.date.day,
-            'session': self.session.slug, 
-            'slug': self.slug})
-        
-    def save(self):
-        slug_temp = self.session.slug + ' ' + self.student.slug
-        self.slug = slugify(slug_temp)
-        super(Attendance, self).save()
-    
 class Course(models.Model):
     '''Represents Courses - a collection of subjects leading to a degree'''
     class Meta:
@@ -394,50 +438,6 @@ class Grade(models.Model):
         self.slug = slugify(slug_temp)
         super(Grade, self).save() 
 
-class FemaleManager(models.Manager):
-    def get_query_set(self):
-        return super(FemaleManager, self).get_query_set().filter(gender='F')
-
-class MaleManager(models.Manager):
-    def get_query_set(self):
-        return super(MaleManager, self).get_query_set().filter(gender='M')
-
-class Person(models.Model):
-    '''Abstract Class under Applicant, Student and Staff'''
-    first_name = models.CharField(max_length=30)
-    surname = models.CharField(max_length=30)
-    slug = models.SlugField('ID number', max_length=40, editable=False, blank=True)
-    dob = models.DateField('Date of Birth')  
-    gender = models.CharField(max_length='1', choices=GENDER_CHOICES, default='F')
-    island = models.CharField(max_length='2', choices=ISLAND_CHOICES, default='01', blank=True, null=True)
-    phone = models.CharField(max_length=12, blank=True)
-    email = models.EmailField(blank=True)
-    
-    disability = models.NullBooleanField()
-    disability_description = models.CharField('Description', max_length=50, blank=True)
-
-    added = models.DateTimeField(auto_now_add=True)
-    updated = models.DateTimeField(auto_now=True)
-    last_change_by = models.ForeignKey(User, related_name='%(class)s_last_change_by', editable=False)
-    penultimate_change_by = models.ForeignKey(User, related_name='%(class)s_penultimate_change_by', blank=True, null=True, editable=False)
-
-    people = models.Manager()
-    men = MaleManager()
-    women = FemaleManager()
-    
-    class Meta:
-        abstract = True
-
-    def __unicode__(self):
-        """Person reference: full name """
-        return self.first_name + ' ' + self.surname
-
-    def age_today(self):
-        return today.year - self.dob.year
-
-    def first_letter(self):
-        return self.surname and self.surname[0] or ''
-
 class Result(models.Model):
     '''Represents an Assignment and it's results'''
     class Meta:
@@ -465,7 +465,7 @@ class Session(models.Model):
     timetable = models.ForeignKey('Timetable', related_name='sessions')
     date = models.DateField()
     slug = models.SlugField(max_length=50,blank=True)
-    students = models.ManyToManyField('Student', through='Attendance', blank=True, null=True)
+    students = models.ManyToManyField('Student', through='StudentAttendance', blank=True, null=True)
 
     def __unicode__(self):
         '''Session Reference: day of week, date, term/year (Timetable)'''
