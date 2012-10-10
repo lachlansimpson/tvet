@@ -132,51 +132,7 @@ EDUCATION_LEVEL_CHOICES = (
     ('8','SPFSC - Fiji School Certificate'),
 )
 
-class FemaleManager(models.Manager):
-    def get_query_set(self):
-        return super(FemaleManager, self).get_query_set().filter(gender='F')
-
-class MaleManager(models.Manager):
-    def get_query_set(self):
-        return super(MaleManager, self).get_query_set().filter(gender='M')
-
-class Person(models.Model):
-    '''Abstract Class under Applicant, Student and Staff'''
-    first_name = models.CharField(max_length=30)
-    surname = models.CharField(max_length=30)
-    slug = models.SlugField('ID number', max_length=40, editable=False, blank=True)
-    dob = models.DateField('Date of Birth')  
-    gender = models.CharField(max_length='1', choices=GENDER_CHOICES, default='F')
-    island = models.CharField(max_length='2', choices=ISLAND_CHOICES, default='01', blank=True, null=True)
-    phone = models.CharField(max_length=12, blank=True)
-    email = models.EmailField(blank=True)
-    
-    disability = models.NullBooleanField()
-    disability_description = models.CharField('Description', max_length=50, blank=True)
-
-    added = models.DateTimeField(auto_now_add=True)
-    updated = models.DateTimeField(auto_now=True)
-    last_change_by = models.ForeignKey(User, related_name='%(class)s_last_change_by', editable=False)
-    penultimate_change_by = models.ForeignKey(User, related_name='%(class)s_penultimate_change_by', blank=True, null=True, editable=False)
-
-    people = models.Manager()
-    men = MaleManager()
-    women = FemaleManager()
-    
-    class Meta:
-        abstract = True
-
-    def __unicode__(self):
-        """Person reference: full name """
-        return self.first_name + ' ' + self.surname
-
-    def age_today(self):
-        return today.year - self.dob.year
-
-    def first_letter(self):
-        return self.surname and self.surname[0] or ''
-
-class Applicant(Person):
+class Applicant('Person'):
     applied_for = models.ForeignKey('Course', related_name='applicants')
     education_level = models.CharField(max_length=2, blank=True, choices=EDUCATION_LEVEL_CHOICES)
     successful = models.NullBooleanField()
@@ -255,88 +211,62 @@ class Applicant(Person):
             self.successful='True'
             self.save()
 
-#TODO Check how to filter by reverse FK
-class NewStudentManager(models.Manager):
-    def get_query_set(self):
-        return super(NewStudentManager, self).get_query_set().filter(enrolment__student__isnull=True)
-
-class Student(Person):
-    '''Represents each student '''
-    education_level = models.CharField(max_length=2, blank=True, choices=EDUCATION_LEVEL_CHOICES)
-    application_details = models.ForeignKey('Applicant')
-    
-    objects = models.Manager()
-    new_students = NewStudentManager()
-
-    def get_id(self):
-        ''' 
-        This returns the student's DB reference number, or "student number"
-        Not kept in the database as it would be extraneous
-        The 100000 is added for aesthetic reasons only
-        '''
-        return self.pk + 100000
-
-    def save(self):
-        '''Can't use prepopulated_fields due to function's restrictions
-        Set the Slug to student ID number''' 
-        if not self.pk:
-            super(Student, self).save() # Call the first save() method to get pk
-            self.slug = slugify(self.get_id())
-        super(Student, self).save() # Call the "real" save() method.
-
-    @models.permalink	
-    def get_absolute_url(self):
-        return ('student_view', [str(self.slug)])
-
-    def attendance_before_today(self):
-        l = self.attendance_records.exclude(session__date__gte =today).order_by('-session__date')
-        return l
-
-class Staff(Person):
-    '''Respresents each Staff member'''
-    class Meta:
-        verbose_name='Staff'
-        verbose_name_plural='Staff'
-
-    classification = models.CharField(max_length=2, choices=CLASSIFICATION_CHOICES)
-    credential = models.ManyToManyField('Credential', blank=True, null=True, related_name='credentials')
-    islpr_reading = models.CharField('ISLPR Level Reading', max_length=2, choices=ISLPR_CHOICES)
-    islpr_writing = models.CharField('ISLPR Level Writing', max_length=2, choices=ISLPR_CHOICES)
-    islpr_speaking = models.CharField('ISLPR Level Speaking', max_length=2, choices=ISLPR_CHOICES)
-    islpr_listening = models.CharField('ISLPR Level Listening', max_length=2, choices=ISLPR_CHOICES)
-    islpr_overall = models.CharField('ISLPR Level Overall', max_length=2, choices=ISLPR_CHOICES)
+class Assessment(models.Model):
+    name = models.CharField(max_length=50)
+    date_given = models.DateField()
+    date_due = models.DateField()
+    subject = models.ForeignKey('Subject', related_name="assessments")
+    slug = models.CharField(max_length=50)
 
     def __unicode__(self):
-        return self.first_name +' ' + self.surname
-    
-    def get_id(self):
-        return self
+        return self.subject.name + ', ' + self.name + ', ' + str(self.date_due)
 
-    def save(self):
-        self.slug = slugify(self) #slugify staff members name
-        super(Staff, self).save() 
-
-    @models.permalink	
     def get_absolute_url(self):
-        return ('staff_view', [str(self.slug)])
+        return self.subject.get_absolute_url() + "assessment/" + self.slug
 
-class Credential(models.Model):
-    ''' This is the class of objects to represent what qualifications the staff have'''
+    def get_year(self):
+        return self.date_due.year
+
+class AttendanceBeforeTodayManager(models.Manager):
+    def get_query_set(self):
+        attendance_list = super(AttendanceBeforeTodayManager, self).get_query_set().filter(session_date__gte=today)
+        return attendance_list
+
+class Attendance(models.Model):
+    '''Represents the "roll call" or attendance record'''
     class Meta:
-        verbose_name_plural='Credentials'
+        abstract=True
+        verbose_name='Attendence Record'
+        verbose_name_plural='Attendence Records'
     
-    name = models.CharField(max_length=50)
-    aqf_level = models.CharField(max_length=2, choices=AQF_LEVEL_CHOICES)
-    institution = models.CharField(max_length=40)
-    year = models.CharField(max_length=4)
-    type = models.CharField(max_length=1, choices=CREDENTIAL_TYPE_CHOICES)
+    session = models.ForeignKey('Session', related_name='attendance_records')
+    reason = models.CharField(max_length=1, choices=REASON_CHOICES, blank=True)
+    absent = models.CharField(max_length=1, choices=ABSENCE_CHOICES, blank=True)
+    slug = models.SlugField(blank=True)
 
     last_change_by = models.ForeignKey(User, related_name='%(class)s_last_change_by', editable=False)
-    penultimate_change_by = models.ForeignKey(User, related_name='%(class)s_penultimate_change_by', blank=True, null=True, editable=False)
+    penultimate_change_by = models.ForeignKey(User, related_name='%(class)s_penultimate_change_by', blank=True, null=True,editable=False)
+    objects = models.Manager()
+    attendance_before_today = AttendanceBeforeTodayManager()
 
     def __unicode__(self):
-        return str(self.get_aqf_level_display()) +', '+self.name+', '+self.institution
+        '''Attendance reference: returns date, session and reason'''
+        return str(self.session) + ', ' + self.get_reason_display()
 
+    @models.permalink	
+    def get_absolute_url(self):
+        return ('attendance_view', (), {
+            'year': self.date.year,
+            'month': self.date.month,
+            'day': self.date.day,
+            'session': self.session.slug, 
+            'slug': self.slug})
+        
+    def save(self):
+        slug_temp = self.session.slug + ' ' + self.student.slug
+        self.slug = slugify(slug_temp)
+        super(Attendance, self).save()
+    
 class Course(models.Model):
     '''Represents Courses - a collection of subjects leading to a degree'''
     class Meta:
@@ -345,7 +275,7 @@ class Course(models.Model):
 
     name = models.CharField(max_length=30)
     slug = models.SlugField(max_length=40)
-    students = models.ManyToManyField(Student, through='Enrolment', blank=True, null=True)
+    students = models.ManyToManyField('Student', through='Enrolment', blank=True, null=True)
     subjects = models.ManyToManyField('Subject', related_name='courses', blank=True, null=True)
 
     def __unicode__(self):
@@ -374,9 +304,26 @@ class Course(models.Model):
                 list += ', ' + subject.name
         return list 
 
+class Credential(models.Model):
+    ''' This is the class of objects to represent what qualifications the staff have'''
+    class Meta:
+        verbose_name_plural='Credentials'
+    
+    name = models.CharField(max_length=50)
+    aqf_level = models.CharField(max_length=2, choices=AQF_LEVEL_CHOICES)
+    institution = models.CharField(max_length=40)
+    year = models.CharField(max_length=4)
+    type = models.CharField(max_length=1, choices=CREDENTIAL_TYPE_CHOICES)
+
+    last_change_by = models.ForeignKey(User, related_name='%(class)s_last_change_by', editable=False)
+    penultimate_change_by = models.ForeignKey(User, related_name='%(class)s_penultimate_change_by', blank=True, null=True, editable=False)
+
+    def __unicode__(self):
+        return str(self.get_aqf_level_display()) +', '+self.name+', '+self.institution
+
 class Enrolment(models.Model):
     '''Represents a Student's enrolment in a Course'''
-    student = models.ForeignKey(Student, related_name='enrolments')
+    student = models.ForeignKey('Student', related_name='enrolments')
     course = models.ForeignKey(Course, related_name='enrolments')
     date_started = models.DateField(default=today)
     date_ended = models.DateField(blank=True, null=True)
@@ -420,38 +367,97 @@ class Enrolment(models.Model):
 #
 #        super(Enrolment, self)
 
-class Subject(models.Model):
-    '''Represents individual subjects, classes, cohorts'''
-    class Meta:
-        verbose_name='Unit of Competence'
-        verbose_name_plural='Units of Competence'
+class Grade(models.Model):
+    '''Represents a Student's interactions with a Subject. ie, being in a class.'''
+    student = models.ForeignKey('Student', related_name='grades')
+    subject = models.ForeignKey('Subject', related_name='grades')
+    date_started = models.DateField()
+    results = models.ForeignKey('Result', related_name='grades', blank=True, null=True)
+    slug = models.SlugField(max_length=60)
+
+    last_change_by = models.ForeignKey(User, related_name='%(class)s_last_change_by', editable=False)
+    penultimate_change_by = models.ForeignKey(User, related_name='%(class)s_penultimate_change_by', blank=True, null=True, editable=False)
     
-    name = models.CharField(max_length=30)
-    slug = models.SlugField(max_length=40)
-    semester = models.CharField(max_length=1, blank=True, choices=SEMESTER_CHOICES)
-    year = models.IntegerField()
-    members = models.ManyToManyField(Student, through='Grade', blank=True, null=True)
+    def __unicode__(self):
+        '''Grade reference: student's name and subject '''
+        return str(self.student) + ', ' + str(self.subject)
+    
+    @models.permalink	
+    def get_absolute_url(self):
+        return ('grade_view', [str(self.slug)])
+
+    def save(self):
+        '''Can't use prepopulated_fields due to function's restrictions
+        using the unique combination of student, subject and year they started
+        the class'''
+        slug_temp = str(self.student) + ' ' +str(self.subject)
+        self.slug = slugify(slug_temp)
+        super(Grade, self).save() 
+
+class FemaleManager(models.Manager):
+    def get_query_set(self):
+        return super(FemaleManager, self).get_query_set().filter(gender='F')
+
+class MaleManager(models.Manager):
+    def get_query_set(self):
+        return super(MaleManager, self).get_query_set().filter(gender='M')
+
+class Person(models.Model):
+    '''Abstract Class under Applicant, Student and Staff'''
+    first_name = models.CharField(max_length=30)
+    surname = models.CharField(max_length=30)
+    slug = models.SlugField('ID number', max_length=40, editable=False, blank=True)
+    dob = models.DateField('Date of Birth')  
+    gender = models.CharField(max_length='1', choices=GENDER_CHOICES, default='F')
+    island = models.CharField(max_length='2', choices=ISLAND_CHOICES, default='01', blank=True, null=True)
+    phone = models.CharField(max_length=12, blank=True)
+    email = models.EmailField(blank=True)
+    
+    disability = models.NullBooleanField()
+    disability_description = models.CharField('Description', max_length=50, blank=True)
+
+    added = models.DateTimeField(auto_now_add=True)
+    updated = models.DateTimeField(auto_now=True)
+    last_change_by = models.ForeignKey(User, related_name='%(class)s_last_change_by', editable=False)
+    penultimate_change_by = models.ForeignKey(User, related_name='%(class)s_penultimate_change_by', blank=True, null=True, editable=False)
+
+    people = models.Manager()
+    men = MaleManager()
+    women = FemaleManager()
+    
+    class Meta:
+        abstract = True
 
     def __unicode__(self):
-        '''Subject reference: subject name and the year given'''
-        return self.name + ', ' + str(self.year) 
+        """Person reference: full name """
+        return self.first_name + ' ' + self.surname
+
+    def age_today(self):
+        return today.year - self.dob.year
+
+    def first_letter(self):
+        return self.surname and self.surname[0] or ''
+
+class Result(models.Model):
+    '''Represents an Assignment and it's results'''
+    class Meta:
+        verbose_name='Result'
+        verbose_name_plural='Results'
+    
+    assessment = models.ForeignKey('Assessment')
+    date_submitted = models.DateField()
+    mark = models.CharField(max_length=2, choices=SUBJECT_RESULTS)    
+    
+    last_change_by = models.ForeignKey(User, related_name='%(class)s_last_change_by', editable=False)
+    penultimate_change_by = models.ForeignKey(User, related_name='%(class)s_penultimate_change_by', blank=True, null=True,editable=False)
+    
+    def __unicode__(self):
+        '''Result reference: the assignment name, due date and grade given'''
+        return self.assessment.name + ', ' + str(self.date_submitted)
 
     @models.permalink	
     def get_absolute_url(self):
-        return ('unit_view', [str(self.slug)])
-
-    def first_letter(self):
-        return self.name and self.name[0] or ''
-
-    def this_weeks_sessions(self):
-        '''These are used to return this week's sessions'''
-        last_monday = today - datetime.timedelta(days=today.weekday())
-        this_friday = today + datetime.timedelta( (4-today.weekday()) % 7 )
-        this_weeks_sessions = []
-        for session in self.sessions.all(): 
-            if session.date > last_monday and session.date < this_friday:
-                this_weeks_sessions.append(session)
-        return this_weeks_sessions
+        return ('result_view', [str(self.slug)])
 
 class Session(models.Model):
     session_number = models.CharField(max_length=1,choices=SESSION_CHOICES)
@@ -486,93 +492,109 @@ class Session(models.Model):
         self.slug = slugify(slug_temp)
         super(Session, self).save() 
 
-class AttendanceBeforeTodayManager(models.Manager):
-    def get_query_set(self):
-        attendance_list = super(AttendanceBeforeTodayManager, self).get_query_set().filter(session_date__gte=today)
-        return attendance_list
-
-class Attendance(models.Model):
-    '''Represents the "roll call" or attendance record'''
+class Staff(Person):
+    '''Respresents each Staff member'''
     class Meta:
-        verbose_name='Attendence Record'
-        verbose_name_plural='Attendence Records'
-    
-    session = models.ForeignKey(Session, related_name='attendance_records')
-    student = models.ForeignKey(Student, related_name='attendance_records')
-    reason = models.CharField(max_length=1, choices=REASON_CHOICES, blank=True)
-    absent = models.CharField(max_length=1, choices=ABSENCE_CHOICES, blank=True)
-    slug = models.SlugField(blank=True)
+        verbose_name='Staff'
+        verbose_name_plural='Staff'
 
-    last_change_by = models.ForeignKey(User, related_name='%(class)s_last_change_by', editable=False)
-    penultimate_change_by = models.ForeignKey(User, related_name='%(class)s_penultimate_change_by', blank=True, null=True,editable=False)
-    objects = models.Manager()
-    attendance_before_today = AttendanceBeforeTodayManager()
+    classification = models.CharField(max_length=2, choices=CLASSIFICATION_CHOICES)
+    credential = models.ManyToManyField('Credential', blank=True, null=True, related_name='credentials')
+    islpr_reading = models.CharField('ISLPR Level Reading', max_length=2, choices=ISLPR_CHOICES)
+    islpr_writing = models.CharField('ISLPR Level Writing', max_length=2, choices=ISLPR_CHOICES)
+    islpr_speaking = models.CharField('ISLPR Level Speaking', max_length=2, choices=ISLPR_CHOICES)
+    islpr_listening = models.CharField('ISLPR Level Listening', max_length=2, choices=ISLPR_CHOICES)
+    islpr_overall = models.CharField('ISLPR Level Overall', max_length=2, choices=ISLPR_CHOICES)
 
     def __unicode__(self):
-        '''Attendance reference: returns date, session and reason'''
-        return str(self.session) + ', ' + self.get_reason_display()
+        return self.first_name +' ' + self.surname
+    
+    def get_id(self):
+        return self
 
-    @models.permalink	
-    def get_absolute_url(self):
-        return ('attendance_view', (), {
-            'year': self.date.year,
-            'month': self.date.month,
-            'day': self.date.day,
-            'session': self.session.slug, 
-            'slug': self.slug})
-        
     def save(self):
-        slug_temp = self.session.slug + ' ' + self.student.slug
-        self.slug = slugify(slug_temp)
-        super(Attendance, self).save()
-    
-class Grade(models.Model):
-    '''Represents a Student's interactions with a Subject. ie, being in a class.'''
-    student = models.ForeignKey(Student, related_name='grades')
-    subject = models.ForeignKey(Subject, related_name='grades')
-    date_started = models.DateField()
-    results = models.ForeignKey('Result', related_name='grades', blank=True, null=True)
-    slug = models.SlugField(max_length=60)
+        self.slug = slugify(self) #slugify staff members name
+        super(Staff, self).save() 
 
-    last_change_by = models.ForeignKey(User, related_name='%(class)s_last_change_by', editable=False)
-    penultimate_change_by = models.ForeignKey(User, related_name='%(class)s_penultimate_change_by', blank=True, null=True, editable=False)
-    
-    def __unicode__(self):
-        '''Grade reference: student's name and subject '''
-        return str(self.student) + ', ' + str(self.subject)
-    
     @models.permalink	
     def get_absolute_url(self):
-        return ('grade_view', [str(self.slug)])
+        return ('staff_view', [str(self.slug)])
+
+class StaffAttendance(Attendance):
+    staff = models.ForeignKey(Staff, related_name='attendance_records')
+
+#TODO Check how to filter by reverse FK
+class NewStudentManager(models.Manager):
+    def get_query_set(self):
+        return super(NewStudentManager, self).get_query_set().filter(enrolment__student__isnull=True)
+
+class Student(Person):
+    '''Represents each student '''
+    education_level = models.CharField(max_length=2, blank=True, choices=EDUCATION_LEVEL_CHOICES)
+    application_details = models.ForeignKey('Applicant')
+    
+    objects = models.Manager()
+    new_students = NewStudentManager()
+
+    def get_id(self):
+        ''' 
+        This returns the student's DB reference number, or "student number"
+        Not kept in the database as it would be extraneous
+        The 100000 is added for aesthetic reasons only
+        '''
+        return self.pk + 100000
 
     def save(self):
         '''Can't use prepopulated_fields due to function's restrictions
-        using the unique combination of student, subject and year they started
-        the class'''
-        slug_temp = str(self.student) + ' ' +str(self.subject)
-        self.slug = slugify(slug_temp)
-        super(Grade, self).save() 
-
-class Result(models.Model):
-    '''Represents an Assignment and it's results'''
-    class Meta:
-        verbose_name='Result'
-        verbose_name_plural='Results'
-    
-    assessment = models.ForeignKey('Assessment')
-    date_submitted = models.DateField()
-    mark = models.CharField(max_length=2, choices=SUBJECT_RESULTS)    
-    
-    last_change_by = models.ForeignKey(User, related_name='%(class)s_last_change_by', editable=False)
-    penultimate_change_by = models.ForeignKey(User, related_name='%(class)s_penultimate_change_by', blank=True, null=True,editable=False)
-    
-    def __unicode__(self):
-        '''Result reference: the assignment name, due date and grade given'''
-        return self.assessment.name + ', ' + str(self.date_submitted)
+        Set the Slug to student ID number''' 
+        if not self.pk:
+            super(Student, self).save() # Call the first save() method to get pk
+            self.slug = slugify(self.get_id())
+        super(Student, self).save() # Call the "real" save() method.
 
     @models.permalink	
     def get_absolute_url(self):
-        return ('result_view', [str(self.slug)])
+        return ('student_view', [str(self.slug)])
+
+    def attendance_before_today(self):
+        l = self.attendance_records.exclude(session__date__gte =today).order_by('-session__date')
+        return l
+
+class StudentAttendance(Attendance):
+    student = models.ForeignKey(Student, related_name='attendance_records')
+
+class Subject(models.Model):
+    '''Represents individual subjects, classes, cohorts'''
+    class Meta:
+        verbose_name='Unit of Competence'
+        verbose_name_plural='Units of Competence'
+    
+    name = models.CharField(max_length=30)
+    slug = models.SlugField(max_length=40)
+    semester = models.CharField(max_length=1, blank=True, choices=SEMESTER_CHOICES)
+    year = models.IntegerField()
+    members = models.ManyToManyField(Student, through='Grade', blank=True, null=True)
+
+    def __unicode__(self):
+        '''Subject reference: subject name and the year given'''
+        return self.name + ', ' + str(self.year) 
+
+    @models.permalink	
+    def get_absolute_url(self):
+        return ('unit_view', [str(self.slug)])
+
+    def first_letter(self):
+        return self.name and self.name[0] or ''
+
+    def this_weeks_sessions(self):
+        '''These are used to return this week's sessions'''
+        last_monday = today - datetime.timedelta(days=today.weekday())
+        this_friday = today + datetime.timedelta( (4-today.weekday()) % 7 )
+        this_weeks_sessions = []
+        for session in self.sessions.all(): 
+            if session.date > last_monday and session.date < this_friday:
+                this_weeks_sessions.append(session)
+        return this_weeks_sessions
 
 class Timetable(models.Model):
     class Meta:
@@ -591,19 +613,3 @@ class Timetable(models.Model):
     @models.permalink	
     def get_absolute_url(self):
         return ('timetable_view', [str(self.slug)])
-
-class Assessment(models.Model):
-    name = models.CharField(max_length=50)
-    date_given = models.DateField()
-    date_due = models.DateField()
-    subject = models.ForeignKey(Subject, related_name="assessments")
-    slug = models.CharField(max_length=50)
-
-    def __unicode__(self):
-        return self.subject.name + ', ' + self.name + ', ' + str(self.date_due)
-
-    def get_absolute_url(self):
-        return self.subject.get_absolute_url() + "assessment/" + self.slug
-
-    def get_year(self):
-        return self.date_due.year
