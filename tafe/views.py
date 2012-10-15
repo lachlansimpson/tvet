@@ -1,6 +1,6 @@
 # Create your views here.
 
-from tafe.models import Timetable, Session, Course, Attendance, Subject, Assessment#, Grade
+from tafe.models import Timetable, Session, Course, StudentAttendance, Subject, Assessment#, Grade
 from tafe.forms import SessionRecurringForm, ApplicantSuccessForm
 from django.shortcuts import render_to_response, get_object_or_404
 from django.http import HttpResponseRedirect
@@ -69,7 +69,7 @@ def session_view(request, year, month, day, slug):
     ''' Show the details of the session '''
     req_date = datetime.date(int(year), int(month), int(day))
     session = get_object_or_404(Session, slug=slug, date=req_date)
-    attendance = Attendance.objects.filter(session=session)
+    attendance = StudentAttendance.objects.filter(session=session)
     
     return render_to_response('tafe/session_detail.html',{'session':session, 'attendance':attendance}, RequestContext(request))
 
@@ -77,7 +77,7 @@ def session_view(request, year, month, day, slug):
 def attendance_view(request, year, month, day, slug):
     '''show the attendance record requested'''
     req_date = datetime.date(int(year), int(month), int(day))
-    attendance = get_object_or_404(Attendance, slug=slug, session__date=req_date)
+    attendance = get_object_or_404(StudentAttendance, slug=slug, session__date=req_date)
 
     return render_to_response('tafe/attendance_detail.html', {'attendance':attendance}, RequestContext(request))
 
@@ -116,7 +116,7 @@ def timetable_daily_view(request, year, month, day):
         daily_sessions.append([])
         daily_sessions[session] = Session.objects.filter(date=date).filter(session_number=session)
 
-    return render_to_response('tafe/timetable_daily_detail.html',{'daily_sessions':daily_sessions, 'date':date})
+    return render_to_response('tafe/timetable_daily_detail.html',{'daily_sessions':daily_sessions, 'date':date}, RequestContext(request))
 
 @login_required
 def timetable_weekly_view(request, slug):
@@ -170,7 +170,7 @@ def unit_view(request, slug):
         student_details = [student]
         '''then add the attendance reason from each session in date order'''
         for session in Session.objects.filter(subject=unit, students=student).order_by('date'):
-            for attendance_record in Attendance.objects.filter(student=student, session=session).order_by('session'):   
+            for attendance_record in StudentAttendance.objects.filter(student=student, session=session).order_by('session'):   
                 if today < session.date:
                     student_details.append('-')
                 else:
@@ -183,13 +183,13 @@ def unit_view(request, slug):
 def session_attendance_view(request, year, month, day, slug):
     req_date = datetime.date(int(year), int(month), int(day))
     session = get_object_or_404(Session, slug=slug, date=req_date)
-    AttendanceFormSet = modelformset_factory(Attendance, fields = ('student', 'reason', 'absent'))
+    StudentAttendanceFormSet = modelformset_factory(StudentAttendance, fields = ('student', 'reason', 'absent'))
     if request.method == 'POST':
-        formset = AttendanceFormSet(request.POST, queryset=Attendance.objects.filter(session=session))
+        formset = StudentAttendanceFormSet(request.POST, queryset=StudentAttendance.objects.filter(session=session))
         if formset.is_valid():
             formset.save()
     else:
-        formset = AttendanceFormSet(queryset=Attendance.objects.filter(session=session).order_by('student'))
+        formset = StudentAttendanceFormSet(queryset=StudentAttendance.objects.filter(session=session).order_by('student'))
         return render_to_response('tafe/attendance_record.html',{'formset':formset, 'session':session,}, RequestContext(request))
 
 @login_required

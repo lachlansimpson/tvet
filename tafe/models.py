@@ -139,24 +139,18 @@ class AttendanceBeforeTodayManager(models.Manager):
 
 class Attendance(models.Model):
     '''Represents the "roll call" or attendance record'''
-    class Meta:
-        abstract=True
-        verbose_name='Attendence Record'
-        verbose_name_plural='Attendence Records'
-    
-    session = models.ForeignKey('Session', related_name='%(class)s_attendance_records')
     reason = models.CharField(max_length=1, choices=REASON_CHOICES, blank=True)
     absent = models.CharField(max_length=1, choices=ABSENCE_CHOICES, blank=True)
     slug = models.SlugField(blank=True)
+    session = models.ForeignKey('Session', related_name='%(class)s_attendance_records')
 
     last_change_by = models.ForeignKey(User, related_name='%(class)s_last_change_by', editable=False)
     penultimate_change_by = models.ForeignKey(User, related_name='%(class)s_penultimate_change_by', blank=True, null=True,editable=False)
     objects = models.Manager()
     attendance_before_today = AttendanceBeforeTodayManager()
 
-    def __unicode__(self):
-        '''Attendance reference: returns date, session and reason'''
-        return str(self.session) + ', ' + self.get_reason_display()
+    class Meta:
+        abstract = True
 
     @models.permalink	
     def get_absolute_url(self):
@@ -167,10 +161,37 @@ class Attendance(models.Model):
             'session': self.session.slug, 
             'slug': self.slug})
         
+class StudentAttendance(Attendance):
+    student = models.ForeignKey('Student', related_name='attendance_records')
+
+    class Meta:
+        verbose_name='Student Attendence Record'
+        verbose_name_plural='Student Attendence Records'
+    
+    def __unicode__(self):
+        '''Attendance reference: returns date, session and reason'''
+        return str(self.session) + ', ' + self.get_reason_display()
+
     def save(self):
         slug_temp = self.session.slug + ' ' + self.student.slug
         self.slug = slugify(slug_temp)
-        super(Attendance, self).save()
+        super(StudentAttendance, self).save()
+    
+class StaffAttendance(Attendance):
+    staff_member = models.ForeignKey('Staff', related_name='attendance_records')
+    
+    class Meta:
+        verbose_name='Staff Attendence Record'
+        verbose_name_plural='Staff Attendence Records'
+    
+    def __unicode__(self):
+        '''Attendance reference: returns date, session and reason'''
+        return self.staff + ' ' + self.session + ' ' + self.get_reason_display()
+
+    def save(self):
+        slug_temp = self.session.slug + ' ' + self.staff.slug
+        self.slug = slugify(slug_temp)
+        super(StaffAttendance, self).save()
     
 class FemaleManager(models.Manager):
     def get_query_set(self):
@@ -196,7 +217,7 @@ class Person(models.Model):
 
     added = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
-    last_change_by = models.ForeignKey(User, related_name='%(class)s_last_change_by', editable=False)
+    last_change_by = models.ForeignKey(User, related_name='%(class)s_last_change_by', editable=False, blank=True,  null=True)
     penultimate_change_by = models.ForeignKey(User, related_name='%(class)s_penultimate_change_by', blank=True, null=True, editable=False)
 
     people = models.Manager()
@@ -263,6 +284,7 @@ class Applicant(Person):
             new_student.gender = self.gender
             new_student.education_level = self.education_level
             new_student.application_details_id = self.pk
+            '''TODO: Fix this total hack'''
             new_student.save()
 
             '''Create the Enrolment record for the Student and the Course they applied for'''
@@ -375,7 +397,7 @@ class Enrolment(models.Model):
     withdrawn_reason = models.CharField(max_length=200, blank=True)
     slug = models.SlugField(max_length=40, blank=True)
 
-    last_change_by = models.ForeignKey(User, related_name='%(class)s_last_change_by', editable=False)
+    last_change_by = models.ForeignKey(User, related_name='%(class)s_last_change_by', editable=False, blank=True, null=True)
     penultimate_change_by = models.ForeignKey(User, related_name='%(class)s_penultimate_change_by', blank=True, null=True, editable=False)
     
     def __unicode__(self):
@@ -520,9 +542,6 @@ class Staff(Person):
     def get_absolute_url(self):
         return ('staff_view', [str(self.slug)])
 
-class StaffAttendance(Attendance):
-    staff = models.ForeignKey(Staff, related_name='attendance_records')
-
 #TODO Check how to filter by reverse FK
 class NewStudentManager(models.Manager):
     def get_query_set(self):
@@ -559,9 +578,6 @@ class Student(Person):
     def attendance_before_today(self):
         l = self.attendance_records.exclude(session__date__gte =today).order_by('-session__date')
         return l
-
-class StudentAttendance(Attendance):
-    student = models.ForeignKey(Student, related_name='attendance_records')
 
 class Subject(models.Model):
     '''Represents individual subjects, classes, cohorts'''

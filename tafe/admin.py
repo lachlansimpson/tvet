@@ -1,4 +1,4 @@
-from tafe.models import Student, Course, Subject, Enrolment, Grade, Attendance, Result, Session, Timetable, Applicant, Staff, Credential, Assessment
+from tafe.models import Student, Course, Subject, Enrolment, Grade, StaffAttendance, StudentAttendance, Result, Session, Timetable, Applicant, Staff, Credential, Assessment
 from django.contrib import admin
 from django.forms import ModelForm
 from django.forms.extras.widgets import SelectDateWidget 
@@ -15,11 +15,6 @@ class ApplicantInline(admin.TabularInline):
 class AssessmentInline(admin.TabularInline):
     model = Assessment 
 
-class AttendanceInline(admin.TabularInline):
-    model = Attendance
-    exclude = ('slug',)
-    template = 'admin/collapsed_tabular_inline.html'
-
 class CourseInline(admin.TabularInline):
     model = Course
 
@@ -32,6 +27,7 @@ class EnrolmentInline(admin.TabularInline):
 
 class GradeInline(admin.TabularInline):
     model = Grade
+    fields = ('student','date_started','results')
 
 class ResultInline(admin.StackedInline):
     model = Result
@@ -41,6 +37,17 @@ class SessionInline(admin.TabularInline):
     model = Session
     extra = 1
     fields = ('date', 'session_number','subject','timetable')
+    template = 'admin/collapsed_tabular_inline.html'
+
+class StaffAttendanceInline(admin.TabularInline):
+    model = StaffAttendance
+    exclude = ('slug',)
+    template = 'admin/collapsed_tabular_inline.html'
+
+class StudentAttendanceInline(admin.TabularInline):
+    model = StudentAttendance
+    fields = ('student','reason','absent')
+    exclude = ('slug',)
     template = 'admin/collapsed_tabular_inline.html'
 
 class StudentInline(admin.StackedInline):
@@ -94,8 +101,8 @@ class AssessmentAdmin(admin.ModelAdmin):
     list_filter = ('name','subject')
     prepopulated_fields = {'slug': ('name',)}
 
-class AttendanceAdmin(admin.ModelAdmin):
-    model = Attendance
+class StudentAttendanceAdmin(admin.ModelAdmin):
+    model = StudentAttendance
     list_display = ('student','session','reason','absent')
     list_filter = ('reason','absent')
     
@@ -206,12 +213,13 @@ class SessionAdmin(admin.ModelAdmin):
     list_display = ('subject', 'day_of_week','date','timetable','get_session_number_display')
     list_filter = ('date','session_number','students')
     inlines = [
-        AttendanceInline,
+        StudentAttendanceInline,
+#        StaffAttendanceInline,
     ]
     model = Session
     
     def save_formset(self, request, form, formset, change): 
-        if formset.model == Attendance:
+        if formset.model == StudentAttendance:
             instances = formset.save(commit=False)
             for instance in instances:
                 try:
@@ -284,7 +292,7 @@ class StudentAdminForm(ModelForm):
 class StudentAdmin(admin.ModelAdmin):
     inlines = (EnrolmentInline,
                GradeInline,
-               AttendanceInline,
+               StudentAttendanceInline,
               )
     fieldsets = (
         ('Bio', { 'fields':(('first_name','surname'),('dob','gender'), ('island', 'slug'))}),
@@ -310,7 +318,7 @@ class StudentAdmin(admin.ModelAdmin):
 
     def save_formset(self, request, form, formset, change): 
         '''note that the following if isn't needed since all inlines use this, but is left as a bookmark'''
-        if formset.model == Grade or formset.model == Enrolment or formset.model == Attendance:
+        if formset.model == Grade or formset.model == Enrolment or formset.model == StudentAttendance:
             instances = formset.save(commit=False)
             for instance in instances:
                 try:
@@ -356,14 +364,15 @@ class TimetableAdmin(admin.ModelAdmin):
 
 admin.site.register(Applicant, ApplicantAdmin)
 admin.site.register(Assessment, AssessmentAdmin)
-admin.site.register(Attendance, AttendanceAdmin)
 admin.site.register(Course, CourseAdmin)
 admin.site.register(Credential, CredentialAdmin)
 admin.site.register(Enrolment, EnrolmentAdmin)
 admin.site.register(Grade, GradeAdmin)
 admin.site.register(Result, ResultAdmin)
 admin.site.register(Session, SessionAdmin)
-admin.site.register(Student, StudentAdmin)
-admin.site.register(Subject, SubjectAdmin)
 admin.site.register(Staff, StaffAdmin)
+admin.site.register(StaffAttendance)
+admin.site.register(Student, StudentAdmin)
+admin.site.register(StudentAttendance, StudentAttendanceAdmin)
+admin.site.register(Subject, SubjectAdmin)
 admin.site.register(Timetable, TimetableAdmin)
