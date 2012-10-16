@@ -74,14 +74,6 @@ def session_view(request, year, month, day, slug):
     return render_to_response('tafe/session_detail.html',{'session':session, 'attendance':attendance}, RequestContext(request))
 
 @login_required
-def attendance_view(request, year, month, day, slug):
-    '''show the attendance record requested'''
-    req_date = datetime.date(int(year), int(month), int(day))
-    attendance = get_object_or_404(StudentAttendance, slug=slug, session__date=req_date)
-
-    return render_to_response('tafe/attendance_detail.html', {'attendance':attendance}, RequestContext(request))
-
-@login_required
 def units_by_qualifications_view(request):
     ''' Show all units or Subjects available for this Course'''
     courses = Course.objects.all().order_by('name')
