@@ -9,8 +9,8 @@ urlpatterns = patterns('tafe.views',
     url(r'^students/$', ListView.as_view(queryset=Student.objects.all().order_by('surname'))),
     url(r'^student/(?P<slug>[-\w]+)/$', DetailView.as_view(model=Student), name='student_view'),
 
-    url(r'^applicants/$', ListView.as_view(queryset=Applicant.objects.exclude(successful='Yes').order_by('surname'))),
-    url(r'^applicants/successful/', 'applicant_success'),
+    url(r'^applicants/$', ListView.as_view(queryset=Applicant.objects.exclude(successful='1').exclude(successful='0').order_by('surname'))),
+    url(r'^applicants/successful/$', 'applicant_success'),
     url(r'^applicant/add/$', CreateView.as_view(model=Applicant)),
     url(r'^applicant/(?P<slug>[-\w]+)/$', DetailView.as_view(model=Applicant), name='applicant_view'),
 
