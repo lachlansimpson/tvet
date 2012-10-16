@@ -340,6 +340,7 @@ class Course(models.Model):
         verbose_name_plural='Qualifications'
 
     name = models.CharField(max_length=30)
+    year = models.CharField(max_length=4)
     slug = models.SlugField(max_length=40)
     students = models.ManyToManyField('Student', through='Enrolment', blank=True, null=True)
     subjects = models.ManyToManyField('Subject', related_name='courses', blank=True, null=True)

@@ -40,8 +40,10 @@ class SessionInline(admin.TabularInline):
     template = 'admin/collapsed_tabular_inline.html'
 
 class StaffAttendanceInline(admin.TabularInline):
-    model = StaffAttendance
     exclude = ('slug',)
+    extra = 1
+    fields = ('staff_member','reason','absent')
+    model = StaffAttendance
     template = 'admin/collapsed_tabular_inline.html'
 
 class StudentAttendanceInline(admin.TabularInline):
@@ -210,11 +212,14 @@ class ResultAdmin(admin.ModelAdmin):
         obj.save()
     
 class SessionAdmin(admin.ModelAdmin):
+    fieldsets = (
+        ('Subject and time', { 'fields': (('subject','date','session_number',),'timetable',)}),
+    )
     list_display = ('subject', 'day_of_week','date','timetable','get_session_number_display')
     list_filter = ('date','session_number','students')
     inlines = [
+        StaffAttendanceInline,
         StudentAttendanceInline,
-#        StaffAttendanceInline,
     ]
     model = Session
     
