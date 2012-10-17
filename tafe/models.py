@@ -172,10 +172,10 @@ class StudentAttendance(Attendance):
         '''Attendance reference: returns date, session and reason'''
         return str(self.session) + ', ' + self.get_reason_display()
 
-    def save(self):
+    def save(self, *args, **kwargs):
         slug_temp = self.session.slug + ' ' + self.student.slug
         self.slug = slugify(slug_temp)
-        super(StudentAttendance, self).save()
+        super(StudentAttendance, self).save(*args, **kwargs)
     
 class StaffAttendance(Attendance):
     staff_member = models.ForeignKey('Staff', related_name='attendance_records')
@@ -188,10 +188,10 @@ class StaffAttendance(Attendance):
         '''Attendance reference: returns date, session and reason'''
         return self.staff + ' ' + self.session + ' ' + self.get_reason_display()
 
-    def save(self):
-        slug_temp = self.session.slug + ' ' + self.staff.slug
+    def save(self, *args, **kwargs):
+        slug_temp = self.session.slug + ' ' + self.staff_member.slug
         self.slug = slugify(slug_temp)
-        super(StaffAttendance, self).save()
+        super(StaffAttendance, self).save(*args, **kwargs)
     
 class FemaleManager(models.Manager):
     def get_query_set(self):
@@ -256,11 +256,11 @@ class Applicant(Person):
     def get_absolute_url(self):
         return ('applicant_view', [str(self.slug)])
     
-    def save(self):
+    def save(self, *args, **kwargs):
         if not self.pk:
-            super(Applicant, self).save() # Call the first save() method to get pk
+            super(Applicant, self).save(*args, **kwargs) # Call the first save() method to get pk
             self.slug = slugify(str(self))
-        super(Applicant, self).save() # Call the "real" save() method.
+        super(Applicant, self).save(*args, **kwargs) # Call the "real" save() method.
 
     def age_group(self):
         if self.age_today < 25:
@@ -284,7 +284,6 @@ class Applicant(Person):
             new_student.gender = self.gender
             new_student.education_level = self.education_level
             new_student.application_details_id = self.pk
-            '''TODO: Fix this total hack'''
             new_student.save()
 
             '''Create the Enrolment record for the Student and the Course they applied for'''
@@ -303,16 +302,25 @@ class Applicant(Person):
                 new_grade.subject = unit
                 new_grade.date_started = today
                 new_grade.save()
+                
+                '''
+                I have moved the creation of attendance records into the views:
+                - we don't have to clean up attendance records if a student withdraws
+                - we don't have a massive creation of attendance records before they are used or needed
+                - we need to create a teacher/staff attendance record anyway, is better to create them all at the same time
+                - there is a bloody get_or_create function - we should be using it
+                '''
 
                 ''' For each grade, there is a session object per date
                 To which is attached an attendance record per student
                 Create all attendance records in advance'''
+                '''
                 for session in unit.sessions.all():
-                    new_attendance_record = Attendance()
+                    new_attendance_record = StudentAttendance()
                     new_attendance_record.student = new_student
                     new_attendance_record.session = session 
                     new_attendance_record.save()
-
+                '''
             '''Converted successfully, move along'''
             self.successful='True'
             self.save()
@@ -418,14 +426,14 @@ class Enrolment(models.Model):
     def get_absolute_url(self):
         return ('enrolment_view', [str(self.slug)])
 
-    def save(self):
+    def save(self, *args, **kwargs):
         '''SLUG:Can't use prepopulated_fields due to function's restrictions
         using the unique combination of student, course and year started
         '''
         year_started = self.date_started.year
         slug_str = str(self.student) + ' ' + str(self.course) + ' ' + str(year_started)
         self.slug = slugify(slug_str)
-        super(Enrolment, self).save() 
+        super(Enrolment, self).save(*args, **kwargs) 
 #        if self.mark == 'W':
 #            pass
     
@@ -453,13 +461,13 @@ class Grade(models.Model):
     def get_absolute_url(self):
         return ('grade_view', [str(self.slug)])
 
-    def save(self):
+    def save(self, *args, **kwargs):
         '''Can't use prepopulated_fields due to function's restrictions
         using the unique combination of student, subject and year they started
         the class'''
         slug_temp = str(self.student) + ' ' +str(self.subject)
         self.slug = slugify(slug_temp)
-        super(Grade, self).save() 
+        super(Grade, self).save(*args, **kwargs) 
 
 class Result(models.Model):
     '''Represents an Assignment and it's results'''
@@ -510,10 +518,10 @@ class Session(models.Model):
             'day': self.date.day,
             'slug': self.slug})
     
-    def save(self):
+    def save(self, *args, **kwargs):
         slug_temp = str(self.subject.name) + " " + self.get_session_number_display()
         self.slug = slugify(slug_temp)
-        super(Session, self).save() 
+        super(Session, self).save(*args, **kwargs) 
 
 class Staff(Person):
     '''Respresents each Staff member'''
@@ -535,9 +543,9 @@ class Staff(Person):
     def get_id(self):
         return self
 
-    def save(self):
+    def save(self, *args, **kwargs):
         self.slug = slugify(self) #slugify staff members name
-        super(Staff, self).save() 
+        super(Staff, self).save(*args, **kwargs) 
 
     @models.permalink	
     def get_absolute_url(self):
@@ -564,13 +572,13 @@ class Student(Person):
         '''
         return self.pk + 100000
 
-    def save(self):
+    def save(self, *args, **kwargs):
         '''Can't use prepopulated_fields due to function's restrictions
         Set the Slug to student ID number''' 
         if not self.pk:
-            super(Student, self).save() # Call the first save() method to get pk
+            super(Student, self).save(*args, **kwargs) # Call the first save() method to get pk
             self.slug = slugify(self.get_id())
-        super(Student, self).save() # Call the "real" save() method.
+        super(Student, self).save(*args, **kwargs) # Call the "real" save() method.
 
     @models.permalink	
     def get_absolute_url(self):
@@ -590,7 +598,8 @@ class Subject(models.Model):
     slug = models.SlugField(max_length=40)
     semester = models.CharField(max_length=1, blank=True, choices=SEMESTER_CHOICES)
     year = models.IntegerField()
-    members = models.ManyToManyField(Student, through='Grade', blank=True, null=True)
+    staff_member = models.ForeignKey(Staff, blank=True, null=True)
+    students = models.ManyToManyField(Student, through='Grade', blank=True, null=True)
 
     def __unicode__(self):
         '''Subject reference: subject name and the year given'''

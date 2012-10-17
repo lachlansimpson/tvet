@@ -1,6 +1,6 @@
 # Create your views here.
 
-from tafe.models import Timetable, Session, Course, StudentAttendance, Subject, Assessment#, Grade
+from tafe.models import Timetable, Session, Course, StudentAttendance, Subject, Assessment, StaffAttendance
 from tafe.forms import SessionRecurringForm, ApplicantSuccessForm
 from django.shortcuts import render_to_response, get_object_or_404
 from django.http import HttpResponseRedirect
@@ -69,9 +69,14 @@ def session_view(request, year, month, day, slug):
     ''' Show the details of the session '''
     req_date = datetime.date(int(year), int(month), int(day))
     session = get_object_or_404(Session, slug=slug, date=req_date)
-    attendance = StudentAttendance.objects.filter(session=session)
-    
-    return render_to_response('tafe/session_detail.html',{'session':session, 'attendance':attendance}, RequestContext(request))
+    '''moving attendance record creation to here from convert_to_student in models'''
+    for student in session.subject.students.all():
+        new_attendance, created = StudentAttendance.objects.get_or_create(session=session,student=student, last_change_by=request.user)
+    student_attendance = StudentAttendance.objects.filter(session=session)
+    staff_member = session.subject.staff_member
+    staff_attendance = StaffAttendance.objects.get_or_create(session=session, staff_member=staff_member, last_change_by=request.user)
+
+    return render_to_response('tafe/session_detail.html',{'session':session, 'student_attendance':student_attendance, 'staff_attendance':staff_attendance}, RequestContext(request))
 
 @login_required
 def units_by_qualifications_view(request):
@@ -175,14 +180,19 @@ def unit_view(request, slug):
 def session_attendance_view(request, year, month, day, slug):
     req_date = datetime.date(int(year), int(month), int(day))
     session = get_object_or_404(Session, slug=slug, date=req_date)
+    StaffAttendanceFormSet = modelformset_factory(StaffAttendance, fields = ('staff_member', 'reason', 'absent'), extra=0)
     StudentAttendanceFormSet = modelformset_factory(StudentAttendance, fields = ('student', 'reason', 'absent'))
     if request.method == 'POST':
-        formset = StudentAttendanceFormSet(request.POST, queryset=StudentAttendance.objects.filter(session=session))
-        if formset.is_valid():
-            formset.save()
+        student_formset = StudentAttendanceFormSet(request.POST, queryset=StudentAttendance.objects.filter(session=session), prefix='students')
+        staff_formset = StaffAttendanceFormSet(request.POST, prefix='staff')
+        if student_formset.is_valid():
+            student_formset.save()
+        if staff_formset.is_valid():
+            staff_formset.save()
     else:
-        formset = StudentAttendanceFormSet(queryset=StudentAttendance.objects.filter(session=session).order_by('student'))
-        return render_to_response('tafe/attendance_record.html',{'formset':formset, 'session':session,}, RequestContext(request))
+        student_formset = StudentAttendanceFormSet(queryset=StudentAttendance.objects.filter(session=session).order_by('student'), prefix='students')
+        staff_formset = StaffAttendanceFormSet(prefix='staff')
+        return render_to_response('tafe/attendance_record.html',{'student_formset':student_formset, 'staff_formset':staff_formset, 'session':session,}, RequestContext(request))
 
 @login_required
 def assessment_view(request, unit, slug):

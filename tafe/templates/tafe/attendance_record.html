@@ -16,10 +16,13 @@ Session detail page of the portal.
 
     {{ session.date }}<br />
 
-    <h4>Students and attendance</h4>
+    <h4>Attendance</h4>
     <form method="post" action="">
-        {{ formset.management_form }}
-        {% for form in formset %}
+        <h5>Staff</h5>
+        {{ staff_formset }}
+        <h5>Students</h5>
+        {{ student_formset.management_form }}
+        {% for form in student_formset %}
             {{ form }}<br />
         {% endfor %}
     </form>

@@ -93,6 +93,9 @@ class StudentAttendanceInline(admin.TabularInline):
 class StudentInline(admin.StackedInline):
     model = Student
 
+class StaffInline(admin.StackedInline):
+    model = Staff
+
 class SubjectInline(admin.StackedInline):
     model = Subject
 
@@ -392,7 +395,7 @@ class StudentAdmin(admin.ModelAdmin):
 
 class SubjectAdmin(admin.ModelAdmin):
     fieldsets = (
-        ('', { 'fields': (('name','slug'),('year','semester'))}),
+        ('', { 'fields': (('name','slug'),('year','semester'), 'staff_member')}),
     )
 
     list_display = ('name','year','semester')
