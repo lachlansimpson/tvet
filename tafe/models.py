@@ -52,18 +52,18 @@ SESSION_CHOICES = (
 )
 
 REASON_CHOICES = (
-    (u'0',u'Present'),
-    (u'1',u'Absent'),
-    (u'2',u'Late'),
-    (u'3',u'Withdrawn'),
+    (u'P',u'Present'),
+    (u'A',u'Absent'),
+    (u'L',u'Late'),
+    (u'W',u'Withdrawn'),
 )
 
 ABSENCE_CHOICES = (
-    (u'0',u'Sick'),
-    (u'1',u'Medical Certificate'),
-    (u'2',u'KIT Official'),
-    (u'3',u'Compassionate'),
-    (u'4',u'Unexplained'),
+    (u'S',u'Sick'),
+    (u'M',u'Medical Certificate'),
+    (u'K',u'KIT Official'),
+    (u'C',u'Compassionate'),
+    (u'U',u'Unexplained'),
 )
 
 SUBJECT_RESULTS = (

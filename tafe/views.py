@@ -10,6 +10,7 @@ from django.forms.models import modelformset_factory
 import datetime
 today = datetime.date.today()
 
+''' Index page'''
 @login_required
 def index(request):
     """ 
@@ -23,6 +24,8 @@ def index(request):
         daily_sessions[session] = Session.objects.filter(date=today).filter(session_number=session)
 
     return render_to_response('tafe/timetable_today_detail.html',{'daily_sessions':daily_sessions}, RequestContext(request))
+
+############### Sessions ###############
 
 @login_required
 def session_create(request):
@@ -79,10 +82,64 @@ def session_view(request, year, month, day, slug):
     return render_to_response('tafe/session_detail.html',{'session':session, 'student_attendance':student_attendance, 'staff_attendance':staff_attendance}, RequestContext(request))
 
 @login_required
+def session_attendance_view(request, year, month, day, slug):
+    req_date = datetime.date(int(year), int(month), int(day))
+    session = get_object_or_404(Session, slug=slug, date=req_date)
+    StaffAttendanceFormSet = modelformset_factory(StaffAttendance, fields = ('staff_member', 'reason', 'absent'), extra=0)
+    StudentAttendanceFormSet = modelformset_factory(StudentAttendance, fields = ('student', 'reason', 'absent'))
+    if request.method == 'POST':
+        student_formset = StudentAttendanceFormSet(request.POST, queryset=StudentAttendance.objects.filter(session=session), prefix='students')
+        staff_formset = StaffAttendanceFormSet(request.POST, prefix='staff')
+        if student_formset.is_valid():
+            student_formset.save()
+        if staff_formset.is_valid():
+            staff_formset.save()
+    else:
+        student_formset = StudentAttendanceFormSet(queryset=StudentAttendance.objects.filter(session=session).order_by('student'), prefix='students')
+        staff_formset = StaffAttendanceFormSet(prefix='staff')
+        return render_to_response('tafe/attendance_record.html',{'student_formset':student_formset, 'staff_formset':staff_formset, 'session':session,}, RequestContext(request))
+
+############### Units ###############
+
+@login_required
 def units_by_qualifications_view(request):
     ''' Show all units or Subjects available for this Course'''
     courses = Course.objects.all().order_by('name')
     return render_to_response('tafe/units_by_qualifications.html',{'courses':courses})
+
+@login_required
+def unit_view(request, slug):
+    unit = get_object_or_404(Subject, slug=slug)
+    unit_students = unit.students.all()
+    unit_attendance_matrix = []
+    weekly_classes = [] 
+    dates = []
+    
+    '''We need to get the headers for each session - date and session_number for the attendance record header row'''
+    for session in Session.objects.filter(subject=unit).order_by('date'):
+        date = session.date
+        session_number = session.get_session_number_display()
+        session_details = [date, session_number]
+        dates.append(session_details)
+
+    '''Add each student and their attendance record, per session, to the matrix'''
+    for student in unit_students:
+        '''the student is the first item in the list'''
+        student_details = [student]
+        all_sessions = Session.objects.filter(subject=unit, students=student).order_by('date')
+        '''then add the attendance reason from each session in date order'''
+        for session in all_sessions:
+            attendance_records = StudentAttendance.objects.filter(student=student, session=session).order_by('session')
+            for attendance_record in attendance_records:   
+                if today < session.date:
+                    student_details.append('-')
+                else:
+                    student_details.append(attendance_record.reason)
+        unit_attendance_matrix.append(student_details)
+    
+    return render_to_response('tafe/unit_detail.html', {'unit':unit,'unit_attendance_matrix':unit_attendance_matrix, 'dates':dates, 'weekly_classes':weekly_classes}, RequestContext(request))
+
+############### Applicants ###############
 
 @login_required
 def applicant_success(request):
@@ -102,6 +159,8 @@ def applicant_success(request):
         form = ApplicantSuccessForm()
 
     return render_to_response('tafe/applicant_success.html', {'form':form}, RequestContext(request))
+
+############### Timetables ###############
 
 @login_required
 def timetable_daily_view(request, year, month, day):
@@ -146,53 +205,7 @@ def timetable_weekly_view(request, slug):
 
     return render_to_response('tafe/timetable_weekly_detail.html',{'timetable':timetable,'all_sessions':all_sessions}, RequestContext(request))
 
-@login_required
-def unit_view(request, slug):
-    unit = get_object_or_404(Subject, slug=slug)
-    unit_students = unit.members.all()
-    unit_attendance_matrix = []
-    weekly_classes = [] 
-    dates = []
-    
-    '''We need to get the headers for each session - date and session_number for the attendance record header row'''
-    for session in Session.objects.filter(subject=unit).order_by('date'):
-        date = session.date
-        session_number = session.get_session_number_display()
-        session_details = [date, session_number]
-        dates.append(session_details)
-
-    '''Add each student and their attendance record, per session, to the matrix'''
-    for student in unit_students:
-        '''the student is the first item in the list'''
-        student_details = [student]
-        '''then add the attendance reason from each session in date order'''
-        for session in Session.objects.filter(subject=unit, students=student).order_by('date'):
-            for attendance_record in StudentAttendance.objects.filter(student=student, session=session).order_by('session'):   
-                if today < session.date:
-                    student_details.append('-')
-                else:
-                    student_details.append(attendance_record.get_reason_display()[0])
-        unit_attendance_matrix.append(student_details)
-    
-    return render_to_response('tafe/unit_detail.html', {'unit':unit,'unit_attendance_matrix':unit_attendance_matrix, 'dates':dates, 'weekly_classes':weekly_classes}, RequestContext(request))
-
-@login_required
-def session_attendance_view(request, year, month, day, slug):
-    req_date = datetime.date(int(year), int(month), int(day))
-    session = get_object_or_404(Session, slug=slug, date=req_date)
-    StaffAttendanceFormSet = modelformset_factory(StaffAttendance, fields = ('staff_member', 'reason', 'absent'), extra=0)
-    StudentAttendanceFormSet = modelformset_factory(StudentAttendance, fields = ('student', 'reason', 'absent'))
-    if request.method == 'POST':
-        student_formset = StudentAttendanceFormSet(request.POST, queryset=StudentAttendance.objects.filter(session=session), prefix='students')
-        staff_formset = StaffAttendanceFormSet(request.POST, prefix='staff')
-        if student_formset.is_valid():
-            student_formset.save()
-        if staff_formset.is_valid():
-            staff_formset.save()
-    else:
-        student_formset = StudentAttendanceFormSet(queryset=StudentAttendance.objects.filter(session=session).order_by('student'), prefix='students')
-        staff_formset = StaffAttendanceFormSet(prefix='staff')
-        return render_to_response('tafe/attendance_record.html',{'student_formset':student_formset, 'staff_formset':staff_formset, 'session':session,}, RequestContext(request))
+############### Assessments ###############
 
 @login_required
 def assessment_view(request, unit, slug):
