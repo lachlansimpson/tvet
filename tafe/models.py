@@ -343,15 +343,15 @@ class Assessment(models.Model):
 
 class Course(models.Model):
     '''Represents Courses - a collection of subjects leading to a degree'''
-    class Meta:
-        verbose_name='Qualification'
-        verbose_name_plural='Qualifications'
-
     name = models.CharField(max_length=30)
     year = models.CharField(max_length=4)
     slug = models.SlugField(max_length=40)
     students = models.ManyToManyField('Student', through='Enrolment', blank=True, null=True)
     subjects = models.ManyToManyField('Subject', related_name='courses', blank=True, null=True)
+
+    class Meta:
+        verbose_name='Qualification'
+        verbose_name_plural='Qualifications'
 
     def __unicode__(self):
         '''Course Reference: name of the course'''
@@ -381,9 +381,6 @@ class Course(models.Model):
 
 class Credential(models.Model):
     ''' This is the class of objects to represent what qualifications the staff have'''
-    class Meta:
-        verbose_name_plural='Credentials'
-    
     name = models.CharField(max_length=50)
     aqf_level = models.CharField(max_length=2, choices=AQF_LEVEL_CHOICES)
     institution = models.CharField(max_length=40)
@@ -393,6 +390,9 @@ class Credential(models.Model):
     last_change_by = models.ForeignKey(User, related_name='%(class)s_last_change_by', editable=False)
     penultimate_change_by = models.ForeignKey(User, related_name='%(class)s_penultimate_change_by', blank=True, null=True, editable=False)
 
+    class Meta:
+        verbose_name_plural='Credentials'
+    
     def __unicode__(self):
         return str(self.get_aqf_level_display()) +', '+self.name+', '+self.institution
 
@@ -471,16 +471,16 @@ class Grade(models.Model):
 
 class Result(models.Model):
     '''Represents an Assignment and it's results'''
-    class Meta:
-        verbose_name='Result'
-        verbose_name_plural='Results'
-    
     assessment = models.ForeignKey('Assessment')
     date_submitted = models.DateField()
     mark = models.CharField(max_length=2, choices=SUBJECT_RESULTS)    
     
     last_change_by = models.ForeignKey(User, related_name='%(class)s_last_change_by', editable=False)
     penultimate_change_by = models.ForeignKey(User, related_name='%(class)s_penultimate_change_by', blank=True, null=True,editable=False)
+    
+    class Meta:
+        verbose_name='Result'
+        verbose_name_plural='Results'
     
     def __unicode__(self):
         '''Result reference: the assignment name, due date and grade given'''
@@ -525,10 +525,6 @@ class Session(models.Model):
 
 class Staff(Person):
     '''Respresents each Staff member'''
-    class Meta:
-        verbose_name='Staff'
-        verbose_name_plural='Staff'
-
     classification = models.CharField(max_length=2, choices=CLASSIFICATION_CHOICES)
     credential = models.ManyToManyField('Credential', blank=True, null=True, related_name='credentials')
     islpr_reading = models.CharField('ISLPR Level Reading', max_length=2, choices=ISLPR_CHOICES)
@@ -536,6 +532,10 @@ class Staff(Person):
     islpr_speaking = models.CharField('ISLPR Level Speaking', max_length=2, choices=ISLPR_CHOICES)
     islpr_listening = models.CharField('ISLPR Level Listening', max_length=2, choices=ISLPR_CHOICES)
     islpr_overall = models.CharField('ISLPR Level Overall', max_length=2, choices=ISLPR_CHOICES)
+
+    class Meta:
+        verbose_name='Staff'
+        verbose_name_plural='Staff'
 
     def __unicode__(self):
         return self.first_name +' ' + self.surname
@@ -551,7 +551,6 @@ class Staff(Person):
     def get_absolute_url(self):
         return ('staff_view', [str(self.slug)])
 
-#TODO Check how to filter by reverse FK
 class NewStudentManager(models.Manager):
     def get_query_set(self):
         return super(NewStudentManager, self).get_query_set().filter(enrolment__student__isnull=True)
@@ -590,10 +589,6 @@ class Student(Person):
 
 class Subject(models.Model):
     '''Represents individual subjects, classes, cohorts'''
-    class Meta:
-        verbose_name='Unit of Competence'
-        verbose_name_plural='Units of Competence'
-    
     name = models.CharField(max_length=30)
     slug = models.SlugField(max_length=40)
     semester = models.CharField(max_length=1, blank=True, choices=SEMESTER_CHOICES)
@@ -601,6 +596,10 @@ class Subject(models.Model):
     staff_member = models.ForeignKey(Staff, blank=True, null=True)
     students = models.ManyToManyField(Student, through='Grade', blank=True, null=True)
 
+    class Meta:
+        verbose_name='Unit of Competence'
+        verbose_name_plural='Units of Competence'
+    
     def __unicode__(self):
         '''Subject reference: subject name and the year given'''
         return self.name + ', ' + str(self.year) 
@@ -623,15 +622,15 @@ class Subject(models.Model):
         return this_weeks_sessions
 
 class Timetable(models.Model):
-    class Meta:
-        unique_together = ('year','term')
-
     year = models.IntegerField()
     term = models.IntegerField()
     start_date = models.DateField()
     end_date = models.DateField()
     slug = models.SlugField(max_length=12)
     
+    class Meta:
+        unique_together = ('year','term')
+
     def __unicode__(self):
         '''Timetable reference: year and term number'''
         return str(self.year) + ', Term ' + str(self.term)
