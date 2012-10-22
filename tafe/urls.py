@@ -1,12 +1,14 @@
 from django.conf.urls import patterns, url
 from django.views.generic import DetailView, ListView, CreateView
 from tafe.models import Student, Subject, Enrolment, Course, Grade, Timetable, Applicant, Staff
-from tafe.views import session_create, session_view, session_attendance_view, timetable_daily_view, units_by_qualifications_view, unit_view, assessment_view
+from tafe.views import session_create, session_view, session_attendance_view, timetable_daily_view, units_by_qualifications_view, unit_view, assessment_view, student_reports
 
 urlpatterns = patterns('tafe.views',
     url(r'^$', 'index'),
     
     url(r'^students/$', ListView.as_view(queryset=Student.objects.all().order_by('surname'))),
+    url(r'^students/reports/$', student_reports, name='student_reports'),
+    url(r'^students/reports/(?P<year>\d{4})/$', student_reports, name='student_reports'),
     url(r'^student/(?P<slug>[-\w]+)/$', DetailView.as_view(model=Student), name='student_view'),
 
     url(r'^applicants/$', ListView.as_view(queryset=Applicant.objects.exclude(successful='1').exclude(successful='0').order_by('surname'))),

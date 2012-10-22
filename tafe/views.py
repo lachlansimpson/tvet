@@ -1,12 +1,13 @@
 # Create your views here.
 
-from tafe.models import Timetable, Session, Course, StudentAttendance, Subject, Assessment, StaffAttendance
+from tafe.models import Timetable, Session, Course, StudentAttendance, Subject, Assessment, StaffAttendance, Enrolment
 from tafe.forms import SessionRecurringForm, ApplicantSuccessForm
 from django.shortcuts import render_to_response, get_object_or_404
 from django.http import HttpResponseRedirect
 from django.contrib.auth.decorators import login_required
 from django.template import RequestContext
 from django.forms.models import modelformset_factory
+from dateutil.relativedelta import *
 import datetime
 today = datetime.date.today()
 
@@ -213,3 +214,40 @@ def assessment_view(request, unit, slug):
     assessment = get_object_or_404(Assessment, slug=slug, subject=subject) 
 
     return render_to_response('tafe/assessment_detail.html',{'assessment':assessment,}, RequestContext(request))
+
+############### Students ###############
+
+@login_required
+def student_reports(request, year):
+    stats = {}
+    if not year:
+        year = today.year
+    stats['year'] = year
+
+    ## Totals: gender diff'd ##
+    enrolled_for_year_m = Enrolment.objects.filter(date_started__year=year).filter(student__gender='M')
+    enrolled_for_year_f = Enrolment.objects.filter(date_started__year=year).filter(student__gender='F')
+    stats['enrolled'] = enrolled_for_year_m.count() + enrolled_for_year_f.count()
+    stats['enrolled_m'] = enrolled_for_year_m.count()
+    stats['enrolled_f'] = enrolled_for_year_f.count()
+
+    ## Students: 16-24, gender diff'd ##
+    ## date for those who are 25 today ##
+    dob_for_25 = today-relativedelta(years=25) 
+    stats['enrolled_24m'] = enrolled_for_year_m.filter(student__dob__lte=dob_for_25).count()
+    stats['enrolled_24f'] = enrolled_for_year_f.filter(student__dob__lte=dob_for_25).count()
+    stats['enrolled_24'] = stats['enrolled_24m'] + stats['enrolled_24f']
+    
+    ## Students: 25+, gender diff'd ##
+    stats['enrolled_25m'] = stats['enrolled_m'] - stats['enrolled_24m'] 
+    stats['enrolled_25m'] = stats['enrolled_m'] - stats['enrolled_24m'] 
+    stats['enrolled_25'] = stats['enrolled'] - stats['enrolled_24']
+
+    ## Students: Outer Islands, gender diff'd ##
+    stats['outer_m'] = enrolled_for_year_m.exclude(student__island = '01').count() # 01 is Tarawa
+    stats['outer_f'] = enrolled_for_year_f.exclude(student__island = '01').count() # 01 is Tarawa
+    stats['outer'] = stats['outer_m'] + stats['outer_f']
+
+    ## Students: Disability, gender diff'd ##
+
+    return render_to_response('tafe/student_reports.html',{'stats':stats},RequestContext(request))
