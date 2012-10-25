@@ -1,0 +1,22 @@
+{% extends "tafe/base_site.html" %}
+
+{% comment %}
+Student reports page of the portal.
+{% endcomment %}
+
+{% block title %}
+Student Reports 
+{% endblock %}
+{% block coltype %}colMS{% endblock %}
+{% block content %}
+<div id="content-left">
+    {% for name, stat in stats.items %}    
+    <h2>{{ name }}</h2>
+        <p>
+        {% for key, value in stat.items %}
+        {{ key }}: {{ value }}<br />
+        {% endfor %}
+        </p> 
+    {% endfor %}
+</div>
+{% endblock %}

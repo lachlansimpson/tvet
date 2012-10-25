@@ -218,36 +218,43 @@ def assessment_view(request, unit, slug):
 ############### Students ###############
 
 @login_required
-def student_reports(request, year):
+def student_reports(request, year=None):
+    year = year or datetime.date.today().year
+    courses = Course.objects.filter(year=year)
+    course_stats ={}
     stats = {}
-    if not year:
-        year = today.year
-    stats['year'] = year
+    for course in courses:
+        name = course.__unicode__()
+        enrolled_m = course.students.filter(gender='M')
+        enrolled_f = course.students.filter(gender='F')
 
-    ## Totals: gender diff'd ##
-    enrolled_for_year_m = Enrolment.objects.filter(date_started__year=year).filter(student__gender='M')
-    enrolled_for_year_f = Enrolment.objects.filter(date_started__year=year).filter(student__gender='F')
-    stats['enrolled'] = enrolled_for_year_m.count() + enrolled_for_year_f.count()
-    stats['enrolled_m'] = enrolled_for_year_m.count()
-    stats['enrolled_f'] = enrolled_for_year_f.count()
+        course_stats['1 coursename'] = name
+        course_stats['2 enrolled'] = course.students.all().count()
+        course_stats['2 enrolled_m'] = enrolled_m.count() 
+        course_stats['2 enrolled_f'] = enrolled_f.count()
+            
+        ## Students: 16-24, gender diff'd ##
+        ## date for those who are 25 today ##
+        dob_for_25 = today-relativedelta(years=25) 
+        course_stats['3 enrolled_24m'] = enrolled_m.filter(dob__lte=dob_for_25).count()
+        course_stats['3 enrolled_24f'] = enrolled_f.filter(dob__lte=dob_for_25).count()
+        course_stats['3 enrolled_24'] = course_stats['3 enrolled_24m'] + course_stats['3 enrolled_24f']
+        
+        ## Students: 25+, gender diff'd ##
+        course_stats['4 enrolled_25m'] = course_stats['2 enrolled_m'] - course_stats['3 enrolled_24m'] 
+        course_stats['4 enrolled_25f'] = course_stats['2 enrolled_f'] - course_stats['3 enrolled_24f'] 
+        course_stats['4 enrolled_25'] = course_stats['2 enrolled'] - course_stats['3 enrolled_24']
 
-    ## Students: 16-24, gender diff'd ##
-    ## date for those who are 25 today ##
-    dob_for_25 = today-relativedelta(years=25) 
-    stats['enrolled_24m'] = enrolled_for_year_m.filter(student__dob__lte=dob_for_25).count()
-    stats['enrolled_24f'] = enrolled_for_year_f.filter(student__dob__lte=dob_for_25).count()
-    stats['enrolled_24'] = stats['enrolled_24m'] + stats['enrolled_24f']
+        ## Students: Outer Islands, gender diff'd ##
+        course_stats['5 outer_m'] = enrolled_m.exclude(island = '01').count() # 01 is Tarawa
+        course_stats['5 outer_f'] = enrolled_f.exclude(island = '01').count() # 01 is Tarawa
+        course_stats['5 outer'] = course_stats['5 outer_m'] + course_stats['5 outer_f']
+
+        ## Students: Disability, gender diff'd ##
+        course_stats['6 disability_m'] = enrolled_m.filter(disability='True').count()
+        course_stats['6 disability_f'] = enrolled_f.filter(disability='True').count()
+        course_stats['6 disability'] = course_stats['6 disability_m'] + course_stats['6 disability_f']
     
-    ## Students: 25+, gender diff'd ##
-    stats['enrolled_25m'] = stats['enrolled_m'] - stats['enrolled_24m'] 
-    stats['enrolled_25m'] = stats['enrolled_m'] - stats['enrolled_24m'] 
-    stats['enrolled_25'] = stats['enrolled'] - stats['enrolled_24']
+        stats[name] = course_stats
 
-    ## Students: Outer Islands, gender diff'd ##
-    stats['outer_m'] = enrolled_for_year_m.exclude(student__island = '01').count() # 01 is Tarawa
-    stats['outer_f'] = enrolled_for_year_f.exclude(student__island = '01').count() # 01 is Tarawa
-    stats['outer'] = stats['outer_m'] + stats['outer_f']
-
-    ## Students: Disability, gender diff'd ##
-
-    return render_to_response('tafe/student_reports.html',{'stats':stats},RequestContext(request))
+    return render_to_response('tafe/student_reports.html',{'course_stats':course_stats,'stats':stats},RequestContext(request))

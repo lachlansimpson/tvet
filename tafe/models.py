@@ -355,7 +355,7 @@ class Course(models.Model):
 
     def __unicode__(self):
         '''Course Reference: name of the course'''
-        return self.name
+        return str(self.name)
 
     @models.permalink	
     def get_absolute_url(self):
