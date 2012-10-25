@@ -10,13 +10,105 @@ Student Reports
 {% block coltype %}colMS{% endblock %}
 {% block content %}
 <div id="content-left">
-    {% for name, stat in stats.items %}    
-    <h2>{{ name }}</h2>
-        <p>
-        {% for key, value in stat.items %}
-        {{ key }}: {{ value }}<br />
-        {% endfor %}
-        </p> 
-    {% endfor %}
+    <div id="stats">
+    {%  if not stats %}
+    Sorry, there are no enrollments at the moment.
+    {% else %}
+        {% for name, stat in stats.items %}    
+        
+            <p>
+            <div id="statblock">
+                <div id="stats-row1" class="stats-row">
+                    <h2>{{ name }}</h2> 
+                </div>
+                <div id="stats-row2" class="stats-row">
+                    <div class="stat-title">
+                    </div>
+                    <div class="stat">
+                    <strong>Female</strong>
+                    </div>
+                    <div class="stat">
+                    <strong>Male</strong>
+                    </div>
+                    <div class="stat">
+                    <strong>Total</strong>
+                    </div>
+                </div>    
+                <div id="stats-24" class="stats-row">
+                    <div class="stat-title">
+                        <h4>Students Enrolled aged 16-24</h4>
+                    </div>
+                    <div class="stat">
+                        {{ stat.enrolled_24f }} ({{ stat.enrolled_24f_pc }}%)
+                    </div>
+                    <div class="stat">
+                        {{ stat.enrolled_24m }} ({{ stat.enrolled_24m_pc }}%)
+                    </div>
+                    <div class="stat">
+                        {{ stat.enrolled_24 }} ({{ stat.enrolled_24_pc }}%)
+                    </div>
+                </div>
+                <div id="stats-25" class="stats-row">
+                    <div class="stat-title">
+                        <h4>Students Enrolled aged 25+</h4>
+                    </div>
+                    <div class="stat">
+                        {{ stat.enrolled_25f }} ({{ stat.enrolled_25f_pc }}%)
+                    </div>
+                    <div class="stat">
+                        {{ stat.enrolled_25m }} ({{ stat.enrolled_25m_pc }}%)
+                    </div>
+                    <div class="stat">
+                        {{ stat.enrolled_25 }} ({{ stat.enrolled_25_pc }}%)
+                    </div>
+                </div>
+                <div id="stats-outer" class="stats-row">
+                    <div class="stat-title">
+                        <h4>Students from Outer islands</h4>
+                    </div>
+                    <div class="stat">
+                        {{ stat.outer_f }} ({{ stat.outer_f_pc }}%)
+                    </div>
+                    <div class="stat">
+                        {{ stat.outer_m }} ({{ stat.outer_m_pc }}%)
+                    </div>
+                    <div class="stat">
+                        {{ stat.outer }} ({{ stat.outer_pc }}%)
+                    </div>
+                </div>
+                <div id="stats-disability" class="stats-row">
+                    <div class="stat-title">
+                        <h4>Students with a disability</h4>
+                    </div>
+                    <div class="stat">
+                        {{ stat.disability_f }} ({{ stat.disability_f_pc }}%)
+                    </div>
+                    <div class="stat">
+                        {{ stat.enrolled_24m }} ({{ stat.disability_m_pc }}%)
+                    </div>
+                    <div class="stat">
+                        {{ stat.disability }} ({{ stat.disability_pc }}%)
+                    </div>
+                </div>
+                <div id="stats-total" class="stats-row">
+                    <div class="stat-title">
+                        <h4>Totals</h4>
+                    </div>
+                    <div class="stat">
+                       {{ stat.enrolled_f }} ({{ stat.enrolled_f_pc }}%)      
+                    </div>
+                    <div class="stat">
+                        {{ stat.enrolled_m }} ({{ stat.enrolled_m_pc }}%)
+                    </div>
+                    <div class="stat">
+                        {{ stat.enrolled }}
+                    </div>
+                </div>
+            </div><!--statblock -->
+            </p>
+            <br />
+            {% endfor %}
+        {% endif %}
+    </div><!-- stats -->
 </div>
 {% endblock %}

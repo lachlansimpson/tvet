@@ -2,12 +2,14 @@
 
 from tafe.models import Timetable, Session, Course, StudentAttendance, Subject, Assessment, StaffAttendance, Enrolment
 from tafe.forms import SessionRecurringForm, ApplicantSuccessForm
+from django.utils.datastructures import SortedDict
 from django.shortcuts import render_to_response, get_object_or_404
 from django.http import HttpResponseRedirect
 from django.contrib.auth.decorators import login_required
 from django.template import RequestContext
 from django.forms.models import modelformset_factory
 from dateutil.relativedelta import *
+
 import datetime
 today = datetime.date.today()
 
@@ -221,40 +223,104 @@ def assessment_view(request, unit, slug):
 def student_reports(request, year=None):
     year = year or datetime.date.today().year
     courses = Course.objects.filter(year=year)
-    course_stats ={}
-    stats = {}
+    stats = SortedDict()
+    totals = SortedDict()
+    enrolments = Enrolment.objects.filter(course__year = year)
+    enrolled_m = enrolments.filter(student__gender = 'M')
+    enrolled_f = enrolments.filter(student__gender = 'F')
+
+    if enrolments.count()==0:
+        return render_to_response('tafe/student_reports.html',{},RequestContext(request))
+    
+    totals['enrolled'] = enrolments.count()    
+    totals['enrolled_m'] = enrolled_m.count() 
+    totals['enrolled_f'] = enrolled_f.count()
+    totals['enrolled_m_pc'] = totals['enrolled_m']/totals['enrolled']
+    totals['enrolled_f_pc'] = totals['enrolled_f']/totals['enrolled']
+        
+    ## Students: 16-24, gender diff'd ##
+    ## date for those who are 25 today ##
+    dob_for_25 = today-relativedelta(years=25) 
+    totals['enrolled_24m'] = enrolled_m.filter(student__dob__lte=dob_for_25).count()
+    totals['enrolled_24f'] = enrolled_f.filter(student__dob__lte=dob_for_25).count()
+    totals['enrolled_24'] = totals['enrolled_24m'] + totals['enrolled_24f']
+    if totals['enrolled_24']==0:
+        totals['enrolled_24_pc'] = totals['enrolled_24m_pc'] = totals['enrolled_24f_pc'] = 0 
+    else:    
+        totals['enrolled_24_pc'] = totals['enrolled_24']/totals['enrolled']
+        totals['enrolled_24m_pc'] = totals['enrolled_24m']/totals['enrolled_24']
+        totals['enrolled_24f_pc'] = totals['enrolled_24f']/totals['enrolled_24']
+    
+    ## Students: 25+, gender diff'd ##
+    totals['enrolled_25m'] = totals['enrolled_m'] - totals['enrolled_24m'] 
+    totals['enrolled_25f'] = totals['enrolled_f'] - totals['enrolled_24f'] 
+    totals['enrolled_25'] = totals['enrolled'] - totals['enrolled_24']
+    if totals['enrolled_25']==0:
+        totals['enrolled_25m_pc'] = totals['enrolled_25f_pc'] = totals['enrolled_25_pc'] = 0 
+    else:
+        totals['enrolled_25m_pc'] = totals['enrolled_25m']/totals['enrolled_25'] 
+        totals['enrolled_25f_pc'] = totals['enrolled_25f']/totals['enrolled_25'] 
+        totals['enrolled_25_pc'] = totals['enrolled_25']/totals['enrolled']
+
+    ## Students: Outer Islands, gender diff'd ##
+    totals['outer_m'] = enrolled_m.exclude(student__island = '01').count() # 01 is Tarawa
+    totals['outer_f'] = enrolled_f.exclude(student__island = '01').count() # 01 is Tarawa
+    totals['outer'] = totals['outer_m'] + totals['outer_f']
+    if totals['outer'] == 0:
+        totals['outer_m_pc'] = totals['outer_f_pc'] = totals['outer_pc'] = 0
+    else:
+        totals['outer_m_pc'] = totals['outer_m']/totals['outer'] 
+        totals['outer_f_pc'] = totals['outer_f']/totals['outer']
+    totals['outer_pc'] = totals['outer']/totals['enrolled']
+
+    ## Students: Disability, gender diff'd ##
+    totals['disability_m'] = enrolled_m.filter(student__disability='True').count()
+    totals['disability_f'] = enrolled_f.filter(student__disability='True').count()
+    totals['disability'] = totals['disability_m'] + totals['disability_f']
+    if totals['disability'] == 0:
+        totals['disability_m_pc'] = totals['disability_f_pc'] = totals['disability_pc'] = 0
+    else:
+        totals['disability_m_pc'] = totals['disability_m']/totals['disability']
+        totals['disability_f_pc'] = totals['disability_f']/totals['disability']
+        totals['disability_pc'] = totals['disability']/totals['enrolled']
+    
+    stats['all'] = totals
+
     for course in courses:
+        course_stats = SortedDict()
+        
         name = course.__unicode__()
+        
         enrolled_m = course.students.filter(gender='M')
         enrolled_f = course.students.filter(gender='F')
 
-        course_stats['1 coursename'] = name
-        course_stats['2 enrolled'] = course.students.all().count()
-        course_stats['2 enrolled_m'] = enrolled_m.count() 
-        course_stats['2 enrolled_f'] = enrolled_f.count()
+        #course_stats['1 coursename'] = name
+        course_stats['enrolled'] = course.students.all().count()
+        course_stats['enrolled_m'] = enrolled_m.count() 
+        course_stats['enrolled_f'] = enrolled_f.count()
             
         ## Students: 16-24, gender diff'd ##
         ## date for those who are 25 today ##
         dob_for_25 = today-relativedelta(years=25) 
-        course_stats['3 enrolled_24m'] = enrolled_m.filter(dob__lte=dob_for_25).count()
-        course_stats['3 enrolled_24f'] = enrolled_f.filter(dob__lte=dob_for_25).count()
-        course_stats['3 enrolled_24'] = course_stats['3 enrolled_24m'] + course_stats['3 enrolled_24f']
+        course_stats['enrolled_24m'] = enrolled_m.filter(dob__lte=dob_for_25).count()
+        course_stats['enrolled_24f'] = enrolled_f.filter(dob__lte=dob_for_25).count()
+        course_stats['enrolled_24'] = course_stats['enrolled_24m'] + course_stats['enrolled_24f']
         
         ## Students: 25+, gender diff'd ##
-        course_stats['4 enrolled_25m'] = course_stats['2 enrolled_m'] - course_stats['3 enrolled_24m'] 
-        course_stats['4 enrolled_25f'] = course_stats['2 enrolled_f'] - course_stats['3 enrolled_24f'] 
-        course_stats['4 enrolled_25'] = course_stats['2 enrolled'] - course_stats['3 enrolled_24']
+        course_stats['enrolled_25m'] = course_stats['enrolled_m'] - course_stats['enrolled_24m'] 
+        course_stats['enrolled_25f'] = course_stats['enrolled_f'] - course_stats['enrolled_24f'] 
+        course_stats['enrolled_25'] = course_stats['enrolled'] - course_stats['enrolled_24']
 
         ## Students: Outer Islands, gender diff'd ##
-        course_stats['5 outer_m'] = enrolled_m.exclude(island = '01').count() # 01 is Tarawa
-        course_stats['5 outer_f'] = enrolled_f.exclude(island = '01').count() # 01 is Tarawa
-        course_stats['5 outer'] = course_stats['5 outer_m'] + course_stats['5 outer_f']
+        course_stats['outer_m'] = enrolled_m.exclude(island = '01').count() # 01 is Tarawa
+        course_stats['outer_f'] = enrolled_f.exclude(island = '01').count() # 01 is Tarawa
+        course_stats['outer'] = course_stats['outer_m'] + course_stats['outer_f']
 
         ## Students: Disability, gender diff'd ##
-        course_stats['6 disability_m'] = enrolled_m.filter(disability='True').count()
-        course_stats['6 disability_f'] = enrolled_f.filter(disability='True').count()
-        course_stats['6 disability'] = course_stats['6 disability_m'] + course_stats['6 disability_f']
+        course_stats['disability_m'] = enrolled_m.filter(disability='True').count()
+        course_stats['disability_f'] = enrolled_f.filter(disability='True').count()
+        course_stats['disability'] = course_stats['disability_m'] + course_stats['disability_f']
     
         stats[name] = course_stats
 
-    return render_to_response('tafe/student_reports.html',{'course_stats':course_stats,'stats':stats},RequestContext(request))
+    return render_to_response('tafe/student_reports.html',{'stats':stats},RequestContext(request))
