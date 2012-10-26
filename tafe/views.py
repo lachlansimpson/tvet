@@ -284,7 +284,7 @@ def student_reports(request, year=None):
         totals['disability_f_pc'] = totals['disability_f']*100/totals['disability']
         totals['disability_pc'] = totals['disability']*100/totals['enrolled']
     
-    stats['all'] = totals
+    stats['All'] = totals
 
     for course in courses:
         course_stats = SortedDict()

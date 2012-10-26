@@ -19,6 +19,9 @@
 .stat {
     width: 25%;
     float: left;
+    text-align: center;
+    margin: 1em 0 .8em 0;
+    padding-bottom: 3px;
 }
 
 .stats-row {
