@@ -1,0 +1,111 @@
+{% extends "tafe/base_site.html" %}
+
+{% comment %}
+Applicant reports page of the portal.
+{% endcomment %}
+
+{% block title %}
+Applicant Reports 
+{% endblock %}
+{% block coltype %}colMS{% endblock %}
+{% block content %}
+<div id="content-left">
+    <div id="stats">
+    {%  if not stats %}
+    Sorry, there are no enrollments at the moment.
+    {% else %}
+        {% for name, stat in stats.items %}    
+            <div id="statblock">
+                <div id="stats-row1" class="stats-row">
+                    <h2>{{ name }} Applicants</h2> 
+                </div>
+                <div id="stats-row2" class="stats-row">
+                    <div class="stat-title">
+                    &nbsp;
+                    </div>
+                    <div class="stat">
+                    <strong>Female</strong>
+                    </div>
+                    <div class="stat">
+                    <strong>Male</strong>
+                    </div>
+                    <div class="stat">
+                    <strong>Total</strong>
+                    </div>
+                </div>    
+                <div id="stats-24" class="stats-row">
+                    <div class="stat-title">
+                        <h4>Applicants aged 16-24</h4>
+                    </div>
+                    <div class="stat">
+                        {{ stat.applicants_24f }} ({{ stat.applicants_24f_pc }}%)
+                    </div>
+                    <div class="stat">
+                        {{ stat.applicants_24m }} ({{ stat.applicants_24m_pc }}%)
+                    </div>
+                    <div class="stat">
+                        {{ stat.applicants_24 }} ({{ stat.applicants_24_pc }}%)
+                    </div>
+                </div>
+                <div id="stats-25" class="stats-row">
+                    <div class="stat-title">
+                        <h4>Applicants aged 25+</h4>
+                    </div>
+                    <div class="stat">
+                        {{ stat.applicants_25f }} ({{ stat.applicants_25f_pc }}%)
+                    </div>
+                    <div class="stat">
+                        {{ stat.applicants_25m }} ({{ stat.applicants_25m_pc }}%)
+                    </div>
+                    <div class="stat">
+                        {{ stat.applicants_25 }} ({{ stat.applicants_25_pc }}%)
+                    </div>
+                </div>
+                <div id="stats-outer" class="stats-row">
+                    <div class="stat-title">
+                        <h4>From Outer islands</h4>
+                    </div>
+                    <div class="stat">
+                        {{ stat.outer_f }} ({{ stat.outer_f_pc }}%)
+                    </div>
+                    <div class="stat">
+                        {{ stat.outer_m }} ({{ stat.outer_m_pc }}%)
+                    </div>
+                    <div class="stat">
+                        {{ stat.outer }} ({{ stat.outer_pc }}%)
+                    </div>
+                </div>
+                <div id="stats-disability" class="stats-row">
+                    <div class="stat-title">
+                        <h4>With a disability</h4>
+                    </div>
+                    <div class="stat">
+                        {{ stat.disability_f }} ({{ stat.disability_f_pc }}%)
+                    </div>
+                    <div class="stat">
+                        {{ stat.applicants_24m }} ({{ stat.disability_m_pc }}%)
+                    </div>
+                    <div class="stat">
+                        {{ stat.disability }} ({{ stat.disability_pc }}%)
+                    </div>
+                </div>
+                <div id="stats-total" class="stats-row">
+                    <div class="stat-title">
+                        <h4>Totals</h4>
+                    </div>
+                    <div class="stat">
+                       {{ stat.applicants_f }} ({{ stat.applicants_f_pc }}%)      
+                    </div>
+                    <div class="stat">
+                        {{ stat.applicants_m }} ({{ stat.applicants_m_pc }}%)
+                    </div>
+                    <div class="stat">
+                        {{ stat.applicants }}
+                    </div>
+                </div>
+            </div><!--statblock -->
+            {% endfor %}
+        {% endif %}
+    </div><!-- stats -->
+</div>
+{% endblock %}
