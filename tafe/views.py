@@ -181,7 +181,6 @@ def applicant_reports(request, year=None):
     totals = SortedDict()
     
     applicants = Applicant.objects.filter(date_of_application__year=year)
-    totals['applicants'] = applicants.all()
     applicants_m = applicants.filter(student__gender = 'M')
     applicants_f = applicants.filter(student__gender = 'F')
 
@@ -249,13 +248,15 @@ def applicant_reports(request, year=None):
         name = course.__unicode__()
 
         applicants = course.applicants.all()
+        applicants_f= applicants.filter(gender='F')
+        applicants_m = applicants.filter(gender='M')
        
         if applicants.count() == 0:
             continue
 
         course_stats['applicants'] = applicants.count()
-        course_stats['applicants_f'] = applicants.filter(gender='F').count()
-        course_stats['applicants_m'] = applicants.filter(gender='M').count()
+        course_stats['applicants_f'] = applicants_f.count()
+        course_stats['applicants_m'] = applicants_m.count()
 
         course_stats['applicants_f_pc'] = course_stats['applicants_f']*100/course_stats['applicants']
         course_stats['applicants_m_pc'] = course_stats['applicants_m']*100/course_stats['applicants']
@@ -274,7 +275,7 @@ def applicant_reports(request, year=None):
         
         ## Applicants: 25+, gender diff'd ##
         course_stats['applicants_25m'] = applicants_m.filter(dob__gt=dob_for_25).count()
-        course_stats['applicants_25f'] = applicants_m.filter(dob__gt=dob_for_25).count()
+        course_stats['applicants_25f'] = applicants_f.filter(dob__gt=dob_for_25).count()
         course_stats['applicants_25'] = course_stats['applicants_25m'] + course_stats['applicants_25f']
         if course_stats['applicants_25'] == 0:
             course_stats['applicants_25m_pc'] = course_stats['applicants_25f_pc'] = course_stats['applicants_25_pc'] = 0 
