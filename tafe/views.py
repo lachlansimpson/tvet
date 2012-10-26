@@ -86,6 +86,9 @@ def session_view(request, year, month, day, slug):
 
 @login_required
 def session_attendance_view(request, year, month, day, slug):
+    ''' Shows the session, students and staff - for marking attendance.
+    TODO: Check to see if this is still used
+    '''
     req_date = datetime.date(int(year), int(month), int(day))
     session = get_object_or_404(Session, slug=slug, date=req_date)
     StaffAttendanceFormSet = modelformset_factory(StaffAttendance, fields = ('staff_member', 'reason', 'absent'), extra=0)
@@ -100,7 +103,7 @@ def session_attendance_view(request, year, month, day, slug):
     else:
         student_formset = StudentAttendanceFormSet(queryset=StudentAttendance.objects.filter(session=session).order_by('student'), prefix='students')
         staff_formset = StaffAttendanceFormSet(prefix='staff')
-        return render_to_response('tafe/attendance_record.html',{'student_formset':student_formset, 'staff_formset':staff_formset, 'session':session,}, RequestContext(request))
+    return render_to_response('tafe/attendance_record.html',{'student_formset':student_formset, 'staff_formset':staff_formset, 'session':session,}, RequestContext(request))
 
 ############### Units ###############
 
@@ -112,6 +115,10 @@ def units_by_qualifications_view(request):
 
 @login_required
 def unit_view(request, slug):
+    '''
+    Shows a Unit's details, along with the student attendance per session and grades
+    TODO: append the grade of each student to the graph
+    '''
     unit = get_object_or_404(Subject, slug=slug)
     unit_students = unit.students.all()
     unit_attendance_matrix = []
@@ -163,7 +170,144 @@ def applicant_success(request):
 
     return render_to_response('tafe/applicant_success.html', {'form':form}, RequestContext(request))
 
+@login_required
+def applicant_reports(request, year=None):
+    '''
+    View returns the statistics on # of applicants, diff'd on gender across age ranges (16-24, 25+)
+    Island and disability. Stats considered per course and overall
+    '''
+    year = year or datetime.date.today().year
+    stats = SortedDict()
+    totals = SortedDict()
+    
+    applicants = Applicant.objects.filter(date_of_application__year=year)
+    totals['applicants'] = applicants.all()
+    applicants_m = applicants.filter(student__gender = 'M')
+    applicants_f = applicants.filter(student__gender = 'F')
 
+    if applicants.count()==0:
+        return render_to_response('tafe/student_reports.html',{},RequestContext(request))
+   
+    ## Stats for all applicants ##
+    totals['applicants'] = applicants.count()    
+    totals['applicants_m'] = applicants_m.count() 
+    totals['applicants_f'] = applicants_f.count()
+    totals['applicants_m_pc'] = totals['applicants_m']*100/totals['applicants']
+    totals['applicants_f_pc'] = totals['applicants_f']*100/totals['applicants']
+        
+    ## Applicants: 16-24, gender diff'd ##
+    dob_for_25 = today-relativedelta(years=25) # date for those who are 25 today  
+    totals['applicants_24m'] = applicants_m.filter(student__dob__lte=dob_for_25).count()
+    totals['applicants_24f'] = applicants_f.filter(student__dob__lte=dob_for_25).count()
+    totals['applicants_24'] = totals['applicants_24m'] + totals['applicants_24f']
+    if totals['applicants_24']==0:
+        totals['applicants_24_pc'] = totals['applicants_24m_pc'] = totals['applicants_24f_pc'] = 0 
+    else:    
+        totals['applicants_24_pc'] = totals['applicants_24']*100/totals['applicants']
+        totals['applicants_24m_pc'] = totals['applicants_24m']*100/totals['applicants_24']
+        totals['applicants_24f_pc'] = totals['applicants_24f']*100/totals['applicants_24']
+    
+    ## Applicants: 25+, gender diff'd ##
+    totals['applicants_25m'] = applicants_m.filter(student__dob__gt=dob_for_25).count()
+    totals['applicants_25f'] = applicants_f.filter(student__dob__gt=dob_for_25).count()
+    totals['applicants_25'] = totals['applicants_25m'] + totals['applicants_25f']
+    if totals['applicants_25']==0:
+        totals['applicants_25m_pc'] = totals['applicants_25f_pc'] = totals['applicants_25_pc'] = 0 
+    else:
+        totals['applicants_25m_pc'] = totals['applicants_25m']*100/totals['applicants_25']
+        totals['applicants_25f_pc'] = totals['applicants_25f']*100/totals['applicants_25'] 
+        totals['applicants_25_pc'] = totals['applicants_25']*100/totals['applicants']
+
+    ## Applicants: Outer Islands, gender diff'd ##
+    totals['outer_m'] = applicants_m.exclude(student__island = '01').count() # 01 is Tarawa
+    totals['outer_f'] = applicants_f.exclude(student__island = '01').count() # 01 is Tarawa
+    totals['outer'] = totals['outer_m'] + totals['outer_f']
+    if totals['outer'] == 0:
+        totals['outer_m_pc'] = totals['outer_f_pc'] = totals['outer_pc'] = 0
+    else:
+        totals['outer_m_pc'] = totals['outer_m']*100/totals['outer'] 
+        totals['outer_f_pc'] = totals['outer_f']*100/totals['outer']
+        totals['outer_pc'] = totals['outer']*100/totals['applicants']
+
+    ## Applicants: Disability, gender diff'd ##
+    totals['disability_m'] = applicants_m.filter(student__disability='True').count()
+    totals['disability_f'] = applicants_f.filter(student__disability='True').count()
+    totals['disability'] = totals['disability_m'] + totals['disability_f']
+    if totals['disability'] == 0:
+        totals['disability_m_pc'] = totals['disability_f_pc'] = totals['disability_pc'] = 0
+    else:
+        totals['disability_m_pc'] = totals['disability_m']*100/totals['disability']
+        totals['disability_f_pc'] = totals['disability_f']*100/totals['disability']
+        totals['disability_pc'] = totals['disability']*100/totals['applicants']
+    
+    stats['All'] = totals
+    
+    ## Stats for Applicants per course ##
+    courses = Course.objects.filter(year=year)
+    for course in courses:
+        course_stats = SortedDict()
+        name = course.__unicode__()
+
+        applicants = course.applicants.all()
+       
+        if applicants.count() == 0:
+            continue
+
+        course_stats['applicants'] = applicants.count()
+        course_stats['applicants_f'] = applicants.filter(gender='F').count()
+        course_stats['applicants_m'] = applicants.filter(gender='M').count()
+
+        course_stats['applicants_f_pc'] = course_stats['applicants_f']*100/course_stats['applicants']
+        course_stats['applicants_m_pc'] = course_stats['applicants_m']*100/course_stats['applicants']
+        
+        ## Applicants: 16-24, gender diff'd ##
+        dob_for_25 = today-relativedelta(years=25) # date for those who are 25 today 
+        course_stats['applicants_24m'] = applicants_m.filter(dob__lte=dob_for_25).count()
+        course_stats['applicants_24f'] = applicants_f.filter(dob__lte=dob_for_25).count()
+        course_stats['applicants_24'] = course_stats['applicants_24m'] + course_stats['applicants_24f']
+        if course_stats['applicants_24'] == 0:
+            course_stats['applicants_24m_pc'] = course_stats['applicants_24f_pc'] = course_stats['applicants_24_pc'] = 0
+        else:
+            course_stats['applicants_24m_pc'] = course_stats['applicants_24m']*100/course_stats['applicants_24'] 
+            course_stats['applicants_24f_pc'] = course_stats['applicants_24f']*100/course_stats['applicants_24'] 
+            course_stats['applicants_24_pc'] = course_stats['applicants_24']*100/course_stats['applicants'] 
+        
+        ## Applicants: 25+, gender diff'd ##
+        course_stats['applicants_25m'] = applicants_m.filter(dob__gt=dob_for_25).count()
+        course_stats['applicants_25f'] = applicants_m.filter(dob__gt=dob_for_25).count()
+        course_stats['applicants_25'] = course_stats['applicants_25m'] + course_stats['applicants_25f']
+        if course_stats['applicants_25'] == 0:
+            course_stats['applicants_25m_pc'] = course_stats['applicants_25f_pc'] = course_stats['applicants_25_pc'] = 0 
+        else:
+            course_stats['applicants_25m_pc'] = course_stats['applicants_25m']*100/course_stats['applicants_25'] 
+            course_stats['applicants_25f_pc'] = course_stats['applicants_25f']*100/course_stats['applicants_25'] 
+            course_stats['applicants_25_pc'] = course_stats['applicants_25']*100/course_stats['applicants']
+
+        ## Applicants: Outer Islands, gender diff'd ##
+        course_stats['outer_m'] = applicants_m.exclude(island = '01').count() # 01 is Tarawa
+        course_stats['outer_f'] = applicants_f.exclude(island = '01').count() # 01 is Tarawa
+        course_stats['outer'] = course_stats['outer_m'] + course_stats['outer_f']
+        if course_stats['outer'] == 0:
+            course_stats['outer_m_pc'] = course_stats['outer_f_pc'] = course_stats['outer_pc'] = 0
+        else:
+            course_stats['outer_m_pc'] = course_stats['outer_m']*100/course_stats['outer'] 
+            course_stats['outer_f_pc'] = course_stats['outer_f']*100/course_stats['outer']
+            course_stats['outer_pc'] = course_stats['outer']*100/course_stats['applicants'] 
+
+        ## Applicants: Disability, gender diff'd ##
+        course_stats['disability_m'] = applicants_m.filter(disability='True').count()
+        course_stats['disability_f'] = applicants_f.filter(disability='True').count()
+        course_stats['disability'] = course_stats['disability_m'] + course_stats['disability_f']
+        if course_stats['disability'] == 0: 
+           course_stats['disability_m_pc'] = course_stats['disability_f_pc'] = course_stats['disability_pc'] = 0 
+        else:
+            course_stats['disability_m_pc'] =course_stats['disability_m']*100/course_stats['disability'] 
+            course_stats['disability_f_pc'] = course_stats['disability_f']*100/course_stats['disability'] 
+            course_stats['disability_pc'] =course_stats['disability']*100/course_stats['applicants'] 
+        
+        stats[name] = course_stats
+    
+    return render_to_response('tafe/applicants_report.html',{'stats':stats}, RequestContext(request))        
 
 ############### Timetables ###############
 
@@ -214,6 +358,7 @@ def timetable_weekly_view(request, slug):
 
 @login_required
 def assessment_view(request, unit, slug):
+    ''' An Assessment's details '''
     subject = get_object_or_404(Subject, slug=unit)
     assessment = get_object_or_404(Assessment, slug=slug, subject=subject) 
 
@@ -222,143 +367,11 @@ def assessment_view(request, unit, slug):
 ############### Students ###############
 
 @login_required
-def applicant_reports(request, year=None):
-    year = year or datetime.date.today().year
-    
-    stats = SortedDict()
-    totals = SortedDict()
-    
-    applicants = Applicant.objects.filter(date_of_application__year=year)
-    totals['applicants'] = applicants.all()
-    applicants_m = applicants.filter(student__gender = 'M')
-    applicants_f = applicants.filter(student__gender = 'F')
-
-    if applicants.count()==0:
-        return render_to_response('tafe/student_reports.html',{},RequestContext(request))
-    
-    totals['applicants'] = applicants.count()    
-    totals['applicants_m'] = applicants_m.count() 
-    totals['applicants_f'] = applicants_f.count()
-    totals['applicants_m_pc'] = totals['applicants_m']*100/totals['applicants']
-    totals['applicants_f_pc'] = totals['applicants_f']*100/totals['applicants']
-        
-    ## Students: 16-24, gender diff'd ##
-    ## date for those who are 25 today ##
-    dob_for_25 = today-relativedelta(years=25) 
-    totals['applicants_24m'] = applicants_m.filter(student__dob__lte=dob_for_25).count()
-    totals['applicants_24f'] = applicants_f.filter(student__dob__lte=dob_for_25).count()
-    totals['applicants_24'] = totals['applicants_24m'] + totals['applicants_24f']
-    if totals['applicants_24']==0:
-        totals['applicants_24_pc'] = totals['applicants_24m_pc'] = totals['applicants_24f_pc'] = 0 
-    else:    
-        totals['applicants_24_pc'] = totals['applicants_24']*100/totals['applicants']
-        totals['applicants_24m_pc'] = totals['applicants_24m']*100/totals['applicants_24']
-        totals['applicants_24f_pc'] = totals['applicants_24f']*100/totals['applicants_24']
-    
-    ## Students: 25+, gender diff'd ##
-    totals['applicants_25m'] = applicants_m.filter(student__dob__gt=dob_for_25).count()
-    totals['applicants_25f'] = applicants_f.filter(student__dob__gt=dob_for_25).count()
-    totals['applicants_25'] = totals['applicants_25m'] + totals['applicants_25f']
-    if totals['applicants_25']==0:
-        totals['applicants_25m_pc'] = totals['applicants_25f_pc'] = totals['applicants_25_pc'] = 0 
-    else:
-        totals['applicants_25m_pc'] = totals['applicants_25m']*100/totals['applicants_25']
-        totals['applicants_25f_pc'] = totals['applicants_25f']*100/totals['applicants_25'] 
-        totals['applicants_25_pc'] = totals['applicants_25']*100/totals['applicants']
-
-    ## Students: Outer Islands, gender diff'd ##
-    totals['outer_m'] = applicants_m.exclude(student__island = '01').count() # 01 is Tarawa
-    totals['outer_f'] = applicants_f.exclude(student__island = '01').count() # 01 is Tarawa
-    totals['outer'] = totals['outer_m'] + totals['outer_f']
-    if totals['outer'] == 0:
-        totals['outer_m_pc'] = totals['outer_f_pc'] = totals['outer_pc'] = 0
-    else:
-        totals['outer_m_pc'] = totals['outer_m']*100/totals['outer'] 
-        totals['outer_f_pc'] = totals['outer_f']*100/totals['outer']
-        totals['outer_pc'] = totals['outer']*100/totals['applicants']
-
-    ## Students: Disability, gender diff'd ##
-    totals['disability_m'] = applicants_m.filter(student__disability='True').count()
-    totals['disability_f'] = applicants_f.filter(student__disability='True').count()
-    totals['disability'] = totals['disability_m'] + totals['disability_f']
-    if totals['disability'] == 0:
-        totals['disability_m_pc'] = totals['disability_f_pc'] = totals['disability_pc'] = 0
-    else:
-        totals['disability_m_pc'] = totals['disability_m']*100/totals['disability']
-        totals['disability_f_pc'] = totals['disability_f']*100/totals['disability']
-        totals['disability_pc'] = totals['disability']*100/totals['applicants']
-    
-    stats['All'] = totals
-
-    courses = Course.objects.filter(year=year)
-    for course in courses:
-        course_stats = SortedDict()
-        name = course.__unicode__()
-
-        applicants = course.applicants.all()
-       
-        if applicants.count() == 0:
-            continue
-
-        course_stats['applicants'] = applicants.count()
-        course_stats['applicants_f'] = applicants.filter(gender='F').count()
-        course_stats['applicants_m'] = applicants.filter(gender='M').count()
-
-        course_stats['applicants_f_pc'] = course_stats['applicants_f']*100/course_stats['applicants']
-        course_stats['applicants_m_pc'] = course_stats['applicants_m']*100/course_stats['applicants']
-        
-        ## Students: 16-24, gender diff'd ##
-        ## date for those who are 25 today ##
-        dob_for_25 = today-relativedelta(years=25) 
-        course_stats['applicants_24m'] = applicants_m.filter(dob__lte=dob_for_25).count()
-        course_stats['applicants_24f'] = applicants_f.filter(dob__lte=dob_for_25).count()
-        course_stats['applicants_24'] = course_stats['applicants_24m'] + course_stats['applicants_24f']
-        if course_stats['applicants_24'] == 0:
-            course_stats['applicants_24m_pc'] = course_stats['applicants_24f_pc'] = course_stats['applicants_24_pc'] = 0
-        else:
-            course_stats['applicants_24m_pc'] = course_stats['applicants_24m']*100/course_stats['applicants_24'] 
-            course_stats['applicants_24f_pc'] = course_stats['applicants_24f']*100/course_stats['applicants_24'] 
-            course_stats['applicants_24_pc'] = course_stats['applicants_24']*100/course_stats['applicants'] 
-        
-        ## Students: 25+, gender diff'd ##
-        course_stats['applicants_25m'] = applicants_m.filter(dob__gt=dob_for_25).count()
-        course_stats['applicants_25f'] = applicants_m.filter(dob__gt=dob_for_25).count()
-        course_stats['applicants_25'] = course_stats['applicants_25m'] + course_stats['applicants_25f']
-        if course_stats['applicants_25'] == 0:
-            course_stats['applicants_25m_pc'] = course_stats['applicants_25f_pc'] = course_stats['applicants_25_pc'] = 0 
-        else:
-            course_stats['applicants_25m_pc'] = course_stats['applicants_25m']*100/course_stats['applicants_25'] 
-            course_stats['applicants_25f_pc'] = course_stats['applicants_25f']*100/course_stats['applicants_25'] 
-            course_stats['applicants_25_pc'] = course_stats['applicants_25']*100/course_stats['applicants']
-
-        ## Students: Outer Islands, gender diff'd ##
-        course_stats['outer_m'] = applicants_m.exclude(island = '01').count() # 01 is Tarawa
-        course_stats['outer_f'] = applicants_f.exclude(island = '01').count() # 01 is Tarawa
-        course_stats['outer'] = course_stats['outer_m'] + course_stats['outer_f']
-        if course_stats['outer'] == 0:
-            course_stats['outer_m_pc'] = course_stats['outer_f_pc'] = course_stats['outer_pc'] = 0
-        else:
-            course_stats['outer_m_pc'] = course_stats['outer_m']*100/course_stats['outer'] 
-            course_stats['outer_f_pc'] = course_stats['outer_f']*100/course_stats['outer']
-            course_stats['outer_pc'] = course_stats['outer']*100/course_stats['applicants'] 
-
-        ## Students: Disability, gender diff'd ##
-        course_stats['disability_m'] = applicants_m.filter(disability='True').count()
-        course_stats['disability_f'] = applicants_f.filter(disability='True').count()
-        course_stats['disability'] = course_stats['disability_m'] + course_stats['disability_f']
-        if course_stats['disability'] == 0: 
-           course_stats['disability_m_pc'] = course_stats['disability_f_pc'] = course_stats['disability_pc'] = 0 
-        else:
-            course_stats['disability_m_pc'] =course_stats['disability_m']*100/course_stats['disability'] 
-            course_stats['disability_f_pc'] = course_stats['disability_f']*100/course_stats['disability'] 
-            course_stats['disability_pc'] =course_stats['disability']*100/course_stats['applicants'] 
-        
-        stats[name] = course_stats
-    
-    return render_to_response('tafe/applicants_report.html',{'stats':stats}, RequestContext(request))        
-        
-@login_required
 def student_reports(request, year=None):
+    '''
+    View returns the statistics on # of Enrolments, diff'd on gender across age ranges (16-24, 25+)
+    Island and disability. Stats considered per course and overall
+    '''
     year = year or datetime.date.today().year
     courses = Course.objects.filter(year=year)
     stats = SortedDict()
@@ -377,8 +390,7 @@ def student_reports(request, year=None):
     totals['enrolled_f_pc'] = totals['enrolled_f']*100/totals['enrolled']
         
     ## Students: 16-24, gender diff'd ##
-    ## date for those who are 25 today ##
-    dob_for_25 = today-relativedelta(years=25) 
+    dob_for_25 = today-relativedelta(years=25) # date for those who are 25 today  
     totals['enrolled_24m'] = enrolled_m.filter(student__dob__lte=dob_for_25).count()
     totals['enrolled_24f'] = enrolled_f.filter(student__dob__lte=dob_for_25).count()
     totals['enrolled_24'] = totals['enrolled_24m'] + totals['enrolled_24f']
@@ -441,8 +453,7 @@ def student_reports(request, year=None):
         course_stats['enrolled_m_pc'] = course_stats['enrolled_m']*100/course_stats['enrolled']
             
         ## Students: 16-24, gender diff'd ##
-        ## date for those who are 25 today ##
-        dob_for_25 = today-relativedelta(years=25) 
+        dob_for_25 = today-relativedelta(years=25) # date for those who are 25 today 
         course_stats['enrolled_24m'] = enrolled_m.filter(dob__lte=dob_for_25).count()
         course_stats['enrolled_24f'] = enrolled_f.filter(dob__lte=dob_for_25).count()
         course_stats['enrolled_24'] = course_stats['enrolled_24m'] + course_stats['enrolled_24f']
