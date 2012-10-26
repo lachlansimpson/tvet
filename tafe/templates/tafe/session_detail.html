@@ -12,7 +12,7 @@ Session detail page of the portal.
 <div id="content-left">
     <h3>{{ session.date }}: {{ session.get_session_number_display }}</h3>
 
-    <h2>{{ session.subject.name }}</h2>
+    <h2><a href="{{ session.subject.get_absolute_url }}">{{ session.subject.name }}</a></h2>
 
 
     {% if staff_attendance %}
