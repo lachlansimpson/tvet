@@ -180,7 +180,7 @@ def applicant_reports(request, year=None):
     stats = SortedDict()
     totals = SortedDict()
     
-    applicants = Applicant.objects.filter(date_of_application__year=year)
+    applicants = Applicant.objects.filter(date_of_application__year=year).exclude(successful=True)
     applicants_m = applicants.filter(student__gender = 'M')
     applicants_f = applicants.filter(student__gender = 'F')
 
@@ -331,13 +331,14 @@ def timetable_weekly_view(request, slug):
     '''
     timetable = get_object_or_404(Timetable, slug=slug)
     all_sessions = []
+    start_date = timetable.start_date
     
-    last_monday = today - datetime.timedelta(days=today.weekday())
+    monday = start_date - datetime.timedelta(days=start_date.weekday())
 
     ''' For each day of the week '''
     for day in range(5):
         ''' To show the timetable for this week we get the date of this week's  Monday '''        
-        weekday = last_monday + datetime.timedelta(day)
+        weekday = monday + datetime.timedelta(day)
         ''' all sessions is the dataset returned to the template'''
         all_sessions.append([])
         ''' weekdays is the daily list of sessions '''

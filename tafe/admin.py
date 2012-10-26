@@ -9,46 +9,9 @@ today = datetime.date.today()
 this_year = datetime.date.today().year
 BIRTH_YEARS = range(this_year-51, this_year-16)
 
-########################
-
-from django.db.models.signals import post_save
-from django.dispatch import receiver
-from django.http import HttpResponseRedirect
-
-@receiver(post_save)
-def redirect(sender, **kwargs):
-    HttpResponseRedirect('/tafe/applicants/')
-
-########################
-
-"""
-class DocumentAdmin(admin.ModelAdmin):
-
-    def add_view(self, request, object_id, extra_context=None):
-
-        result = super(DocumentAdmin, self).add_view(request, object_id, extra_context)
-
-        applicant = Applicant.objects.get(id__exact=object_id)
-        
-        if not request.POST.has_key('_addanother') and not request.POST.has_key('_continue'):
-            result['Location'] = applicant.get_absolute_url()
-        return result
-    
-    def change_view(self, request, object_id, extra_context=None):
-
-        result = super(DocumentAdmin, self).change_view(request, object_id, extra_context)
-
-        applicant = Applicant.objects.get(id__exact=object_id)
-        
-        if not request.POST.has_key('_addanother') and not request.POST.has_key('_continue'):
-            result['Location'] = applicant.get_absolute_url()
-        return result
-"""
-
-########################
-
 class ApplicantInline(admin.TabularInline):
     model = Applicant
+    extra = 1
 
 class AssessmentInline(admin.TabularInline):
     model = Assessment 
@@ -60,8 +23,8 @@ class CredentialInline(admin.TabularInline):
     model = Staff.credential.through
 
 class EnrolmentInline(admin.TabularInline):
+    model = Enrolment 
     extra = 1    
-    model = Enrolment
 
 class GradeInline(admin.TabularInline):
     model = Grade
@@ -78,10 +41,10 @@ class SessionInline(admin.TabularInline):
     template = 'admin/collapsed_tabular_inline.html'
 
 class StaffAttendanceInline(admin.TabularInline):
+    model = StaffAttendance
     exclude = ('slug',)
     extra = 1
     fields = ('staff_member','reason','absent')
-    model = StaffAttendance
     template = 'admin/collapsed_tabular_inline.html'
 
 class StudentAttendanceInline(admin.TabularInline):
@@ -108,7 +71,6 @@ class ApplicantAdminForm(ModelForm):
         }            
 
 class ApplicantAdmin(admin.ModelAdmin):
-#class ApplicantAdmin(DocumentAdmin):
     fieldsets = (
         ('Bio', {'fields':(('first_name','surname'),('dob','gender', 'island'))}),
         ('Contact Information', { 'fields':(('phone','email'),)}),
@@ -176,6 +138,7 @@ class StudentAttendanceAdmin(admin.ModelAdmin):
 
 class CourseAdmin(admin.ModelAdmin):
     inlines = (EnrolmentInline,
+               ApplicantInline,
         )
     filter_horizontal = ('subjects',)
     fieldsets = (
