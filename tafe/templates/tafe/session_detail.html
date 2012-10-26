@@ -10,13 +10,18 @@ Session detail page of the portal.
 {% block coltype %}colMS{% endblock %}
 {% block content %}
 <div id="content-left">
-    {{ session.get_session_number_display }}<br />
+    <h3>{{ session.date }}: {{ session.get_session_number_display }}</h3>
 
-    {{ session.subject.name }}<br />
+    <h2>{{ session.subject.name }}</h2>
 
-    {{ session.date }}<br />
 
-    <a href="{{ session.get_absolute_url }}attendance">Mark attendance for this class</a>
+    {% if staff_attendance %}
+        {{ staff_attendance }}
+    {% else %}
+        No staff assigned yet
+    {% endif %}
+
+    <p><a href="{{ session.get_absolute_url }}attendance">Mark attendance for this class</a></p>
     <h4>Students and attendance</h4> 
     {% for record in attendance.all %}
     <a href="/tafe/attendance/{{ session.date.year}}/{{ session.date.month }}/{{ session.date.day }}/{{ record.slug }}">{{ record.student }}, {{ record.get_reason_display }}</a><br />

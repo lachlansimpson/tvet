@@ -80,7 +80,10 @@ def session_view(request, year, month, day, slug):
         new_attendance, created = StudentAttendance.objects.get_or_create(session=session,student=student, last_change_by=request.user)
     student_attendance = StudentAttendance.objects.filter(session=session)
     staff_member = session.subject.staff_member
-    staff_attendance = StaffAttendance.objects.get_or_create(session=session, staff_member=staff_member, last_change_by=request.user)
+    if staff_member is not None:
+        staff_attendance = StaffAttendance.objects.get_or_create(session=session, staff_member=staff_member, last_change_by=request.user)
+    else:
+        staff_attendance = {}
 
     return render_to_response('tafe/session_detail.html',{'session':session, 'student_attendance':student_attendance, 'staff_attendance':staff_attendance}, RequestContext(request))
 
