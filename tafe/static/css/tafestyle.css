@@ -1,0 +1,28 @@
+#statblock {
+    width: 100%;
+}
+
+#stats-row1 {
+    width: 100%;
+    clear: both;
+}
+
+#stats-row2 {
+    width: 100%;
+    clear: both;
+}
+
+.stat-title {
+    width: 25%;
+    float: left;
+}
+.stat {
+    width: 25%;
+    float: left;
+}
+
+.stats-row {
+    border-style: solid;
+    border-width: 1px;
+    clear: both;
+}

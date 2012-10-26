@@ -235,8 +235,8 @@ def student_reports(request, year=None):
     totals['enrolled'] = enrolments.count()    
     totals['enrolled_m'] = enrolled_m.count() 
     totals['enrolled_f'] = enrolled_f.count()
-    totals['enrolled_m_pc'] = totals['enrolled_m']/totals['enrolled']
-    totals['enrolled_f_pc'] = totals['enrolled_f']/totals['enrolled']
+    totals['enrolled_m_pc'] = totals['enrolled_m']*100/totals['enrolled']
+    totals['enrolled_f_pc'] = totals['enrolled_f']*100/totals['enrolled']
         
     ## Students: 16-24, gender diff'd ##
     ## date for those who are 25 today ##
@@ -247,9 +247,9 @@ def student_reports(request, year=None):
     if totals['enrolled_24']==0:
         totals['enrolled_24_pc'] = totals['enrolled_24m_pc'] = totals['enrolled_24f_pc'] = 0 
     else:    
-        totals['enrolled_24_pc'] = totals['enrolled_24']/totals['enrolled']
-        totals['enrolled_24m_pc'] = totals['enrolled_24m']/totals['enrolled_24']
-        totals['enrolled_24f_pc'] = totals['enrolled_24f']/totals['enrolled_24']
+        totals['enrolled_24_pc'] = totals['enrolled_24']*100/totals['enrolled']
+        totals['enrolled_24m_pc'] = totals['enrolled_24m']*100/totals['enrolled_24']
+        totals['enrolled_24f_pc'] = totals['enrolled_24f']*100/totals['enrolled_24']
     
     ## Students: 25+, gender diff'd ##
     totals['enrolled_25m'] = totals['enrolled_m'] - totals['enrolled_24m'] 
@@ -258,9 +258,9 @@ def student_reports(request, year=None):
     if totals['enrolled_25']==0:
         totals['enrolled_25m_pc'] = totals['enrolled_25f_pc'] = totals['enrolled_25_pc'] = 0 
     else:
-        totals['enrolled_25m_pc'] = totals['enrolled_25m']/totals['enrolled_25'] 
-        totals['enrolled_25f_pc'] = totals['enrolled_25f']/totals['enrolled_25'] 
-        totals['enrolled_25_pc'] = totals['enrolled_25']/totals['enrolled']
+        totals['enrolled_25m_pc'] = totals['enrolled_25m']*100/totals['enrolled_25']
+        totals['enrolled_25f_pc'] = totals['enrolled_25f']*100/totals['enrolled_25'] 
+        totals['enrolled_25_pc'] = totals['enrolled_25']*100/totals['enrolled']
 
     ## Students: Outer Islands, gender diff'd ##
     totals['outer_m'] = enrolled_m.exclude(student__island = '01').count() # 01 is Tarawa
@@ -269,9 +269,9 @@ def student_reports(request, year=None):
     if totals['outer'] == 0:
         totals['outer_m_pc'] = totals['outer_f_pc'] = totals['outer_pc'] = 0
     else:
-        totals['outer_m_pc'] = totals['outer_m']/totals['outer'] 
-        totals['outer_f_pc'] = totals['outer_f']/totals['outer']
-    totals['outer_pc'] = totals['outer']/totals['enrolled']
+        totals['outer_m_pc'] = totals['outer_m']*100/totals['outer'] 
+        totals['outer_f_pc'] = totals['outer_f']*100/totals['outer']
+        totals['outer_pc'] = totals['outer']*100/totals['enrolled']
 
     ## Students: Disability, gender diff'd ##
     totals['disability_m'] = enrolled_m.filter(student__disability='True').count()
@@ -280,22 +280,24 @@ def student_reports(request, year=None):
     if totals['disability'] == 0:
         totals['disability_m_pc'] = totals['disability_f_pc'] = totals['disability_pc'] = 0
     else:
-        totals['disability_m_pc'] = totals['disability_m']/totals['disability']
-        totals['disability_f_pc'] = totals['disability_f']/totals['disability']
-        totals['disability_pc'] = totals['disability']/totals['enrolled']
+        totals['disability_m_pc'] = totals['disability_m']*100/totals['disability']
+        totals['disability_f_pc'] = totals['disability_f']*100/totals['disability']
+        totals['disability_pc'] = totals['disability']*100/totals['enrolled']
     
     stats['all'] = totals
 
     for course in courses:
         course_stats = SortedDict()
-        
         name = course.__unicode__()
         
         enrolled_m = course.students.filter(gender='M')
         enrolled_f = course.students.filter(gender='F')
 
-        #course_stats['1 coursename'] = name
-        course_stats['enrolled'] = course.students.all().count()
+        if course.students.all().count() == 0:
+            continue 
+        else:
+            course_stats['enrolled'] = course.students.all().count()
+        
         course_stats['enrolled_m'] = enrolled_m.count() 
         course_stats['enrolled_f'] = enrolled_f.count()
             
@@ -305,21 +307,45 @@ def student_reports(request, year=None):
         course_stats['enrolled_24m'] = enrolled_m.filter(dob__lte=dob_for_25).count()
         course_stats['enrolled_24f'] = enrolled_f.filter(dob__lte=dob_for_25).count()
         course_stats['enrolled_24'] = course_stats['enrolled_24m'] + course_stats['enrolled_24f']
+        if course_stats['enrolled_24'] == 0:
+            course_stats['enrolled_24m_pc'] = course_stats['enrolled_24f_pc'] = course_stats['enrolled_24_pc'] = 0
+        else:
+            course_stats['enrolled_24m_pc'] = course_stats['enrolled_24m']*100/course_stats['enrolled_24'] 
+            course_stats['enrolled_24f_pc'] = course_stats['enrolled_24f']*100/course_stats['enrolled_24'] 
+            course_stats['enrolled_24_pc'] = course_stats['enrolled_24']*100/course_stats['enrolled'] 
         
         ## Students: 25+, gender diff'd ##
         course_stats['enrolled_25m'] = course_stats['enrolled_m'] - course_stats['enrolled_24m'] 
         course_stats['enrolled_25f'] = course_stats['enrolled_f'] - course_stats['enrolled_24f'] 
         course_stats['enrolled_25'] = course_stats['enrolled'] - course_stats['enrolled_24']
+        if course_stats['enrolled_25'] == 0:
+            course_stats['enrolled_25m_pc'] = course_stats['enrolled_25f_pc'] = course_stats['enrolled_25_pc'] = 0 
+        else:
+            course_stats['enrolled_25m_pc'] = course_stats['enrolled_25m']*100/course_stats['enrolled_25'] 
+            course_stats['enrolled_25f_pc'] = course_stats['enrolled_25f']*100/course_stats['enrolled_25'] 
+            course_stats['enrolled_25_pc'] = course_stats['enrolled_25']*100/course_stats['enrolled']
 
         ## Students: Outer Islands, gender diff'd ##
         course_stats['outer_m'] = enrolled_m.exclude(island = '01').count() # 01 is Tarawa
         course_stats['outer_f'] = enrolled_f.exclude(island = '01').count() # 01 is Tarawa
         course_stats['outer'] = course_stats['outer_m'] + course_stats['outer_f']
+        if course_stats['outer'] == 0:
+            course_stats['outer_m_pc'] = course_stats['outer_f_pc'] = course_stats['outer_pc'] = 0
+        else:
+            course_stats['outer_m_pc'] = course_stats['outer_m']*100/course_stats['outer'] 
+            course_stats['outer_f_pc'] = course_stats['outer_f']*100/course_stats['outer']
+            course_stats['outer_pc'] = course_stats['outer']*100/course_stats['enrolled'] 
 
         ## Students: Disability, gender diff'd ##
         course_stats['disability_m'] = enrolled_m.filter(disability='True').count()
         course_stats['disability_f'] = enrolled_f.filter(disability='True').count()
         course_stats['disability'] = course_stats['disability_m'] + course_stats['disability_f']
+        if course_stats['disability'] == 0: 
+           course_stats['disability_m_pc'] = course_stats['disability_f_pc'] = course_stats['disability_pc'] = 0 
+        else:
+            course_stats['disability_m_pc'] =course_stats['disability_m']*100/course_stats['disability'] 
+            course_stats['disability_f_pc'] = course_stats['disability_f']*100/course_stats['disability'] 
+            course_stats['disability_pc'] =course_stats['disability']*100/course_stats['disability_f'] 
     
         stats[name] = course_stats
 
