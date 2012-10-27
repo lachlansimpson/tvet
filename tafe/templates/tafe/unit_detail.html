@@ -28,8 +28,8 @@ Subject/Unit detail page of the portal.
 
     <table>
         <tr><td>Student Name</td>
-            {% for day in dates %}
-               <td>{{ day.0|date:"d/m" }} {{ day.1.0 }}</td>
+            {% for session in sessions %}
+            <td><A href="{{ session.get_absolute_url }}">{{ session.date|date:"d/m" }} {{ session.session_number_short }}</a></td>
             {% endfor %}
         </tr>
         {% for student in unit_attendance_matrix %}

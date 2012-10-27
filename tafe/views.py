@@ -126,14 +126,11 @@ def unit_view(request, slug):
     unit_students = unit.students.all()
     unit_attendance_matrix = []
     weekly_classes = [] 
-    dates = []
+    sessions = []
     
     '''We need to get the headers for each session - date and session_number for the attendance record header row'''
     for session in Session.objects.filter(subject=unit).order_by('date'):
-        date = session.date
-        session_number = session.get_session_number_display()
-        session_details = [date, session_number]
-        dates.append(session_details)
+        sessions.append(session)
 
     '''Add each student and their attendance record, per session, to the matrix'''
     for student in unit_students:
@@ -150,7 +147,7 @@ def unit_view(request, slug):
                     student_details.append(attendance_record.reason)
         unit_attendance_matrix.append(student_details)
     
-    return render_to_response('tafe/unit_detail.html', {'unit':unit,'unit_attendance_matrix':unit_attendance_matrix, 'dates':dates, 'weekly_classes':weekly_classes}, RequestContext(request))
+    return render_to_response('tafe/unit_detail.html', {'unit':unit,'unit_attendance_matrix':unit_attendance_matrix, 'sessions':sessions, 'weekly_classes':weekly_classes}, RequestContext(request))
 
 ############### Applicants ###############
 
