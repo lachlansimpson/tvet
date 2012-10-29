@@ -85,7 +85,22 @@ class ApplicantAdmin(admin.ModelAdmin):
     list_display = ('__unicode__', 'gender', 'disability', 'applied_for', 'eligibility', 'successful')
     list_filter = ('gender', 'disability', 'applied_for', 'eligibility', 'successful')
     readonly_fields = ('added', 'updated','last_change_by','penultimate_change_by')
-    actions = ['make_student']
+    actions = ['make_student', 'mark_unsuccessful']
+
+    def mark_unsuccessful(self, request, queryset):
+        '''Marks a group of applicants as unsuccessful'''
+        rows_updated = 0
+        for applicant in queryset:
+            applicant.successful = 0 #0 == FALSE
+            applicant.save()
+            rows_updated += 1
+
+        if rows_updated == 1:
+            message_bit = "1 applicant was"
+        else:
+            message_bit = "%s applicants were" % rows_updated
+        self.message_user(request, "%s marked unsuccessful." % message_bit)
+
 
     def make_student(self, request, queryset):
         '''Creates a convert to student option for applicants on the admin screen'''
