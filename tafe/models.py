@@ -303,26 +303,8 @@ class Applicant(Person):
                 new_grade.date_started = today
                 new_grade.save()
                 
-                '''
-                I have moved the creation of attendance records into the views:
-                - we don't have to clean up attendance records if a student withdraws
-                - we don't have a massive creation of attendance records before they are used or needed
-                - we need to create a teacher/staff attendance record anyway, is better to create them all at the same time
-                - there is a bloody get_or_create function - we should be using it
-                '''
-
-                ''' For each grade, there is a session object per date
-                To which is attached an attendance record per student
-                Create all attendance records in advance'''
-                '''
-                for session in unit.sessions.all():
-                    new_attendance_record = StudentAttendance()
-                    new_attendance_record.student = new_student
-                    new_attendance_record.session = session 
-                    new_attendance_record.save()
-                '''
             '''Converted successfully, move along'''
-            self.successful='True'
+            self.successful= 1 
             self.save()
 
 class Assessment(models.Model):

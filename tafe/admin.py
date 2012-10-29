@@ -101,7 +101,6 @@ class ApplicantAdmin(admin.ModelAdmin):
             message_bit = "%s applicants were" % rows_updated
         self.message_user(request, "%s marked unsuccessful." % message_bit)
 
-
     def make_student(self, request, queryset):
         '''Creates a convert to student option for applicants on the admin screen'''
         rows_updated = 0
