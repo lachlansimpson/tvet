@@ -181,8 +181,8 @@ def applicant_reports(request, year=None):
     totals = SortedDict()
     
     applicants = Applicant.objects.filter(date_of_application__year=year).exclude(successful=True)
-    applicants_m = applicants.filter(student__gender = 'M')
-    applicants_f = applicants.filter(student__gender = 'F')
+    applicants_m = applicants.filter(gender = 'M')
+    applicants_f = applicants.filter(gender = 'F')
 
     if applicants.count()==0:
         return render_to_response('tafe/student_reports.html',{},RequestContext(request))
@@ -196,8 +196,8 @@ def applicant_reports(request, year=None):
         
     ## Applicants: 16-24, gender diff'd ##
     dob_for_25 = today-relativedelta(years=25) # date for those who are 25 today  
-    totals['applicants_24m'] = applicants_m.filter(student__dob__lte=dob_for_25).count()
-    totals['applicants_24f'] = applicants_f.filter(student__dob__lte=dob_for_25).count()
+    totals['applicants_24m'] = applicants_m.filter(dob__lte=dob_for_25).count()
+    totals['applicants_24f'] = applicants_f.filter(dob__lte=dob_for_25).count()
     totals['applicants_24'] = totals['applicants_24m'] + totals['applicants_24f']
     if totals['applicants_24']==0:
         totals['applicants_24_pc'] = totals['applicants_24m_pc'] = totals['applicants_24f_pc'] = 0 
@@ -207,8 +207,8 @@ def applicant_reports(request, year=None):
         totals['applicants_24f_pc'] = totals['applicants_24f']*100/totals['applicants_24']
     
     ## Applicants: 25+, gender diff'd ##
-    totals['applicants_25m'] = applicants_m.filter(student__dob__gt=dob_for_25).count()
-    totals['applicants_25f'] = applicants_f.filter(student__dob__gt=dob_for_25).count()
+    totals['applicants_25m'] = applicants_m.filter(dob__gt=dob_for_25).count()
+    totals['applicants_25f'] = applicants_f.filter(dob__gt=dob_for_25).count()
     totals['applicants_25'] = totals['applicants_25m'] + totals['applicants_25f']
     if totals['applicants_25']==0:
         totals['applicants_25m_pc'] = totals['applicants_25f_pc'] = totals['applicants_25_pc'] = 0 
@@ -218,8 +218,8 @@ def applicant_reports(request, year=None):
         totals['applicants_25_pc'] = totals['applicants_25']*100/totals['applicants']
 
     ## Applicants: Outer Islands, gender diff'd ##
-    totals['outer_m'] = applicants_m.exclude(student__island = '01').count() # 01 is Tarawa
-    totals['outer_f'] = applicants_f.exclude(student__island = '01').count() # 01 is Tarawa
+    totals['outer_m'] = applicants_m.exclude(island = '01').count() # 01 is Tarawa
+    totals['outer_f'] = applicants_f.exclude(island = '01').count() # 01 is Tarawa
     totals['outer'] = totals['outer_m'] + totals['outer_f']
     if totals['outer'] == 0:
         totals['outer_m_pc'] = totals['outer_f_pc'] = totals['outer_pc'] = 0
@@ -229,8 +229,8 @@ def applicant_reports(request, year=None):
         totals['outer_pc'] = totals['outer']*100/totals['applicants']
 
     ## Applicants: Disability, gender diff'd ##
-    totals['disability_m'] = applicants_m.filter(student__disability='True').count()
-    totals['disability_f'] = applicants_f.filter(student__disability='True').count()
+    totals['disability_m'] = applicants_m.filter(disability = 1).count()
+    totals['disability_f'] = applicants_f.filter(disability = 1).count()
     totals['disability'] = totals['disability_m'] + totals['disability_f']
     if totals['disability'] == 0:
         totals['disability_m_pc'] = totals['disability_f_pc'] = totals['disability_pc'] = 0
