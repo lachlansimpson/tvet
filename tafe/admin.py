@@ -7,7 +7,7 @@ import datetime
 
 today = datetime.date.today()
 this_year = datetime.date.today().year
-BIRTH_YEARS = range(this_year-51, this_year-16)
+BIRTH_YEARS = range(this_year-51, this_year-15)
 
 class ApplicantInline(admin.TabularInline):
     model = Applicant
@@ -156,7 +156,7 @@ class CourseAdmin(admin.ModelAdmin):
         )
     filter_horizontal = ('subjects',)
     fieldsets = (
-        ('', { 'fields':(('name','slug'),)}),
+        ('', { 'fields':(('name','year', 'slug'),)}),
         ('Subjects', { 'fields':('subjects',)}),
     )
     list_display = ('name', 'count_students', 'count_males', 'count_females', 'subjects_available')

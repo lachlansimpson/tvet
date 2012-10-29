@@ -185,7 +185,7 @@ def applicant_reports(request, year=None):
     applicants_f = applicants.filter(gender = 'F')
 
     if applicants.count()==0:
-        return render_to_response('tafe/student_reports.html',{},RequestContext(request))
+        return render_to_response('tafe/applicants_report.html',{},RequestContext(request))
    
     ## Stats for all applicants ##
     totals['applicants'] = applicants.count()    
