@@ -282,6 +282,7 @@ class Applicant(Person):
             new_student.surname = self.surname
             new_student.dob = self.dob
             new_student.gender = self.gender
+            new_student.island = self.island
             new_student.education_level = self.education_level
             new_student.application_details_id = self.pk
             new_student.save()
