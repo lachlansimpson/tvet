@@ -1,0 +1,1 @@
+[{"pk": 1, "model": "tafe.course", "fields": {"slug": "automotive", "subjects": [], "name": "Automotive", "year": ""}}, {"pk": 2, "model": "tafe.course", "fields": {"slug": "business", "subjects": [], "name": "Business", "year": ""}}, {"pk": 3, "model": "tafe.course", "fields": {"slug": "english", "subjects": [], "name": "English", "year": ""}}]

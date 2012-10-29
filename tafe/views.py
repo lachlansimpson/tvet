@@ -242,18 +242,19 @@ def applicant_reports(request, year=None):
     stats['All'] = totals
     
     ## Stats for Applicants per course ##
-    courses = Course.objects.filter(year=year)
-    for course in courses:
-        course_stats = SortedDict()
+    courses = Course.objects.all()
+    for course in courses: 
+        if course.applicants.exclude(successful=True).count()==0:
+            continue
+        
         name = course.__unicode__()
-
-        applicants = course.applicants.all()
+        
+        course_stats = SortedDict()
+        
+        applicants = course.applicants.exclude(successful=True)
         applicants_f= applicants.filter(gender='F')
         applicants_m = applicants.filter(gender='M')
        
-        if applicants.count() == 0:
-            continue
-
         course_stats['applicants'] = applicants.count()
         course_stats['applicants_f'] = applicants_f.count()
         course_stats['applicants_m'] = applicants_m.count()
