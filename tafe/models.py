@@ -269,11 +269,6 @@ class Applicant(Person):
             return '25-35'
         return '35+'
     
-    def mark_unsuccessful(self):
-        '''Marks applicant as unsuccessful'''
-        self.successful = 'FALSE'
-        self.save()
-
     def convert_to_student(self):
         '''Turn an applicant into a student, create all required associated objects'''
         if self.successful:
