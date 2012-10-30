@@ -1,13 +1,14 @@
 # Create your views here.
 
 from tafe.models import Timetable, Session, Course, StudentAttendance, Subject, Assessment, StaffAttendance, Enrolment, Applicant
-from tafe.forms import SessionRecurringForm, ApplicantSuccessForm
+from tafe.forms import SessionRecurringForm, ApplicantSuccessForm, ReportRequestForm
 from django.utils.datastructures import SortedDict
-from django.shortcuts import render_to_response, get_object_or_404
+from django.shortcuts import render_to_response, get_object_or_404, redirect
 from django.http import HttpResponseRedirect
 from django.contrib.auth.decorators import login_required
 from django.template import RequestContext
 from django.forms.models import modelformset_factory
+from django.core.urlresolvers import reverse
 from dateutil.relativedelta import *
 
 import datetime
@@ -503,3 +504,23 @@ def student_reports(request, year=None):
         stats[name] = course_stats
 
     return render_to_response('tafe/student_reports.html',{'stats':stats},RequestContext(request))
+
+############### Reports ###############
+@login_required
+def reports(request):
+    if request.method=='POST':
+        form = ReportRequestForm(request.POST)
+        if form.is_valid():
+            year = int(form.cleaned_data['year'])
+            data_type = form.cleaned_data['data_type']
+            if data_type == '1':
+                return redirect(reverse('student_reports', kwargs={'year':year}))
+            elif data_type == '2':
+                return redirect(reverse('applicant_reports', kwargs={'year':year}))
+
+        else:
+            pass
+    else:
+        form = ReportRequestForm()
+
+    return render_to_response('tafe/reports.html', {'form':form}, RequestContext(request))

@@ -1,0 +1,12 @@
+{% extends "tafe/base_site.html" %}
+{% comment %}
+
+{% endcomment %}
+{% block coltype %}colMS{% endblock %}
+{% block content %}
+    {{ block.super }}
+    <form action="/tafe/reports/" method="post">{% csrf_token %} 
+        {{ form.as_p }}
+        <input type="submit" value="Submit">
+    </form>
+{% endblock %}

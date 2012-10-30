@@ -237,6 +237,10 @@ class Person(models.Model):
     def first_letter(self):
         return self.surname and self.surname[0] or ''
 
+class CurrentApplicantManager(models.Manager):
+    def get_query_set(self):
+        return super(CurrentApplicantManager, self).get_query_set().exclude(successful='1').exclude(successful='0')
+
 class Applicant(Person):
     applied_for = models.ForeignKey('Course', related_name='applicants')
     education_level = models.CharField(max_length=2, blank=True, choices=EDUCATION_LEVEL_CHOICES)
@@ -250,7 +254,9 @@ class Applicant(Person):
     date_of_application = models.DateField(blank=True, null=True)
     date_offer_sent = models.DateField(blank=True, null=True)
     date_offer_accepted = models.DateField(blank=True, null=True)
+
     objects = models.Manager()
+    current = CurrentApplicantManager()
 
     @models.permalink
     def get_absolute_url(self):
