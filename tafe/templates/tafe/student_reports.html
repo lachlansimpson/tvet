@@ -38,13 +38,13 @@ Student Reports
                         <h4>Students aged 16-24</h4>
                     </div>
                     <div class="stat">
-                        {{ stat.enrolled_24f }} ({{ stat.enrolled_24f_pc }}%)
+                        {{ stat.queryset_24f }} ({{ stat.queryset_24f_pc }}%)
                     </div>
                     <div class="stat">
-                        {{ stat.enrolled_24m }} ({{ stat.enrolled_24m_pc }}%)
+                        {{ stat.queryset_24m }} ({{ stat.queryset_24m_pc }}%)
                     </div>
                     <div class="stat">
-                        {{ stat.enrolled_24 }} ({{ stat.enrolled_24_pc }}%)
+                        {{ stat.queryset_24 }} ({{ stat.queryset_24_pc }}%)
                     </div>
                 </div>
                 <div id="stats-25" class="stats-row">
@@ -52,13 +52,13 @@ Student Reports
                         <h4>Students aged 25+</h4>
                     </div>
                     <div class="stat">
-                        {{ stat.enrolled_25f }} ({{ stat.enrolled_25f_pc }}%)
+                        {{ stat.queryset_25f }} ({{ stat.queryset_25f_pc }}%)
                     </div>
                     <div class="stat">
-                        {{ stat.enrolled_25m }} ({{ stat.enrolled_25m_pc }}%)
+                        {{ stat.queryset_25m }} ({{ stat.queryset_25m_pc }}%)
                     </div>
                     <div class="stat">
-                        {{ stat.enrolled_25 }} ({{ stat.enrolled_25_pc }}%)
+                        {{ stat.queryset_25 }} ({{ stat.queryset_25_pc }}%)
                     </div>
                 </div>
                 <div id="stats-outer" class="stats-row">
@@ -83,7 +83,7 @@ Student Reports
                         {{ stat.disability_f }} ({{ stat.disability_f_pc }}%)
                     </div>
                     <div class="stat">
-                        {{ stat.enrolled_24m }} ({{ stat.disability_m_pc }}%)
+                        {{ stat.disability_m }} ({{ stat.disability_m_pc }}%)
                     </div>
                     <div class="stat">
                         {{ stat.disability }} ({{ stat.disability_pc }}%)
@@ -94,13 +94,13 @@ Student Reports
                         <h4>Totals</h4>
                     </div>
                     <div class="stat">
-                       {{ stat.enrolled_f }} ({{ stat.enrolled_f_pc }}%)      
+                       {{ stat.queryset_f }} ({{ stat.queryset_f_pc }}%)      
                     </div>
                     <div class="stat">
-                        {{ stat.enrolled_m }} ({{ stat.enrolled_m_pc }}%)
+                        {{ stat.queryset_m }} ({{ stat.queryset_m_pc }}%)
                     </div>
                     <div class="stat">
-                        {{ stat.enrolled }}
+                        {{ stat.queryset }}
                     </div>
                 </div>
             </div><!--statblock -->

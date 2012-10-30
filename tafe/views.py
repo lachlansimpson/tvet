@@ -1,6 +1,6 @@
 # Create your views here.
 
-from tafe.models import Timetable, Session, Course, StudentAttendance, Subject, Assessment, StaffAttendance, Enrolment, Applicant
+from tafe.models import Timetable, Session, Course, StudentAttendance, Subject, Assessment, StaffAttendance, Applicant, Student
 from tafe.forms import SessionRecurringForm, ApplicantSuccessForm, ReportRequestForm
 from django.utils.datastructures import SortedDict
 from django.shortcuts import render_to_response, get_object_or_404, redirect
@@ -179,80 +179,25 @@ def applicant_reports(request, year=None):
     '''
     year = year or datetime.date.today().year
     stats = SortedDict()
-    totals = SortedDict()
     
-    applicants = Applicant.objects.filter(date_of_application__year=year).exclude(successful=True)
-    applicants_m = applicants.filter(gender = 'M')
-    applicants_f = applicants.filter(gender = 'F')
-
-    if applicants.count()==0:
+    queryset = Applicant.objects.filter(date_of_application__year=year).exclude(successful=1)
+    stats['All'] = total_stats(queryset) 
+    if stats['All'] == 0:
         return render_to_response('tafe/applicants_report.html',{},RequestContext(request))
-   
-    ## Stats for all applicants ##
-    totals['applicants'] = applicants.count()    
-    totals['applicants_m'] = applicants_m.count() 
-    totals['applicants_f'] = applicants_f.count()
-    totals['applicants_m_pc'] = totals['applicants_m']*100/totals['applicants']
-    totals['applicants_f_pc'] = totals['applicants_f']*100/totals['applicants']
-        
-    ## Applicants: 16-24, gender diff'd ##
-    dob_for_25 = today-relativedelta(years=25) # date for those who are 25 today  
-    totals['applicants_24m'] = applicants_m.filter(dob__lte=dob_for_25).count()
-    totals['applicants_24f'] = applicants_f.filter(dob__lte=dob_for_25).count()
-    totals['applicants_24'] = totals['applicants_24m'] + totals['applicants_24f']
-    if totals['applicants_24']==0:
-        totals['applicants_24_pc'] = totals['applicants_24m_pc'] = totals['applicants_24f_pc'] = 0 
-    else:    
-        totals['applicants_24_pc'] = totals['applicants_24']*100/totals['applicants']
-        totals['applicants_24m_pc'] = totals['applicants_24m']*100/totals['applicants_24']
-        totals['applicants_24f_pc'] = totals['applicants_24f']*100/totals['applicants_24']
-    
-    ## Applicants: 25+, gender diff'd ##
-    totals['applicants_25m'] = applicants_m.filter(dob__gt=dob_for_25).count()
-    totals['applicants_25f'] = applicants_f.filter(dob__gt=dob_for_25).count()
-    totals['applicants_25'] = totals['applicants_25m'] + totals['applicants_25f']
-    if totals['applicants_25']==0:
-        totals['applicants_25m_pc'] = totals['applicants_25f_pc'] = totals['applicants_25_pc'] = 0 
-    else:
-        totals['applicants_25m_pc'] = totals['applicants_25m']*100/totals['applicants_25']
-        totals['applicants_25f_pc'] = totals['applicants_25f']*100/totals['applicants_25'] 
-        totals['applicants_25_pc'] = totals['applicants_25']*100/totals['applicants']
 
-    ## Applicants: Outer Islands, gender diff'd ##
-    totals['outer_m'] = applicants_m.exclude(island = '01').count() # 01 is Tarawa
-    totals['outer_f'] = applicants_f.exclude(island = '01').count() # 01 is Tarawa
-    totals['outer'] = totals['outer_m'] + totals['outer_f']
-    if totals['outer'] == 0:
-        totals['outer_m_pc'] = totals['outer_f_pc'] = totals['outer_pc'] = 0
-    else:
-        totals['outer_m_pc'] = totals['outer_m']*100/totals['outer'] 
-        totals['outer_f_pc'] = totals['outer_f']*100/totals['outer']
-        totals['outer_pc'] = totals['outer']*100/totals['applicants']
-
-    ## Applicants: Disability, gender diff'd ##
-    totals['disability_m'] = applicants_m.filter(disability = 1).count()
-    totals['disability_f'] = applicants_f.filter(disability = 1).count()
-    totals['disability'] = totals['disability_m'] + totals['disability_f']
-    if totals['disability'] == 0:
-        totals['disability_m_pc'] = totals['disability_f_pc'] = totals['disability_pc'] = 0
-    else:
-        totals['disability_m_pc'] = totals['disability_m']*100/totals['disability']
-        totals['disability_f_pc'] = totals['disability_f']*100/totals['disability']
-        totals['disability_pc'] = totals['disability']*100/totals['applicants']
-    
-    stats['All'] = totals
-    
     ## Stats for Applicants per course ##
-    courses = Course.objects.all()
+    newyear = str(year+1)
+    courses = Course.objects.filter(year__exact=newyear)
     for course in courses: 
-        if course.applicants.exclude(successful=True).count()==0:
-            continue
-        
         name = course.__unicode__()
-        
+        queryset = course.applicants.exclude(successful=1)
+        if queryset.count()==0:
+            continue
+        stats[name] = total_stats(queryset)
+       
+        '''
         course_stats = SortedDict()
         
-        applicants = course.applicants.exclude(successful=True)
         applicants_f= applicants.filter(gender='F')
         applicants_m = applicants.filter(gender='M')
        
@@ -309,7 +254,7 @@ def applicant_reports(request, year=None):
             course_stats['disability_pc'] =course_stats['disability']*100/course_stats['applicants'] 
         
         stats[name] = course_stats
-    
+        '''
     return render_to_response('tafe/applicants_report.html',{'stats':stats}, RequestContext(request))        
 
 ############### Timetables ###############
@@ -377,79 +322,27 @@ def student_reports(request, year=None):
     Island and disability. Stats considered per course and overall
     '''
     year = year or datetime.date.today().year
-    courses = Course.objects.filter(year=year)
+    queryset = Student.objects.filter(enrolments__course__year__exact=year)
     stats = SortedDict()
-    totals = SortedDict()
-    enrolments = Enrolment.objects.filter(course__year = year)
-    enrolled_m = enrolments.filter(student__gender = 'M')
-    enrolled_f = enrolments.filter(student__gender = 'F')
-
-    if enrolments.count()==0:
-        return render_to_response('tafe/student_reports.html',{},RequestContext(request))
+    stats['All'] = total_stats(queryset) 
+    if stats['All'] == 0:
+        return render_to_response('tafe/enrolled_report.html',{},RequestContext(request))
     
-    totals['enrolled'] = enrolments.count()    
-    totals['enrolled_m'] = enrolled_m.count() 
-    totals['enrolled_f'] = enrolled_f.count()
-    totals['enrolled_m_pc'] = totals['enrolled_m']*100/totals['enrolled']
-    totals['enrolled_f_pc'] = totals['enrolled_f']*100/totals['enrolled']
-        
-    ## Students: 16-24, gender diff'd ##
-    dob_for_25 = today-relativedelta(years=25) # date for those who are 25 today  
-    totals['enrolled_24m'] = enrolled_m.filter(student__dob__lte=dob_for_25).count()
-    totals['enrolled_24f'] = enrolled_f.filter(student__dob__lte=dob_for_25).count()
-    totals['enrolled_24'] = totals['enrolled_24m'] + totals['enrolled_24f']
-    if totals['enrolled_24']==0:
-        totals['enrolled_24_pc'] = totals['enrolled_24m_pc'] = totals['enrolled_24f_pc'] = 0 
-    else:    
-        totals['enrolled_24_pc'] = totals['enrolled_24']*100/totals['enrolled']
-        totals['enrolled_24m_pc'] = totals['enrolled_24m']*100/totals['enrolled_24']
-        totals['enrolled_24f_pc'] = totals['enrolled_24f']*100/totals['enrolled_24']
-    
-    ## Students: 25+, gender diff'd ##
-    totals['enrolled_25m'] = enrolled_m.filter(student__dob__gt=dob_for_25).count()
-    totals['enrolled_25f'] = enrolled_f.filter(student__dob__gt=dob_for_25).count()
-    totals['enrolled_25'] = totals['enrolled_25m'] + totals['enrolled_25f']
-    if totals['enrolled_25']==0:
-        totals['enrolled_25m_pc'] = totals['enrolled_25f_pc'] = totals['enrolled_25_pc'] = 0 
-    else:
-        totals['enrolled_25m_pc'] = totals['enrolled_25m']*100/totals['enrolled_25']
-        totals['enrolled_25f_pc'] = totals['enrolled_25f']*100/totals['enrolled_25'] 
-        totals['enrolled_25_pc'] = totals['enrolled_25']*100/totals['enrolled']
-
-    ## Students: Outer Islands, gender diff'd ##
-    totals['outer_m'] = enrolled_m.exclude(student__island = '01').count() # 01 is Tarawa
-    totals['outer_f'] = enrolled_f.exclude(student__island = '01').count() # 01 is Tarawa
-    totals['outer'] = totals['outer_m'] + totals['outer_f']
-    if totals['outer'] == 0:
-        totals['outer_m_pc'] = totals['outer_f_pc'] = totals['outer_pc'] = 0
-    else:
-        totals['outer_m_pc'] = totals['outer_m']*100/totals['outer'] 
-        totals['outer_f_pc'] = totals['outer_f']*100/totals['outer']
-        totals['outer_pc'] = totals['outer']*100/totals['enrolled']
-
-    ## Students: Disability, gender diff'd ##
-    totals['disability_m'] = enrolled_m.filter(student__disability='True').count()
-    totals['disability_f'] = enrolled_f.filter(student__disability='True').count()
-    totals['disability'] = totals['disability_m'] + totals['disability_f']
-    if totals['disability'] == 0:
-        totals['disability_m_pc'] = totals['disability_f_pc'] = totals['disability_pc'] = 0
-    else:
-        totals['disability_m_pc'] = totals['disability_m']*100/totals['disability']
-        totals['disability_f_pc'] = totals['disability_f']*100/totals['disability']
-        totals['disability_pc'] = totals['disability']*100/totals['enrolled']
-    
-    stats['All'] = totals
-
+    courses = Course.objects.filter(year=year)
     for course in courses:
+        name = course.__unicode__() 
+        queryset = course.students.all()
+        if queryset.count()==0:
+            continue
+        stats[name] = total_stats(queryset)
+        
+        
+        '''
         course_stats = SortedDict()
-        name = course.__unicode__()
         
         enrolled_m = course.students.filter(gender='M')
         enrolled_f = course.students.filter(gender='F')
 
-        if course.students.all().count() == 0:
-            continue 
-        
         course_stats['enrolled'] = course.students.all().count()
         course_stats['enrolled_m'] = enrolled_m.count() 
         course_stats['enrolled_f'] = enrolled_f.count()
@@ -500,9 +393,9 @@ def student_reports(request, year=None):
             course_stats['disability_m_pc'] =course_stats['disability_m']*100/course_stats['disability'] 
             course_stats['disability_f_pc'] = course_stats['disability_f']*100/course_stats['disability'] 
             course_stats['disability_pc'] =course_stats['disability']*100/course_stats['enrolled'] 
-    
+        
         stats[name] = course_stats
-
+        '''
     return render_to_response('tafe/student_reports.html',{'stats':stats},RequestContext(request))
 
 ############### Reports ###############
@@ -524,3 +417,72 @@ def reports(request):
         form = ReportRequestForm()
 
     return render_to_response('tafe/reports.html', {'form':form}, RequestContext(request))
+
+def course_stats(queryset):
+    
+    return stats[name]
+
+def total_stats(queryset):
+    
+    queryset_m = queryset.filter(gender = 'M')
+    queryset_f = queryset.filter(gender = 'F')
+
+    if queryset.count()==0:
+        #return render_to_response('tafe/queryset_report.html',{},RequestContext(request))
+        return 0
+
+    totals = SortedDict()
+    ## Stats for all queryset ##
+    totals['queryset'] = queryset.count()    
+    totals['queryset_m'] = queryset_m.count() 
+    totals['queryset_f'] = queryset_f.count()
+    totals['queryset_m_pc'] = totals['queryset_m']*100/totals['queryset']
+    totals['queryset_f_pc'] = totals['queryset_f']*100/totals['queryset']
+        
+    ## Applicants: 16-24, gender diff'd ##
+    dob_for_25 = today-relativedelta(years=25) # date for those who are 25 today  
+    totals['queryset_24m'] = queryset_m.filter(dob__lte=dob_for_25).count()
+    totals['queryset_24f'] = queryset_f.filter(dob__lte=dob_for_25).count()
+    totals['queryset_24'] = totals['queryset_24m'] + totals['queryset_24f']
+    if totals['queryset_24']==0:
+        totals['queryset_24_pc'] = totals['queryset_24m_pc'] = totals['queryset_24f_pc'] = 0 
+    else:    
+        totals['queryset_24_pc'] = totals['queryset_24']*100/totals['queryset']
+        totals['queryset_24m_pc'] = totals['queryset_24m']*100/totals['queryset_24']
+        totals['queryset_24f_pc'] = totals['queryset_24f']*100/totals['queryset_24']
+    
+    ## Applicants: 25+, gender diff'd ##
+    totals['queryset_25m'] = queryset_m.filter(dob__gt=dob_for_25).count()
+    totals['queryset_25f'] = queryset_f.filter(dob__gt=dob_for_25).count()
+    totals['queryset_25'] = totals['queryset_25m'] + totals['queryset_25f']
+    if totals['queryset_25']==0:
+        totals['queryset_25m_pc'] = totals['queryset_25f_pc'] = totals['queryset_25_pc'] = 0 
+    else:
+        totals['queryset_25m_pc'] = totals['queryset_25m']*100/totals['queryset_25']
+        totals['queryset_25f_pc'] = totals['queryset_25f']*100/totals['queryset_25'] 
+        totals['queryset_25_pc'] = totals['queryset_25']*100/totals['queryset']
+
+    ## Applicants: Outer Islands, gender diff'd ##
+    totals['outer_m'] = queryset_m.exclude(island = '01').count() # 01 is Tarawa
+    totals['outer_f'] = queryset_f.exclude(island = '01').count() # 01 is Tarawa
+    totals['outer'] = totals['outer_m'] + totals['outer_f']
+    if totals['outer'] == 0:
+        totals['outer_m_pc'] = totals['outer_f_pc'] = totals['outer_pc'] = 0
+    else:
+        totals['outer_m_pc'] = totals['outer_m']*100/totals['outer'] 
+        totals['outer_f_pc'] = totals['outer_f']*100/totals['outer']
+        totals['outer_pc'] = totals['outer']*100/totals['queryset']
+
+    ## Applicants: Disability, gender diff'd ##
+    totals['disability_m'] = queryset_m.filter(disability = 1).count()
+    totals['disability_f'] = queryset_f.filter(disability = 1).count()
+    totals['disability'] = totals['disability_m'] + totals['disability_f']
+    if totals['disability'] == 0:
+        totals['disability_m_pc'] = totals['disability_f_pc'] = totals['disability_pc'] = 0
+    else:
+        totals['disability_m_pc'] = totals['disability_m']*100/totals['disability']
+        totals['disability_f_pc'] = totals['disability_f']*100/totals['disability']
+        totals['disability_pc'] = totals['disability']*100/totals['queryset']
+    
+    
+    return totals
