@@ -181,9 +181,9 @@ def applicant_reports(request, year=None):
     stats = SortedDict()
     
     queryset = Applicant.objects.filter(date_of_application__year=year).exclude(successful=1)
-    stats['All'] = total_stats(queryset) 
-    if stats['All'] == 0:
+    if queryset.count()==0:
         return render_to_response('tafe/applicants_report.html',{},RequestContext(request))
+    stats['All'] = total_stats(queryset) 
 
     ## Stats for Applicants per course ##
     newyear = str(year+1)
@@ -263,11 +263,12 @@ def student_reports(request, year=None):
     Island and disability. Stats considered per course and overall
     '''
     year = year or datetime.date.today().year
-    queryset = Student.objects.filter(enrolments__course__year__exact=year)
     stats = SortedDict()
+    
+    queryset = Student.objects.filter(enrolments__course__year__exact=year) 
+    if queryset.count()==0:
+       return render_to_response('tafe/student_reports.html',{},RequestContext(request))
     stats['All'] = total_stats(queryset) 
-    if stats['All'] == 0:
-        return render_to_response('tafe/student_reports.html',{},RequestContext(request))
     
     courses = Course.objects.filter(year=year)
     for course in courses:
