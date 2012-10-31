@@ -10,7 +10,7 @@ Succesful applicants are now enrolled
 {% endblock %}
 {% block coltype %}colMS{% endblock %}
 {% block content %}
-{{ block.super }}<h3>New Students:</h3>
+<h3>New Students:</h3>
 {% if applicants %}
     {% regroup applicants by first_letter as letter_list %} 
     {% for letter in letter_list %}

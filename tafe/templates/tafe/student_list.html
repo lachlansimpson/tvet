@@ -10,7 +10,7 @@ List of students enrolled
 {% endblock %}
 {% block coltype %}colMS{% endblock %}
 {% block content %}
-{{ block.super }}<h3>Student register</h3>
+<h3>Student register</h3>
 {% if student_list %}
     {% regroup student_list by first_letter as letter_list %} 
     {% for letter in letter_list %}

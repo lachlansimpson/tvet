@@ -335,13 +335,47 @@ class Assessment(models.Model):
     def get_year(self):
         return self.date_due.year
 
+class Subject(models.Model):
+    '''Represents individual subjects, classes, cohorts'''
+    name = models.CharField(max_length=30)
+    slug = models.SlugField(max_length=40)
+    semester = models.CharField(max_length=1, blank=True, choices=SEMESTER_CHOICES)
+    year = models.IntegerField()
+    staff_member = models.ForeignKey('Staff', blank=True, null=True)
+    students = models.ManyToManyField('Student', through='Grade', blank=True, null=True)
+
+    class Meta:
+        verbose_name='Unit of Competence'
+        verbose_name_plural='Units of Competence'
+    
+    def __unicode__(self):
+        '''Subject reference: subject name and the year given'''
+        return self.name + ', ' + str(self.year) 
+
+    @models.permalink	
+    def get_absolute_url(self):
+        return ('unit_view', [str(self.slug)])
+
+    def first_letter(self):
+        return self.name and self.name[0] or ''
+
+    def this_weeks_sessions(self):
+        '''These are used to return this week's sessions'''
+        last_monday = today - datetime.timedelta(days=today.weekday())
+        this_friday = today + datetime.timedelta( (4-today.weekday()) % 7 )
+        this_weeks_sessions = []
+        for session in self.sessions.all(): 
+            if session.date > last_monday and session.date < this_friday:
+                this_weeks_sessions.append(session)
+        return this_weeks_sessions
+
 class Course(models.Model):
     '''Represents Courses - a collection of subjects leading to a degree'''
     name = models.CharField(max_length=30)
     year = models.CharField(max_length=4)
     slug = models.SlugField(max_length=40)
     students = models.ManyToManyField('Student', through='Enrolment', blank=True, null=True)
-    subjects = models.ManyToManyField('Subject', related_name='courses', blank=True, null=True)
+    subjects = models.ManyToManyField('Subject', related_name='courses', blank=True, null=True, verbose_name=Subject._meta.verbose_name_plural)
 
     class Meta:
         verbose_name='Qualification'
@@ -584,40 +618,6 @@ class Student(Person):
     def attendance_before_today(self):
         l = self.attendance_records.exclude(session__date__gte =today).order_by('-session__date')
         return l
-
-class Subject(models.Model):
-    '''Represents individual subjects, classes, cohorts'''
-    name = models.CharField(max_length=30)
-    slug = models.SlugField(max_length=40)
-    semester = models.CharField(max_length=1, blank=True, choices=SEMESTER_CHOICES)
-    year = models.IntegerField()
-    staff_member = models.ForeignKey(Staff, blank=True, null=True)
-    students = models.ManyToManyField(Student, through='Grade', blank=True, null=True)
-
-    class Meta:
-        verbose_name='Unit of Competence'
-        verbose_name_plural='Units of Competence'
-    
-    def __unicode__(self):
-        '''Subject reference: subject name and the year given'''
-        return self.name + ', ' + str(self.year) 
-
-    @models.permalink	
-    def get_absolute_url(self):
-        return ('unit_view', [str(self.slug)])
-
-    def first_letter(self):
-        return self.name and self.name[0] or ''
-
-    def this_weeks_sessions(self):
-        '''These are used to return this week's sessions'''
-        last_monday = today - datetime.timedelta(days=today.weekday())
-        this_friday = today + datetime.timedelta( (4-today.weekday()) % 7 )
-        this_weeks_sessions = []
-        for session in self.sessions.all(): 
-            if session.date > last_monday and session.date < this_friday:
-                this_weeks_sessions.append(session)
-        return this_weeks_sessions
 
 class Timetable(models.Model):
     year = models.IntegerField()

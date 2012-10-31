@@ -6,19 +6,13 @@ from tafe.views import session_create, session_view, session_attendance_view, ti
 urlpatterns = patterns('tafe.views',
     url(r'^$', 'index'),
     
-    url(r'^reports/$', reports, name='reports'),
-    
-    url(r'^students/$', ListView.as_view(queryset=Student.objects.all().order_by('surname'))),
-    url(r'^students/reports/$', student_reports, name='student_reports'),
-    url(r'^students/reports/(?P<year>\d{4})/$', student_reports, name='student_reports'),
-    url(r'^student/(?P<slug>[-\w]+)/$', DetailView.as_view(model=Student), name='student_view'),
-
     url(r'^applicants/$', ListView.as_view(queryset=Applicant.current.order_by('surname'))),
-    url(r'^applicants/reports/$', applicant_reports, name='applicant_reports'),
-    url(r'^applicants/reports/(?P<year>\d{4})/$', applicant_reports, name='applicant_reports'),
     url(r'^applicants/successful/$', 'applicant_success'),
     url(r'^applicant/add/$', CreateView.as_view(model=Applicant)),
     url(r'^applicant/(?P<slug>[-\w]+)/$', DetailView.as_view(model=Applicant), name='applicant_view'),
+
+    url(r'^students/$', ListView.as_view(queryset=Student.objects.all().order_by('surname'))),
+    url(r'^student/(?P<slug>[-\w]+)/$', DetailView.as_view(model=Student), name='student_view'),
 
     url(r'^staff/$', ListView.as_view(queryset=Staff.people.all().order_by('surname'))),
     url(r'^staff/(?P<slug>[-\w]+)/$', DetailView.as_view(model=Staff), name='staff_view'),
@@ -45,4 +39,11 @@ urlpatterns = patterns('tafe.views',
     url(r'^session/create/$', session_create), 
     url(r'^session/(?P<year>\d{4})/(?P<month>\d{1,2})/(?P<day>\d{1,2})/(?P<slug>[-\w]+)/$', session_view, name='session_view'), 
     url(r'^session/(?P<year>\d{4})/(?P<month>\d{1,2})/(?P<day>\d{1,2})/(?P<slug>[-\w]+)/attendance/$', session_attendance_view, name='session_attendance_view'), 
+    
+    url(r'^reports/$', reports, name='reports'),
+    url(r'^report/students/$', student_reports, name='student_reports'),
+    url(r'^report/students/(?P<year>\d{4})/$', student_reports, name='student_reports'),
+    url(r'^report/applicants/$', applicant_reports, name='applicant_reports'),
+    url(r'^report/applicants/(?P<year>\d{4})/$', applicant_reports, name='applicant_reports'),
+    
 )

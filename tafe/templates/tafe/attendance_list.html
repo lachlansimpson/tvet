@@ -8,8 +8,6 @@ Attendance list
 {% endblock %}
 {% block coltype %}colMS{% endblock %}
 {% block content %}
-{{ block.super }}
-
 {% if attendance_list %}
     {% regroup attendance_list|dictsort:"session.date" by session.date as dated_list %} 
     {% for date in dated_list %}

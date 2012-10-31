@@ -10,7 +10,6 @@ Course list page of the portal.
 {% endblock %}
 {% block coltype %}colMS{% endblock %}
 {% block content %}
-    {{ block.super }}
 <h3>Units Available by Qualification</h3>    
 {% for course in courses %}
     <h3><a href="{{ course.get_absolute_url }}">{{ course.name }}</a></h3>

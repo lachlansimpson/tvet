@@ -115,7 +115,7 @@ def session_attendance_view(request, year, month, day, slug):
 def units_by_qualifications_view(request):
     ''' Show all units or Subjects available for this Course'''
     courses = Course.objects.all().order_by('name')
-    return render_to_response('tafe/units_by_qualifications.html',{'courses':courses})
+    return render_to_response('tafe/units_by_qualifications.html',{'courses':courses}, RequestContext(request))
 
 @login_required
 def unit_view(request, slug):

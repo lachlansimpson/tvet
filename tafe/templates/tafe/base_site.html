@@ -11,33 +11,32 @@
 <ul class="sf-menu clear">
     <li class="current"><a href="/tafe/">Home</a></li>
         {% if title %} &rsaquo; {{ title }}{% endif %}
-    <li><a href="/tafe/applicants/">Applicants</a>
+        <li><a href="/tafe/applicants/" title="The list of all applicants">Applicants</a>
         <ul>
-            <li><a href="/tafe/applicants/successful/">Successful Applicants</a>
-            <li><a href="/admin/tafe/applicant/add/">New Applicants</a>
+            <li><a href="/admin/tafe/applicant/add/">New Applicants</a> 
+            <li><a href="/tafe/applicants/successful/">Mark as succesful</a>
         </ul>
     </li>
-    <li><a href="/tafe/students/">Students</a>
+    <li><a href="/tafe/students/" title="The list of all students">Students</a>
         <ul>
-            <li><a href="/tafe/students/">List all enrolled students</a></li>
-            <li><a href="/tafe/students/all/">List all students</a></li>
             <li><a href="/admin/tafe/student/add/">Add a new Student</a></li>
         </ul>        
     </li>
-    <li><a href="/tafe/staff/">Staff</a>
+        <li><a href="/tafe/staff/" title="The list of all staff">Staff</a>
         <ul>
-            <li><a href="/tafe/staff/all/">List all staff</a></li>
             <li><a href="/admin/tafe/staff/add/">Add a new Staff Member</a></li>
         </ul>        
     </li>
     <li><a href="/tafe/qualifications/">Qualifications</a>
         <ul>
             <li><a href="/admin/tafe/qualification/add/">Add a new Qualification</a></li>
+            <li><a href="/tafe/units/qualifications/">List available units by qualification</a></li>
             <li><a href="/tafe/enrolments/">Enrolments</a></li>
         </ul>
     </li>
     <li><a href="/tafe/units/">Units</a>
         <ul>
+            <li><a href="/admin/tafe/subject/add/">Add a new Unit</a></li>
             <li><a href="/tafe/session/create/">Create a new recurring session</a></li>
             <li><a href="/tafe/grades/">Grades</a></li>
             <li><a href="/tafe/attendance/all/">Attendance</a></li>
@@ -47,6 +46,12 @@
         <ul>
             <li><a href="/tafe/timetable/this_week/">This week's timetable</a></li>
             <li><a href="/tafe/timetable/today/">Today's timetable</a></li>
+        </ul>
+    </li>
+    <li><a href="/tafe/reports/">Reports</a>
+        <ul>
+            <li><a href="/tafe/report/students/">Student report</a></li>
+            <li><a href="/tafe/report/applicants/">Applicant report</a></li>
         </ul>
     </li>
     <li><a href="/search/">Search</a></li>

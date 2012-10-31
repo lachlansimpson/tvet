@@ -10,7 +10,6 @@ Units of Competance list
 {% endblock %}
 {% block coltype %}colMS{% endblock %}
 {% block content %}
-{{ block.super }}
 {% if subject_list %}
     {% regroup subject_list|dictsort:"first_letter" by first_letter as letter_list %} 
     {% for letter in letter_list %}

@@ -6,12 +6,11 @@ Course list page of the portal.
 {% endcomment %}
 
 {% block title %}
-    Course list
+    Qualification list
 {% endblock %}
 {% block coltype %}colMS{% endblock %}
 {% block content %}
-    {{ block.super }}
-<h3>Courses Available</h3>    
+<h3>Qualifications Available</h3>    
 {% if course_list %}
     <h3 id="{{ letter.grouper }}">{{ letter.grouper }}</h3>
     <ul>
