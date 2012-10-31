@@ -24,7 +24,10 @@ Student detail
         {% if student.disability %}
             Disability: {{ student.disbility_description }}<br />
         {% endif %}
+        {% if student.education_level %}
         Highest Education level: {{ student.get_education_level_display }}<br />
+        {% endif %}
+        Application details: <a href="{{ student.application_details.get_absolute_url }}">{{ student.application_details }}</a>
     </div>
     <div id="enrolment">
         <h3>Enrolment details</h3>
@@ -65,9 +68,10 @@ Student detail
             {% endif %}
         {% endfor %}
     </div>
+    <div id="admin">
     <h5>Admin</h5>
     Date added: {{ student.added }}<br />
-    Date last changed: {{ student.updated }}
-
+    Last change: {{ student.last_change_by}}, {{ student.updated }}
+    </div>
 </div>
 {% endblock %}

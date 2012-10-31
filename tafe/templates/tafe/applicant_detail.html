@@ -28,6 +28,7 @@ Applicant detail
     Highest Education level: {{ applicant.get_education_level_display }}<br />
     </div>
     <div id="application-details">
+        <h2>Applicantion Details</h2>
         Date Applied: {{ applicant.date_of_application }} 
         {% if applicant.short_listed %}
         <div id="shortlist">
@@ -44,10 +45,10 @@ Applicant detail
         {% endif %}        
     </div>
 
-
+    <div id="admin">
     <h5>Admin</h5>
     Date added: {{ applicant.added }}<br />
-    Date last changed: {{ applicant.updated }}
-
+    Last change: {{ applicant.last_change_by}}, {{ applicant.updated }}
+    </div>
 </div>
 {% endblock %}

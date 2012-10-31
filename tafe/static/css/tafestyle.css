@@ -9,6 +9,35 @@
  *
  */
 
+#bio, #enrolment, #units, #attendance, #application-details {
+    -moz-border-radius: 6px;
+    -webkit-border-radius: 6px;
+    border-radius: 6px;
+    background-color: #C7B6A5;
+    width: 45%;
+    margin: 5px;
+    padding: 0 10px 15px 10px;
+}
+
+#bio, #attendance {
+    float: left;
+}
+
+#enrolment, #units, #application-details {
+    float: right;
+}
+
+#admin {
+    -moz-border-radius: 6px;
+    -webkit-border-radius: 6px;
+    border-radius: 6px;
+    clear: both;
+    background-color: #ECE5DF;
+    width: 45%;
+    margin: 5px;
+    padding: 5px 10px 15px 10px;
+}
+
 #statblock {
     width: 100%;
     clear: both;
