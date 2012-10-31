@@ -4,9 +4,9 @@ The Main page for all of the reports with a choosing method
 {% endcomment %}
 {% block coltype %}colMS{% endblock %}
 {% block content %}
-    {{ block.super }}
     <form action="/tafe/reports/" method="post">{% csrf_token %} 
         {{ form.as_p }}
         <input type="submit" value="Submit">
     </form>
+    <p>Note that Applicants reports are based on the year they are entered</p>
 {% endblock %}

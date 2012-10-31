@@ -27,12 +27,12 @@ Student detail
         {% if student.education_level %}
         Highest Education level: {{ student.get_education_level_display }}<br />
         {% endif %}
-        Application details: <a href="{{ student.application_details.get_absolute_url }}">{{ student.application_details }}</a>
+        <a href="{{ student.tsiapplication_details.get_absolute_url }}">Application Record</a>
     </div>
     <div id="enrolment">
         <h3>Enrolment details</h3>
         {% for enrolment in student.enrolments.all %}
-            <p><a href="{{ enrolment.course.get_absolute_url }}">{{ enrolment.course.name }}</a><br />
+            <p>Qualification: <a href="{{ enrolment.course.get_absolute_url }}">{{ enrolment.course.name }}</a><br />
             Date started: {{ enrolment.date_started }}<br />
 
             {% if enrolment.date_ended %}
@@ -48,7 +48,7 @@ Student detail
     <div id="units">
         <h3>Units of Competence</h3>
         {% for unit in student.grades.all %}
-            <p>Subject: <a href="{{unit.subject.get_absolute_url}}">{{ unit.subject.name }}</a>, {{ unit.subject.year }}, semester: {{ unit.subject.semester }}<br />
+            <p>Units: <a href="{{unit.subject.get_absolute_url}}">{{ unit.subject.name }}</a>, {{ unit.subject.year }}, semester: {{ unit.subject.semester }}<br />
             Date Started: {{ unit.date_started }}<br /> 
             {% if unit.results.count != 0 %}
                 {% for result in unit.results.all %}
