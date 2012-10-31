@@ -842,14 +842,23 @@ table#change-history tbody th {
 /* HEADER */
 
 #header {
-    background: #417690;
-    color: #ffc;
+    background: white;
+    color: #134780;
     overflow: hidden;
     margin: 10px 15px;    
 }
+/* KIT TVET DATABASE COLOURS
+ *
+ * The hex values for the colours are as follows:
+ * turquoise: 56D6C9
+ * dark blue: 134780
+ * sand: C7B6A5
+ * pale sand background colour: ECE5DF
+ *
+ */
 
 #header a:link, #header a:visited {
-    color: white;
+    color: #134780;
 }
 
 #header a:hover {
@@ -857,11 +866,11 @@ table#change-history tbody th {
 }
 
 #branding h1 {
-    padding: 0 10px;
+    padding: 20px 10px 10px;
     font-size: 18px;
     margin: 8px 0;
     font-weight: normal;
-    color: #f4f379;
+    color: #134780;
 }
 
 #branding h2 {
@@ -872,13 +881,18 @@ table#change-history tbody th {
     color: #ffc;
 }
 
+#branding img {
+    float: left;
+    padding:  0 20px;
+}
+
 #user-tools {
     /*position: absolute;*/
     top: 0;
     right: 0;
-    padding: 1.2em 10px;
+    padding: /*1.2em*/ 0 10px;
     font-size: 11px;
-    text-align: right;
+    /*text-align: right;*/
 }
 
 /* SIDEBAR */

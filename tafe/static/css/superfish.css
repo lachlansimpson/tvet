@@ -71,18 +71,20 @@ ul.sf-menu li li li.sfHover ul {
 	color:			#13a;
 }
 .sf-menu li {
-	background:		#BDD2FF;
+	/*background:		#BDD2FF;*/
+	background:		#ECE5DF;
 }
 .sf-menu li li {
-	background:		#AABDE6;
+/*	background:		#AABDE6;*/
 }
 .sf-menu li li li {
 	background:		#9AAEDB;
 }
 .sf-menu li:hover, .sf-menu li.sfHover,
 .sf-menu a:focus, .sf-menu a:hover, .sf-menu a:active {
-	background:		#CFDEFF;
-	outline:		0;
+/*	background:		#CFDEFF;*/
+	background:             #56D6C9;
+        outline:		0;
 }
 
 /*** arrows **/

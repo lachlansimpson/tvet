@@ -39,9 +39,9 @@
             <!-- Header -->
             <div id="header">
                 <div id="branding">
-                    {% block branding %}{% endblock %}
-                </div>
+                    {% block branding %}<img src="{{ STATIC_URL }}images/kit.png" width=80 height=90 />{% endblock %}
                 {% if user.is_active and user.is_staff %}
+                </div>
                 <div id="user-tools">
                     {% trans 'Welcome,' %}
                     <strong>{% filter force_escape %}{% firstof user.first_name user.username %}{% endfilter %}</strong>.
