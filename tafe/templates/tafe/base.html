@@ -2,7 +2,6 @@
 <html lang="{{ LANGUAGE_CODE|default:"en-us" }}" {% if LANGUAGE_BIDI %}dir="rtl"{% endif %}>
     <head>
         <title>{% block title %}{% endblock %}</title>
-        <link rel="stylesheet" type="text/css" href="{% block stylesheet %}{% static "admin/css/base.css" %}{% endblock %}" />
         {% block extrastyle %}
 
         <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}css/superfish.css" media="screen">
@@ -34,7 +33,7 @@
     <body class="{% if is_popup %}popup {% endif %}{% block bodyclass %}{% endblock %}">
 
         <!-- Container -->
-        <div id="contaitafe">
+        <div id="container">
 
             {% if not is_popup %}
             <!-- Header -->
@@ -62,11 +61,6 @@
 
             <div class="breadcrumbs">
                 {% block breadcrumbs %}     
-                {% comment %} 
-                {% if user.is_active and user.is_staff %}
-                <a href="{% url 'admin:index' %}">{% trans 'Admin' %}</a>
-                {% endif %}
-                {% endcomment %}
                 {% endblock %}
             </div>
 

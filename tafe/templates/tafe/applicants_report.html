@@ -16,22 +16,12 @@ Applicant Reports
     {% else %}
         {% for name, stat in stats.items %}    
             <div id="statblock">
-                <div id="stats-row1" class="stats-row">
-                    <h2>{{ name }} Applicants</h2> 
-                </div>
-                <div id="stats-row2" class="stats-row">
-                    <div class="stat-title">
-                    &nbsp;
-                    </div>
-                    <div class="stat">
-                    <strong>Female</strong>
-                    </div>
-                    <div class="stat">
-                    <strong>Male</strong>
-                    </div>
-                    <div class="stat">
-                    <strong>Total</strong>
-                    </div>
+                <div id="stats-title" class="stats-row"><h2>{{ name }} Applicants</h2></div>
+                <div id="stats-headers" class="stats-row">
+                    <div class="stat-title">&nbsp;</div>
+                    <div class="stat"><strong>Female</strong></div>
+                    <div class="stat"><strong>Male</strong></div>
+                    <div class="stat"><strong>Total</strong></div>
                 </div>    
                 <div id="stats-24" class="stats-row">
                     <div class="stat-title">
