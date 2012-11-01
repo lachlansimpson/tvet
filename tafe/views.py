@@ -4,7 +4,7 @@ from tafe.models import Timetable, Session, Course, StudentAttendance, Subject, 
 from tafe.forms import SessionRecurringForm, ApplicantSuccessForm, ReportRequestForm
 from django.utils.datastructures import SortedDict
 from django.shortcuts import render_to_response, get_object_or_404, redirect
-from django.http import HttpResponseRedirect
+from django.http import HttpResponse, HttpResponseRedirect
 from django.contrib.auth.decorators import login_required
 from django.template import RequestContext
 from django.forms.models import modelformset_factory
@@ -171,33 +171,6 @@ def applicant_success(request):
 
     return render_to_response('tafe/applicant_success.html', {'form':form}, RequestContext(request))
 
-@login_required
-def applicant_reports(request, year=None):
-    '''
-    View returns the statistics on # of applicants, diff'd on gender across age ranges (16-24, 25+)
-    Island and disability. Stats considered per course and overall
-    '''
-    year = year or datetime.date.today().year
-    stats = SortedDict()
-    
-    queryset = Applicant.objects.filter(date_of_application__year=year).exclude(successful=1)
-    if queryset.count()==0:
-        return render_to_response('tafe/applicants_report.html',{},RequestContext(request))
-    stats['All'] = total_stats(queryset) 
-
-    ## Stats for Applicants per course ##
-    newyear = str(year+1)
-    
-    courses = Course.objects.filter(year__exact=newyear)
-    for course in courses: 
-        name = course.__unicode__()
-        queryset = course.applicants.exclude(successful=1).exclude(successful=0)
-        if queryset.count()==0:
-            continue
-        stats[name] = total_stats(queryset)
-       
-    return render_to_response('tafe/applicants_report.html',{'stats':stats}, RequestContext(request))        
-
 ############### Timetables ###############
 
 @login_required
@@ -256,6 +229,77 @@ def assessment_view(request, unit, slug):
 
 ############### Students ###############
 
+############### Reports ###############
+@login_required
+def reports(request):
+    '''
+    GETs a year and report subject (Applicants, Students, Enrolments, Staff) and POSTS
+    the relevant report
+    '''
+    if request.method=='POST':
+        form = ReportRequestForm(request.POST)
+        if form.is_valid():
+            year = int(form.cleaned_data['year'])
+            data_type = form.cleaned_data['data_type']
+            if data_type == '1':
+                return redirect(reverse('student_reports', kwargs={'year':year}))
+            elif data_type == '2':
+                return redirect(reverse('applicant_reports', kwargs={'year':year}))
+
+        else:
+            pass
+    else:
+        form = ReportRequestForm()
+
+    return render_to_response('tafe/reports.html', {'form':form}, RequestContext(request))
+
+@login_required
+def rawreports(request):
+    ''' Offers all the data as CSV '''
+
+def download_csv(self, request, queryset):
+    import csv
+    import StringIO
+
+    f = StringIO.StringIO()
+    writer = csv.writer(f)
+    writer.writerow([])
+
+    for s in queryset:
+        writer.writerow([])
+
+    f.seek(0)
+    response = HttpResponse(f, content_type='text/csv')
+    response['Content-Disposition'] = 'attachment; filename=download.csv'
+    return response
+
+@login_required
+def applicant_reports(request, year=None):
+    '''
+    View returns the statistics on # of applicants, diff'd on gender across age ranges (16-24, 25+)
+    Island and disability. Stats considered per course and overall
+    '''
+    year = year or datetime.date.today().year
+    stats = SortedDict()
+    
+    queryset = Applicant.objects.filter(date_of_application__year=year).exclude(successful=1)
+    if queryset.count()==0:
+        return render_to_response('tafe/applicants_report.html',{},RequestContext(request))
+    stats['All'] = total_stats(queryset) 
+
+    ## Stats for Applicants per course ##
+    newyear = str(year+1)
+    
+    courses = Course.objects.filter(year__exact=newyear)
+    for course in courses: 
+        name = course.__unicode__()
+        queryset = course.applicants.exclude(successful=1).exclude(successful=0)
+        if queryset.count()==0:
+            continue
+        stats[name] = total_stats(queryset)
+       
+    return render_to_response('tafe/applicants_report.html',{'stats':stats}, RequestContext(request))        
+
 @login_required
 def student_reports(request, year=None):
     '''
@@ -279,26 +323,6 @@ def student_reports(request, year=None):
         stats[name] = total_stats(queryset)
     
     return render_to_response('tafe/student_reports.html',{'stats':stats},RequestContext(request))
-
-############### Reports ###############
-@login_required
-def reports(request):
-    if request.method=='POST':
-        form = ReportRequestForm(request.POST)
-        if form.is_valid():
-            year = int(form.cleaned_data['year'])
-            data_type = form.cleaned_data['data_type']
-            if data_type == '1':
-                return redirect(reverse('student_reports', kwargs={'year':year}))
-            elif data_type == '2':
-                return redirect(reverse('applicant_reports', kwargs={'year':year}))
-
-        else:
-            pass
-    else:
-        form = ReportRequestForm()
-
-    return render_to_response('tafe/reports.html', {'form':form}, RequestContext(request))
 
 def total_stats(queryset):
     
