@@ -78,7 +78,7 @@
 		bcClass     : 'sf-breadcrumb',
 		menuClass   : 'sf-js-enabled',
 		anchorClass : 'sf-with-ul',
-		arrowClass  : 'sf-sub-indicator',
+                arrowClass  : 'sf-sub-indicator',
 		shadowClass : 'sf-shadow'
 	};
 	sf.defaults = {
@@ -88,7 +88,7 @@
 		delay		: 800,
 		animation	: {opacity:'show'},
 		speed		: 'normal',
-		autoArrows	: true,
+		autoArrows	: false,
 		dropShadows : true,
 		disableHI	: false,		// true disables hoverIntent detection
 		onInit		: function(){}, // callback functions

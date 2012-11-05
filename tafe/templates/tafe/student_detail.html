@@ -9,8 +9,8 @@ Student detail
 {% endblock %}
 {% block coltype %}colMS{% endblock %}
 {% block content %}
-<div id="content-left">
-    <div id="bio">
+<div id="content-left" class="grid_12">
+    <div id="bio" class="grid_5">
         <h2>{{ student }} - {{ student.get_id}}</h2>
         Date of birth: {{ student.dob }}    Age: {{ student.age_today }}<br />
         Gender: {{ student.get_gender_display }}<br />
@@ -29,7 +29,7 @@ Student detail
         {% endif %}
         <a href="{{ student.tsiapplication_details.get_absolute_url }}">Application Record</a>
     </div>
-    <div id="enrolment">
+    <div id="enrolment" class="grid_5">
         <h3>Enrolment details</h3>
         {% for enrolment in student.enrolments.all %}
             <p>Qualification: <a href="{{ enrolment.course.get_absolute_url }}">{{ enrolment.course.name }}</a><br />
@@ -45,7 +45,9 @@ Student detail
             </p>
         {% endfor %}
     </div>
-    <div id="units">
+    <div class="clear"></div>
+    {% if student.grades.all %}
+    <div id="units" class="grid_5">
         <h3>Units of Competence</h3>
         {% for unit in student.grades.all %}
             <p>Units: <a href="{{unit.subject.get_absolute_url}}">{{ unit.subject.name }}</a>, {{ unit.subject.year }}, semester: {{ unit.subject.semester }}<br />
@@ -57,18 +59,23 @@ Student detail
             {% endif %} 
             </p>
         {% endfor %}
+    
     </div>
-    <div id="attendance">
-        <h3>Attendence record</h3> 
-        {% for record in student.attendance_before_today %}
-            {% if record.reason == '0' %}
-                {{ record.session.date|date:"d/m" }}, {{ record.session.subject.name }}, {{ record.get_reason_display }}<br />
-            {% else %}
-                {{ record.session.date|date:"d/m" }}, {{ record.session.subject.name }}, {{ record.get_reason_display }},  {{ record.get_absent_display }}<br />
-            {% endif %}
-        {% endfor %}
-    </div>
-    <div id="admin">
+    {% if student.attendance_before_today %}
+        <div id="attendance" class="grid_5">
+            <h3>Attendence record</h3> 
+            {% for record in student.attendance_before_today %}
+                {% if record.reason == '0' %}
+                    {{ record.session.date|date:"d/m" }}, {{ record.session.subject.name }}, {{ record.get_reason_display }}<br />
+                {% else %}
+                    {{ record.session.date|date:"d/m" }}, {{ record.session.subject.name }}, {{ record.get_reason_display }},  {{ record.get_absent_display }}<br />
+                {% endif %}
+            {% endfor %}
+   
+        </div>
+    {% endif %} <!-- endif student.attendance_before_today -->
+    {% endif %} <!-- endif student.grades.all -->
+    <div id="admin" class="grid_5">
     <h5>Admin</h5>
     Date added: {{ student.added }}<br />
     Last change: {{ student.last_change_by}}, {{ student.updated }}

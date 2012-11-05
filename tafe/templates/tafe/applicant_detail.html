@@ -1,7 +1,7 @@
 {% extends "tafe/base_site.html" %}
 
 {% comment %}
-Student detail page of the portal.
+Applicant detail page of the portal.
 {% endcomment %}
 
 {% block title %}
@@ -9,25 +9,25 @@ Applicant detail
 {% endblock %}
 {% block coltype %}colMS{% endblock %}
 {% block content %}
-<div id="content-left">
-    <div id="bio">
+<div id="content-left grid_12">
+    <div id="bio" class="grid_5">
     <h2>{{ applicant }} - {{ applicant.applied_for }}</h2>
-    Date of birth: {{ applicant.dob }}<br />
-    Gender: {{ applicant.get_gender_display }}<br />
-    Island: {{ applicant.get_island_display }}<br />
-    Age: {{ applicant.age_today }}    Age Group: {{ applicant.age_group }}<br />
+    <p>Date of birth: {{ applicant.dob }}</p>
+    <p>Gender: {{ applicant.get_gender_display }}</p>
+    <p>Island: {{ applicant.get_island_display }}</p> 
+    <p>Age: {{ applicant.age_today }}    Age Group: {{ applicant.age_group }}</p>
     {% if applicant.phone %}
-    Phone: {{ applicant.phone }}<br />
+    <p>Phone: {{ applicant.phone }}</p>
     {% endif %}
     {% if applicant.email %}
-    Email: {{ applicant.email }}<br /> 
+    <p>Email: {{ applicant.email }}</p> 
     {% endif %}
     {% if applicant.disability %}
-    Disability: {{ applicant.disbility_description }}<br />
+    <p>Disability: {{ applicant.disbility_description }}</p>
     {% endif %}
-    Highest Education level: {{ applicant.get_education_level_display }}<br />
+    <p>Education: {{ applicant.get_education_level_display }}</p>
     </div>
-    <div id="application-details">
+    <div id="application-details" class="grid_4">
         <h2>Applicantion Details</h2>
         Date Applied: {{ applicant.date_of_application }} 
         {% if applicant.short_listed %}
@@ -45,7 +45,7 @@ Applicant detail
         {% endif %}        
     </div>
 
-    <div id="admin">
+    <div id="admin" class="grid_5">
     <h5>Admin</h5>
     Date added: {{ applicant.added }}<br />
     Last change: {{ applicant.last_change_by}}, {{ applicant.updated }}

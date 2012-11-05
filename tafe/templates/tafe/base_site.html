@@ -1,14 +1,15 @@
 {% extends "tafe/base.html" %}
-{% load admin_static %}
+{% load admin_static %}{% load url from future %}
 
 {% block title %}{{ title }}KIT Student Management System{% endblock %}
 
 {% block branding %}{{ block.super }}
-    <a href="/tafe/"><h1 id="site-name">KIT Student Management System</h1></a>
+<a href="/tafe/"><div id="site-name">KIT Student Management System</div>
+    <img src="{{ STATIC_URL }}images/kit-header.jpg" /></a>
 {% endblock %}
 
 {% block breadcrumbs %}
-<ul class="sf-menu clear">
+<ul class="sf-menu">
     <li class="current"><a href="/tafe/">Home</a></li>
         {% if title %} &rsaquo; {{ title }}{% endif %}
         <li><a href="/tafe/applicants/" title="The list of all applicants">Applicants</a>

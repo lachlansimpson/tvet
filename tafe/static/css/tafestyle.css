@@ -9,22 +9,30 @@
  *
  */
 
+#site-name {
+    display: none;
+}
+
 #bio, #enrolment, #units, #attendance, #application-details {
     -moz-border-radius: 6px;
     -webkit-border-radius: 6px;
     border-radius: 6px;
     background-color: #C7B6A5;
-    width: 45%;
-    margin: 5px;
-    padding: 0 10px 15px 10px;
+    /*width: 45%;
+    margin: 5px;*/
+    padding: 0 10px 10px 10px;
 }
 
 #bio, #attendance {
-    float: left;
+    /*float: left;*/
 }
 
 #enrolment, #units, #application-details {
-    float: right;
+/*    float: right;*/
+}
+
+#units, #attendance, #admin {
+    margin-top: 10px;
 }
 
 #admin {
@@ -33,9 +41,7 @@
     border-radius: 6px;
     clear: both;
     background-color: #ECE5DF;
-    width: 45%;
-    margin: 5px;
-    padding: 5px 10px 15px 10px;
+    padding: 5px 10px 10px 10px;
 }
 
 #statblock {
@@ -173,7 +179,7 @@ h4 {
 
 h5 {
     font-size: 10px;
-    margin: 1.5em 0 .5em 0;
+    margin: .5em 0 .5em 0;
     color: #666;
     text-transform: uppercase;
     letter-spacing: 1px;
@@ -804,17 +810,18 @@ table#change-history tbody th {
 #container {
     position: relative;
     width: 100%;
-    min-width: 760px;
+    /*min-width: 760px;*/
     padding: 0;
 }
 
 #content {
-    margin: 10px 15px;
+    /*margin: 10px 15px;*/
 }
 
 #header {
     /*width: 100%; */
-    margin: 10px 15px 10px 15px;
+    /*margin: 10px 15px 10px 15px;*/
+    margin: 10px 0px 10px 0px;
 }
 
 #content-main {

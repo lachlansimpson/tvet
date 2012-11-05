@@ -4,12 +4,15 @@
         <title>{% block title %}{% endblock %}</title>
         {% block extrastyle %}
 
-        <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}css/superfish.css" media="screen">
         <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}css/tafestyle.css" media="screen">
-        {% comment %}<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js"></script>
+        <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}css/960_12_col.css" media="screen">
+        <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}css/superfish.css" media="screen">  
+        
+        {% comment %}
+        <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js"></script>
         {% endcomment %}
+        
         <script type="text/javascript" src="{{ STATIC_URL }}js/jquery-1.8.1.min.js"></script>
-
         <script type="text/javascript" src="{{ STATIC_URL }}js/hoverIntent.js"></script>
         <script type="text/javascript" src="{{ STATIC_URL }}js/superfish.js"></script>
         <script type="text/javascript">
@@ -33,16 +36,16 @@
     <body class="{% if is_popup %}popup {% endif %}{% block bodyclass %}{% endblock %}">
 
         <!-- Container -->
-        <div id="container">
+        <div id="container" class="container_12">
 
             {% if not is_popup %}
             <!-- Header -->
-            <div id="header">
+            <div id="header" class="grid_12">
                 <div id="branding">
-                    {% block branding %}<img src="{{ STATIC_URL }}images/kit.png" width=80 height=90 />{% endblock %}
+                    {% block branding %}{% endblock %}
                 {% if user.is_active and user.is_staff %}
                 </div>
-                <div id="user-tools">
+                <div id="user-tools" class="grid_5 push_7" >
                     {% trans 'Welcome,' %}
                     <strong>{% filter force_escape %}{% firstof user.first_name user.username %}{% endfilter %}</strong>.
                     {% block userlinks %}
@@ -58,12 +61,9 @@
                 {% block nav-global %}{% endblock %}
             </div>
             <!-- END Header -->
-
-            <div class="breadcrumbs">
-                {% block breadcrumbs %}     
-                {% endblock %}
+            <div class="breadcrumbs grid_12">
+                {% block breadcrumbs %}{% endblock %}
             </div>
-
             {% endif %}
 
             {% block messages %}
@@ -75,7 +75,7 @@
             {% endblock messages %}
 
             <!-- Content -->
-            <div id="content" class="{% block coltype %}colM{% endblock %}">
+            <div id="content" class="{% block coltype %}colM{% endblock %} grid_12">
                 {% block pretitle %}{% endblock %}
                 {% block content_title %}{% if title %}<h1>{{ title }}</h1>{% endif %}{% endblock %}
                 {% block content %}
@@ -84,37 +84,6 @@
                     {{ content }}
                 </div>
                 <div id="content-related">
-                    <section>
-                    <h3>General Lists</h3>
-                    <h4>Students and Staff</h4>
-                    <a href="/tafe/students/">List all enrolled students</a><br />
-                    <a href="/tafe/students/all/">List all students</a><br />
-                    <a href="/tafe/staff/">List all employed staff</a><br />
-                    <a href="/tafe/staff/all/">List all staff</a>
-
-                    <h4>Qualifications</h4>
-                    <a href="/tafe/qualifications/">List Course available</a><br />
-                    <a href="/tafe/qualifications/all/">List all Courses</a><br />
-
-                    <h4>Units</h4>
-                    <a href="/tafe/units/">List available units</a><br />
-                    <a href="/tafe/units/qualifications/">List available units by qualification</a><br />
-                    <a href="/tafe/units/all/">List all units</a><br />
-                    
-                    <h4>Enrolments and Grades</h4>
-                    <a href="/tafe/enrolments/">All current Enrolments</a><br />
-                    <a href="/tafe/enrolments/all/">All Enrolments</a><br />
-                    <a href="/tafe/grades/">All current Grades</a><br />
-                    <a href="/tafe/grades/all/">All Grades</a><br />
-
-                    </section>
-                    <section>
-                    <h3>Add a new...</h3>
-                    <a href="/admin/tafe/student/add/">Create a new student</a><br />
-                    <a href="/admin/tafe/grade/add/">Creato a new grade</a><br />
-                    <a href="/admin/tafe/qualification/add/">Create a new qualification</a><br />
-                    <a href="/admin/tafe/enrolments/add/">Create a new enrolments</a><br />
-                    </section>
                 </div>
                 {% endblock %}
                 {% block sidebar %}

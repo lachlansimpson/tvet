@@ -270,7 +270,7 @@ def download_csv(self, request, queryset):
 
     f.seek(0)
     response = HttpResponse(f, content_type='text/csv')
-    response['Content-Disposition'] = 'attachment; filename=download.csv'
+    response['Content-Disposition'] = 'attachment; filename=%s.csv' % slugify(model.__unicode__)
     return response
 
 @login_required
