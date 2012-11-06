@@ -13,25 +13,21 @@
     display: none;
 }
 
-#bio, #enrolment, #units, #attendance, #application-details {
+#assessments, #sessions, #bio, #enrolment, #units, #attendance, #application-details {
     -moz-border-radius: 6px;
     -webkit-border-radius: 6px;
     border-radius: 6px;
     background-color: #C7B6A5;
-    /*width: 45%;
-    margin: 5px;*/
     padding: 0 10px 10px 10px;
 }
 
 #bio, #attendance {
-    /*float: left;*/
 }
 
 #enrolment, #units, #application-details {
-/*    float: right;*/
 }
 
-#units, #attendance, #admin {
+#attendance, #assessments, #units, #attendance, #admin {
     margin-top: 10px;
 }
 

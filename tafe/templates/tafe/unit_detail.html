@@ -10,35 +10,44 @@ Subject/Unit detail page of the portal.
 {% block coltype %}colMS{% endblock %}
 {% block content %}
 <div id="content-left">
-    <h2>{{ unit.name }} - Semester: {{ unit.get_semester_display }}, {{ unit.year }}</h2>
-
-    This week's classes:<br />
-    {% for session in unit.this_weeks_sessions %}
-        <a href="{{ session.get_absolute_url }}">{{ session.day_of_week }}: {{ session.get_session_number_display }}</a><br />
-    {% endfor %}
-
-    <h4>Assessments</h4>
-    {% for test in unit.assessments.all %}
-    <a href="{{ test.get_absolute_url }}">{{ test }}</a><br />
-    {% endfor %} 
-    <h4>Student attendance records</h4>
-    {% for grade in unit.grades.all %}
-    <a href="{{ grade.student.get_absolute_url}}">{{ grade.student }}</a>: <a href="{{ grade.get_absolute_url }}">{{ grade.subject }}</a><br />
-    {% endfor %}
-
-    <table>
-        <tr><td>Student Name</td>
-            {% for session in sessions %}
-            <td><A href="{{ session.get_absolute_url }}">{{ session.date|date:"d/m" }} {{ session.session_number_short }}</a></td>
-            {% endfor %}
-        </tr>
-        {% for student in unit_attendance_matrix %}
-        <tr>
-            {% for attendance in student %}
-            <td>{{ attendance }}</td>
-            {% endfor %}
-        </tr>
+    <div id="bio" class="grid_5">
+        <h2>{{ unit.name }}</h2>
+        <h2>Semester: {{ unit.get_semester_display }}, {{ unit.year }}</h2>
+    </div>
+    <div id="sessions" class="grid_5">
+        <h3>This week's classes</h3>
+        {% for session in unit.this_weeks_sessions %}
+            <a href="{{ session.get_absolute_url }}">{{ session.day_of_week }}: {{ session.get_session_number_display }}</a><br />
         {% endfor %}
-    </table>
+    </div>
+    <div class="clear"></div>
+    <div id="assessments" class="grid_5">
+        <h4>Assessments</h4>
+        {% for test in unit.assessments.all %}
+        <a href="{{ test.get_absolute_url }}">{{ test }}</a><br />
+        {% endfor %} 
+    </div>
+    <div class="clear"></div>
+    <div id="attendance" class="grid_10">
+        <h4>Student attendance records</h4>
+        {% for grade in unit.grades.all %}
+        <a href="{{ grade.student.get_absolute_url}}">{{ grade.student }}</a>: <a href="{{ grade.get_absolute_url }}">{{ grade.subject }}</a><br />
+        {% endfor %}
+
+        <table>
+            <tr><td>Student Name</td>
+                {% for session in sessions %}
+                <td><A href="{{ session.get_absolute_url }}">{{ session.date|date:"d/m" }} {{ session.session_number_short }}</a></td>
+                {% endfor %}
+            </tr>
+            {% for student in unit_attendance_matrix %}
+            <tr>
+                {% for attendance in student %}
+                <td>{{ attendance }}</td>
+                {% endfor %}
+            </tr>
+            {% endfor %}
+        </table>
+    </div><!-- end id=attendance -->
 </div>
 {% endblock %}
