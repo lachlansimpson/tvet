@@ -10,6 +10,7 @@ Timetable list page of the portal.
 {% endblock %}
 {% block coltype %}colMS{% endblock %}
 {% block content %}
+<div id="bio" class="grid_5">
     <h3>Timetables</h3>
     {% if timetable_list %}
         {% for timetable in timetable_list %}
@@ -17,5 +18,6 @@ Timetable list page of the portal.
         {% endfor %}
     {% else %}
         <p>No timetables are available.</p>
-    {% endif %}
+        {% endif %}
+</div>
 {% endblock %}

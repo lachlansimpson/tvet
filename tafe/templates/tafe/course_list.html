@@ -10,6 +10,7 @@ Course list page of the portal.
 {% endblock %}
 {% block coltype %}colMS{% endblock %}
 {% block content %}
+<div id="bio" class="grid_5">
 <h3>Qualifications Available</h3>    
 {% if course_list %}
     <h3 id="{{ letter.grouper }}">{{ letter.grouper }}</h3>
@@ -21,4 +22,5 @@ Course list page of the portal.
 {% else %}
     <p>No courses are available.</p>
 {% endif %}
+</div>
 {% endblock %}

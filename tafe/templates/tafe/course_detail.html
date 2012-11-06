@@ -10,6 +10,7 @@ Course detail page of the portal.
 {% block coltype %}colMS{% endblock %}
 {% block content %}
 <div id="content-left">
+<div id="bio" class="grid_5">
     <h3>{{ course.name }}</h3>
     <h4>Subjects:</h4>
     {% for subject in course.subjects.all %}
@@ -21,5 +22,6 @@ Course detail page of the portal.
     {% for student in course.students.all %}
         <a href="{{ student.get_absolute_url}}">{{ student }}</a><br />
     {% endfor %}
+</div>
 </div>
 {% endblock %}

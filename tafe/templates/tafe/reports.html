@@ -4,9 +4,12 @@ The Main page for all of the reports with a choosing method
 {% endcomment %}
 {% block coltype %}colMS{% endblock %}
 {% block content %}
-    <form action="/tafe/reports/" method="post">{% csrf_token %} 
-        {{ form.as_p }}
-        <input type="submit" value="Submit">
-    </form>
-    <p>Note that Applicants reports are based on the year they are entered</p>
+<div id="bio" class="grid_5">
+    <h3>Report Generator</h3>
+        <form action="/tafe/reports/" method="post">{% csrf_token %} 
+            {{ form.as_p }}
+            <input type="submit" value="Submit">
+        </form>
+        Note that Applicants reports are based on the year they are entered, not the year(s) they are students
+    </div>
 {% endblock %}
