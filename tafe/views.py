@@ -245,7 +245,7 @@ def reports(request):
             raw = form.cleaned_data['raw_data']
             if data_type == '1':
                 if raw:
-                    raw                                        
+                    pass
                 else:
                     return HttpResponseRedirect('/tafe/report/students/%s' % year)
             elif data_type == '2':
