@@ -242,8 +242,12 @@ def reports(request):
         if form.is_valid():
             year = form.cleaned_data['year']
             data_type = form.cleaned_data['data_type']
+            raw = form.cleaned_data['raw_data']
             if data_type == '1':
-                return HttpResponseRedirect('/tafe/report/students/%s' % year)
+                if raw:
+                    raw                                        
+                else:
+                    return HttpResponseRedirect('/tafe/report/students/%s' % year)
             elif data_type == '2':
                 return HttpResponseRedirect('/tafe/report/applicants/%s' % year)
         else:
@@ -262,12 +266,12 @@ def applicant_reports(request, year=None, type=None):
     year = year or datetime.date.today().year
     stats = SortedDict()
     
-    queryset = Applicant.objects.filter(date_of_application__year=year).exclude(successful=1)
+    queryset = Applicant.objects.filter(applied_for__year__exact=year).exclude(successful=1)
+    
     if queryset.count()==0:
         return render_to_response('tafe/applicants_report.html',{},RequestContext(request))
     stats['All'] = total_stats(queryset) 
     
-    year = year+1 # we need to increment because we are enrolling in next years courses
     courses = Course.objects.filter(year__exact=year)
     for course in courses: 
         name = course.__unicode__()

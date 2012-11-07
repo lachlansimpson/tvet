@@ -21,3 +21,4 @@ class ReportRequestForm(forms.Form):
     DATA_TYPES = ((1,'Students'),(2,'Applicants'),(3,'Enrolments'),(4,'Staff'),(5,'Results'))
     year = forms.CharField(max_length=4)
     data_type = forms.ChoiceField(choices=DATA_TYPES)
+    raw_data = forms.BooleanField(required=False)
