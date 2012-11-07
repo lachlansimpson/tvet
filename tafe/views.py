@@ -3,13 +3,13 @@
 from tafe.models import Timetable, Session, Course, StudentAttendance, Subject, Assessment, StaffAttendance, Applicant, Student
 from tafe.forms import SessionRecurringForm, ApplicantSuccessForm, ReportRequestForm
 from django.utils.datastructures import SortedDict
-from django.shortcuts import render_to_response, get_object_or_404, redirect
+from django.shortcuts import render_to_response, get_object_or_404
 from django.http import HttpResponse, HttpResponseRedirect
 from django.contrib.auth.decorators import login_required
 from django.template import RequestContext
 from django.forms.models import modelformset_factory
-from django.core.urlresolvers import reverse
 from dateutil.relativedelta import *
+import csv
 
 import datetime
 today = datetime.date.today()
@@ -230,6 +230,7 @@ def assessment_view(request, unit, slug):
 ############### Students ###############
 
 ############### Reports ###############
+
 @login_required
 def reports(request):
     '''
@@ -239,13 +240,12 @@ def reports(request):
     if request.method=='POST':
         form = ReportRequestForm(request.POST)
         if form.is_valid():
-            year = int(form.cleaned_data['year'])
+            year = form.cleaned_data['year']
             data_type = form.cleaned_data['data_type']
             if data_type == '1':
-                return redirect(reverse('student_reports', kwargs={'year':year}))
+                return HttpResponseRedirect('/tafe/report/students/%s' % year)
             elif data_type == '2':
-                return redirect(reverse('applicant_reports', kwargs={'year':year}))
-
+                return HttpResponseRedirect('/tafe/report/applicants/%s' % year)
         else:
             pass
     else:
@@ -254,27 +254,7 @@ def reports(request):
     return render_to_response('tafe/reports.html', {'form':form}, RequestContext(request))
 
 @login_required
-def rawreports(request):
-    ''' Offers all the data as CSV '''
-
-def download_csv(self, request, queryset):
-    import csv
-    import StringIO
-
-    f = StringIO.StringIO()
-    writer = csv.writer(f)
-    writer.writerow([])
-
-    for s in queryset:
-        writer.writerow([])
-
-    f.seek(0)
-    response = HttpResponse(f, content_type='text/csv')
-    response['Content-Disposition'] = 'attachment; filename=%s.csv' % slugify(model.__unicode__)
-    return response
-
-@login_required
-def applicant_reports(request, year=None):
+def applicant_reports(request, year=None, type=None):
     '''
     View returns the statistics on # of applicants, diff'd on gender across age ranges (16-24, 25+)
     Island and disability. Stats considered per course and overall
@@ -286,11 +266,9 @@ def applicant_reports(request, year=None):
     if queryset.count()==0:
         return render_to_response('tafe/applicants_report.html',{},RequestContext(request))
     stats['All'] = total_stats(queryset) 
-
-    ## Stats for Applicants per course ##
-    newyear = str(year+1)
     
-    courses = Course.objects.filter(year__exact=newyear)
+    year = year+1 # we need to increment because we are enrolling in next years courses
+    courses = Course.objects.filter(year__exact=year)
     for course in courses: 
         name = course.__unicode__()
         queryset = course.applicants.exclude(successful=1).exclude(successful=0)
@@ -298,10 +276,24 @@ def applicant_reports(request, year=None):
             continue
         stats[name] = total_stats(queryset)
        
-    return render_to_response('tafe/applicants_report.html',{'stats':stats}, RequestContext(request))        
+    ''' test to see if CSV dump is wanted''' 
+    if type:
+        response = HttpResponse(mimetype='text/csv')
+        response['Content-Disposition'] = 'attachment; filename=applicants_%s.csv' % year
+
+        writer = csv.writer(response)
+        for key, value in stats.items():
+            table = (str(key),)
+            writer.writerow(table)
+            writer.writerow(value.keys())
+            writer.writerow(value.values())
+
+        return response
+    else: #if not a CSV dump, send to web   
+        return render_to_response('tafe/applicants_report.html',{'stats':stats}, RequestContext(request))        
 
 @login_required
-def student_reports(request, year=None):
+def student_reports(request, year=None, type=None):
     '''
     View returns the statistics on # of Enrolments, diff'd on gender across age ranges (16-24, 25+)
     Island and disability. Stats considered per course and overall
@@ -321,8 +313,22 @@ def student_reports(request, year=None):
         if queryset.count()==0:
             continue
         stats[name] = total_stats(queryset)
-    
-    return render_to_response('tafe/student_reports.html',{'stats':stats},RequestContext(request))
+   
+    ''' test to see if CSV dump is wanted''' 
+    if type:
+        response = HttpResponse(mimetype='text/csv')
+        response['Content-Disposition'] = 'attachment; filename=students_%s.csv' % year
+
+        writer = csv.writer(response)
+        for key, value in stats.items():
+            table = (str(key),)
+            writer.writerow(table)
+            writer.writerow(value.keys())
+            writer.writerow(value.values())
+
+        return response
+    else:     #if not a CSV dump, send to web  
+        return render_to_response('tafe/student_reports.html',{'stats':stats},RequestContext(request))
 
 def total_stats(queryset):
     
