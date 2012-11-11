@@ -243,13 +243,12 @@ def reports(request):
             year = form.cleaned_data['year']
             data_type = form.cleaned_data['data_type']
             raw = form.cleaned_data['raw_data']
+            if raw:
+                type = 'raw'
             if data_type == '1':
-                if raw:
-                    pass
-                else:
-                    return HttpResponseRedirect('/tafe/report/students/%s' % year)
+                return HttpResponseRedirect('/tafe/report/students/%s/%s' % year, type)
             elif data_type == '2':
-                return HttpResponseRedirect('/tafe/report/applicants/%s' % year)
+                return HttpResponseRedirect('/tafe/report/applicants/%s/%s' % year, type)
         else:
             pass
     else:
