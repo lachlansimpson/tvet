@@ -6,7 +6,7 @@ from tafe.views import session_create, session_view, session_attendance_view, ti
 urlpatterns = patterns('tafe.views',
     url(r'^$', 'index'),
     
-    url(r'^applicants/$', ListView.as_view(queryset=Applicant.current.order_by('surname'))),
+    url(r'^applicants/$', ListView.as_view(queryset=Applicant.current.order_by('first_name'))),
     url(r'^applicants/successful/$', 'applicant_success'),
     url(r'^applicant/add/$', CreateView.as_view(model=Applicant)),
     url(r'^applicant/(?P<slug>[-\w]+)/$', DetailView.as_view(model=Applicant), name='applicant_view'),
