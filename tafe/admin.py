@@ -75,7 +75,7 @@ class ApplicantAdmin(admin.ModelAdmin):
         ('Bio', {'fields':(('first_name','surname'),('dob','gender', 'island'))}),
         ('Contact Information', { 'fields':(('phone','email'),)}),
         ('Other Information', { 'fields':(('disability','disability_description'), 'education_level')}),
-        ('Course Applied For', { 'fields':(('applied_for', 'date_of_application', 'short_listed'),)}),
+        ('Course Applied For', { 'fields':(('applied_for', 'date_of_application'),)}),
         ('Test Results', {'fields':(('test_ma','test_eng'),)}),
         ('Short Listing', {'fields':(('short_listed','test_ap'),)}),
         ('Ranking, Eligibility and Success', {'fields':(('ranking','eligibility','successful'),)}),
