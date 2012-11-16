@@ -8,6 +8,7 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.contrib.auth.decorators import login_required
 from django.template import RequestContext
 from django.forms.models import modelformset_factory
+from django.template.defaultfilters import slugify
 from dateutil.relativedelta import *
 import csv
 
@@ -242,13 +243,8 @@ def reports(request):
         if form.is_valid():
             year = form.cleaned_data['year']
             data_type = form.cleaned_data['data_type']
-            raw = form.cleaned_data['raw_data']
-            if raw:
-                type = 'raw'
-            if data_type == '1':
-                return HttpResponseRedirect('/tafe/report/students/%s/%s' % year, type)
-            elif data_type == '2':
-                return HttpResponseRedirect('/tafe/report/applicants/%s/%s' % year, type)
+            data_output = form.cleaned_data['data_output']
+            return HttpResponseRedirect('/tafe/report/%s/%s/%s/' % (data_type, year, data_output))
         else:
             pass
     else:
@@ -257,87 +253,112 @@ def reports(request):
     return render_to_response('tafe/reports.html', {'form':form}, RequestContext(request))
 
 @login_required
-def applicant_reports(request, year=None, type=None):
+def applicant_reports(request, year=None, format=None):
     '''
     View returns the statistics on # of applicants, diff'd on gender across age ranges (16-24, 25+)
     Island and disability. Stats considered per course and overall
     '''
     year = year or datetime.date.today().year
-    stats = SortedDict()
-    
+    format = format or 'html'
     queryset = Applicant.objects.filter(applied_for__year__exact=year).exclude(successful=1)
     
-    if queryset.count()==0:
+    if queryset.count()==0: # If there are no objects in the queryset... 
         return render_to_response('tafe/applicants_report.html',{},RequestContext(request))
-    stats['All'] = total_stats(queryset) 
-    
-    courses = Course.objects.filter(year__exact=year)
-    for course in courses: 
-        name = course.__unicode__()
-        queryset = course.applicants.exclude(successful=1).exclude(successful=0)
-        if queryset.count()==0:
-            continue
-        stats[name] = total_stats(queryset)
-       
-    ''' test to see if CSV dump is wanted''' 
-    if type:
-        response = HttpResponse(mimetype='text/csv')
-        response['Content-Disposition'] = 'attachment; filename=applicants_%s.csv' % year
+    if format=='raw': # If raw is required, no stats needed. Return raw queryset data
+        return raw_export(queryset)
+    else: # we need to make the stats
+        stats = SortedDict() 
+        stats['All'] = total_stats(queryset) 
+        
+        courses = Course.objects.filter(year__exact=year)
+        for course in courses: 
+            name = course.__unicode__()
+            queryset = course.applicants.exclude(successful=1).exclude(successful=0)
+            if queryset.count()==0:
+                continue
+            stats[name] = total_stats(queryset)
+        
+        if format == 'csv': # test to see if CSV dump of stats is wanted  
+            response = HttpResponse(mimetype='text/csv')
+            response['Content-Disposition'] = 'attachment; filename=applicants_stats_%s.csv' % year
 
-        writer = csv.writer(response)
-        for key, value in stats.items():
-            table = (str(key),)
-            writer.writerow(table)
-            writer.writerow(value.keys())
-            writer.writerow(value.values())
+            writer = csv.writer(response)
+            for key, value in stats.items():
+                table = (str(key),)
+                writer.writerow(table)
+                writer.writerow(value.keys())
+                writer.writerow(value.values())
 
-        return response
-    else: #if not a CSV dump, send to web   
-        return render_to_response('tafe/applicants_report.html',{'stats':stats}, RequestContext(request))        
+            return response
+        else: # format == 'html'
+            return render_to_response('tafe/applicants_report.html',{'stats':stats}, RequestContext(request))        
 
 @login_required
-def student_reports(request, year=None, type=None):
+def student_reports(request, year=None, format=None):
     '''
     View returns the statistics on # of Enrolments, diff'd on gender across age ranges (16-24, 25+)
     Island and disability. Stats considered per course and overall
     '''
     year = year or datetime.date.today().year
-    stats = SortedDict()
-    
     queryset = Student.objects.filter(enrolments__course__year__exact=year) 
+    
     if queryset.count()==0:
        return render_to_response('tafe/student_reports.html',{},RequestContext(request))
-    stats['All'] = total_stats(queryset) 
-    
-    courses = Course.objects.filter(year=year)
-    for course in courses:
-        name = course.__unicode__() 
-        queryset = course.students.all()
-        if queryset.count()==0:
-            continue
-        stats[name] = total_stats(queryset)
-   
-    ''' test to see if CSV dump is wanted''' 
-    if type:
-        response = HttpResponse(mimetype='text/csv')
-        response['Content-Disposition'] = 'attachment; filename=students_%s.csv' % year
+    if format == 'raw':
+        return raw_export(queryset)
+    else:    
+        stats = SortedDict()  
+        stats['All'] = total_stats(queryset) 
+        courses = Course.objects.filter(year=year)
+        for course in courses:
+            name = course.__unicode__() 
+            queryset = course.students.all()
+            if queryset.count()==0:
+                continue
+            stats[name] = total_stats(queryset)
+       
+        ''' test to see if CSV dump is wanted''' 
+        if format == 'csv':
+            response = HttpResponse(mimetype='text/csv')
+            response['Content-Disposition'] = 'attachment; filename=students_%s.csv' % year
 
-        writer = csv.writer(response)
-        for key, value in stats.items():
-            table = (str(key),)
-            writer.writerow(table)
-            writer.writerow(value.keys())
-            writer.writerow(value.values())
+            writer = csv.writer(response)
+            for key, value in stats.items():
+                table = (str(key),)
+                writer.writerow(table)
+                writer.writerow(value.keys())
+                writer.writerow(value.values())
 
-        return response
-    else:     #if not a CSV dump, send to web  
-        return render_to_response('tafe/student_reports.html',{'stats':stats},RequestContext(request))
+            return response
+        else:     #if not a CSV dump, send to web  
+            return render_to_response('tafe/student_reports.html',{'stats':stats},RequestContext(request))
+
+def raw_export(queryset):
+    model = queryset.model
+    response = HttpResponse(mimetype='text/csv')
+    response['Content-Disposition'] = 'attachment; filename=%s.csv' % slugify(model.__name__)
+    writer = csv.writer(response)
+    # Write headers to CSV file
+    headers = []
+    for field in model._meta.fields:
+        headers.append(field.name)
+    writer.writerow(headers)
+    # Write data to CSV file
+    for obj in queryset:
+        row = []
+        for field in headers:
+            if field in headers:
+                val = getattr(obj, field)
+                if callable(val):
+                    val = val()
+                row.append(val)
+        writer.writerow(row)
+    # Return CSV file to browser as download
+    return response
 
 def total_stats(queryset):
-    
     queryset_m = queryset.filter(gender = 'M')
     queryset_f = queryset.filter(gender = 'F')
-
     totals = SortedDict()
     ## Stats for all queryset ##
     totals['queryset'] = queryset.count()    
@@ -346,7 +367,7 @@ def total_stats(queryset):
     totals['queryset_m_pc'] = totals['queryset_m']*100/totals['queryset']
     totals['queryset_f_pc'] = totals['queryset_f']*100/totals['queryset']
         
-    ## Applicants: 16-24, gender diff'd ##
+    ## 16-24, gender diff'd ##
     dob_for_25 = today-relativedelta(years=25) # date for those who are 25 today  
     totals['queryset_24m'] = queryset_m.filter(dob__lte=dob_for_25).count()
     totals['queryset_24f'] = queryset_f.filter(dob__lte=dob_for_25).count()
@@ -358,7 +379,7 @@ def total_stats(queryset):
         totals['queryset_24m_pc'] = totals['queryset_24m']*100/totals['queryset_24']
         totals['queryset_24f_pc'] = totals['queryset_24f']*100/totals['queryset_24']
     
-    ## Applicants: 25+, gender diff'd ##
+    ## 25+, gender diff'd ##
     totals['queryset_25m'] = queryset_m.filter(dob__gt=dob_for_25).count()
     totals['queryset_25f'] = queryset_f.filter(dob__gt=dob_for_25).count()
     totals['queryset_25'] = totals['queryset_25m'] + totals['queryset_25f']
@@ -369,7 +390,7 @@ def total_stats(queryset):
         totals['queryset_25f_pc'] = totals['queryset_25f']*100/totals['queryset_25'] 
         totals['queryset_25_pc'] = totals['queryset_25']*100/totals['queryset']
 
-    ## Applicants: Outer Islands, gender diff'd ##
+    ## Outer Islands, gender diff'd ##
     totals['outer_m'] = queryset_m.exclude(island = '01').count() # 01 is Tarawa
     totals['outer_f'] = queryset_f.exclude(island = '01').count() # 01 is Tarawa
     totals['outer'] = totals['outer_m'] + totals['outer_f']
@@ -380,7 +401,7 @@ def total_stats(queryset):
         totals['outer_f_pc'] = totals['outer_f']*100/totals['outer']
         totals['outer_pc'] = totals['outer']*100/totals['queryset']
 
-    ## Applicants: Disability, gender diff'd ##
+    ## Disability, gender diff'd ##
     totals['disability_m'] = queryset_m.filter(disability = 1).count()
     totals['disability_f'] = queryset_f.filter(disability = 1).count()
     totals['disability'] = totals['disability_m'] + totals['disability_f']

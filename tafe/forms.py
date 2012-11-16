@@ -18,7 +18,8 @@ class ApplicantSuccessForm(forms.Form):
     applicants = forms.ModelMultipleChoiceField(queryset=Applicant.objects.exclude(successful='Yes'), widget=CheckboxSelectMultiple)
 
 class ReportRequestForm(forms.Form):
-    DATA_TYPES = ((1,'Students'),(2,'Applicants'),(3,'Enrolments'),(4,'Staff'),(5,'Results'))
+    DATA_TYPES = (('students','Students'),('applicants','Applicants'),('staff','Staff'),('results','Results'))
+    DATA_OUTPUT = (('html','html'),('csv','csv'),('raw','raw'))
     year = forms.CharField(max_length=4)
     data_type = forms.ChoiceField(choices=DATA_TYPES)
-    raw_data = forms.BooleanField(required=False)
+    data_output = forms.ChoiceField(choices=DATA_OUTPUT)

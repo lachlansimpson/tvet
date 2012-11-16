@@ -41,10 +41,16 @@ urlpatterns = patterns('tafe.views',
     url(r'^session/(?P<year>\d{4})/(?P<month>\d{1,2})/(?P<day>\d{1,2})/(?P<slug>[-\w]+)/attendance/$', session_attendance_view, name='session_attendance_view'), 
     
     url(r'^reports/$', reports, name='reports'),
+    # html reports for this year
     url(r'^report/students/$', student_reports, name='student_reports'),
-    url(r'^report/students/(?P<year>\d{4})/$', student_reports, name='student_reports'),
     url(r'^report/applicants/$', applicant_reports, name='applicant_reports'),
-    url(r'^report/applicants/(?P<year>\d{4})/$', applicant_reports, name='applicant_reports'), 
-    url(r'^report/applicants/(?P<year>\d{4})/csv/$', applicant_reports, {'type':'raw'}, name='applicant_reports'),
-    url(r'^report/students/(?P<year>\d{4})/csv/$', student_reports, {'type':'raw'}, name='student_reports'), 
+    # html reports of the stats
+    url(r'^report/students/(?P<year>\d{4})/html/$', student_reports, name='student_reports'),
+    url(r'^report/applicants/(?P<year>\d{4})/html/$', applicant_reports, name='applicant_reports'), 
+    # csv download of the stats
+    url(r'^report/applicants/(?P<year>\d{4})/csv/$', applicant_reports, {'format':'csv'}, name='applicant_reports'),
+    url(r'^report/students/(?P<year>\d{4})/csv/$', student_reports, {'format':'csv'}, name='student_reports'), 
+    # csv download of the raw data
+    url(r'^report/applicants/(?P<year>\d{4})/raw/$', applicant_reports, {'format':'raw'}, name='applicant_reports'),
+    url(r'^report/students/(?P<year>\d{4})/raw/$', student_reports, {'format':'raw'}, name='student_reports'), 
 )
