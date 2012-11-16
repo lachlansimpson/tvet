@@ -268,7 +268,7 @@ def applicant_reports(request, year=None, format=None):
         stats = SortedDict() 
         stats['All'] = total_stats(queryset) 
         
-        courses = Course.objects.filter(year__exact=year)
+        courses = Course.objects.filter(year=year)
         for course in courses: 
             name = course.__unicode__()
             queryset = course.applicants.exclude(successful=1).exclude(successful=0)
