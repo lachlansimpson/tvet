@@ -20,6 +20,6 @@ class ApplicantSuccessForm(forms.Form):
 class ReportRequestForm(forms.Form):
     DATA_TYPES = (('students','Students'),('applicants','Applicants'),('staff','Staff'),('results','Results'))
     DATA_OUTPUT = (('html','html'),('csv','csv'),('raw','raw'))
-    year = forms.CharField(max_length=4)
+    year = forms.CharField(max_length=4, min_length=4)
     data_type = forms.ChoiceField(choices=DATA_TYPES)
     data_output = forms.ChoiceField(choices=DATA_OUTPUT)

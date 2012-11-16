@@ -228,8 +228,6 @@ def assessment_view(request, unit, slug):
 
     return render_to_response('tafe/assessment_detail.html',{'assessment':assessment,}, RequestContext(request))
 
-############### Students ###############
-
 ############### Reports ###############
 
 @login_required
@@ -265,7 +263,7 @@ def applicant_reports(request, year=None, format=None):
     if queryset.count()==0: # If there are no objects in the queryset... 
         return render_to_response('tafe/applicants_report.html',{},RequestContext(request))
     if format=='raw': # If raw is required, no stats needed. Return raw queryset data
-        return raw_export(queryset)
+        return raw_csv_export(queryset)
     else: # we need to make the stats
         stats = SortedDict() 
         stats['All'] = total_stats(queryset) 
@@ -305,7 +303,7 @@ def student_reports(request, year=None, format=None):
     if queryset.count()==0:
        return render_to_response('tafe/student_reports.html',{},RequestContext(request))
     if format == 'raw':
-        return raw_export(queryset)
+        return raw_csv_export(queryset)
     else:    
         stats = SortedDict()  
         stats['All'] = total_stats(queryset) 
@@ -319,6 +317,7 @@ def student_reports(request, year=None, format=None):
        
         ''' test to see if CSV dump is wanted''' 
         if format == 'csv':
+            '''
             response = HttpResponse(mimetype='text/csv')
             response['Content-Disposition'] = 'attachment; filename=students_%s.csv' % year
 
@@ -330,10 +329,27 @@ def student_reports(request, year=None, format=None):
                 writer.writerow(value.values())
 
             return response
+            '''
+            temp = slugify(queryset.model)
+            filename = '%s_%s_%s.csv' %(temp,year,format)
+            return stats_csv_export(stats,filename)
         else:     #if not a CSV dump, send to web  
             return render_to_response('tafe/student_reports.html',{'stats':stats},RequestContext(request))
 
-def raw_export(queryset):
+def stats_csv_export(stats, filename):
+    response = HttpResponse(mimetype='text/csv')
+    response['Content-Disposition'] = 'attachment; filename=%s' % filename
+
+    writer = csv.writer(response)
+    for key, value in stats.items():
+        table = (str(key),)
+        writer.writerow(table)
+        writer.writerow(value.keys())
+        writer.writerow(value.values())
+
+    return response
+
+def raw_csv_export(queryset):
     model = queryset.model
     response = HttpResponse(mimetype='text/csv')
     response['Content-Disposition'] = 'attachment; filename=%s.csv' % slugify(model.__name__)
