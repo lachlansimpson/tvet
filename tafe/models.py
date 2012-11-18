@@ -130,6 +130,7 @@ EDUCATION_LEVEL_CHOICES = (
     ('6','Form 6'),
     ('7','Form 7'),
     ('8','SPFSC - Fiji School Certificate'),
+    ('9','Form 3 or below'),
 )
 
 class AttendanceBeforeTodayManager(models.Manager):

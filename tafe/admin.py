@@ -83,8 +83,8 @@ class ApplicantAdmin(admin.ModelAdmin):
         ('Admin (non editable)', {'fields':(('added', 'updated','last_change_by','penultimate_change_by'),)}),
     )
     form = ApplicantAdminForm
-    list_display = ('__unicode__', 'gender', 'disability', 'applied_for', 'eligibility', 'successful')
-    list_filter = ('gender', 'disability', 'applied_for', 'eligibility', 'successful')
+    list_display = ('__unicode__', 'gender', 'disability', 'applied_for', 'eligibility', 'successful', 'test_ma', 'test_eng')
+    list_filter = ('gender', 'disability', 'test_ma','test_eng','successful', 'applied_for', 'eligibility')
     readonly_fields = ('added', 'updated','last_change_by','penultimate_change_by')
     actions = ['make_student', 'mark_unsuccessful']
 
