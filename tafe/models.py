@@ -130,6 +130,7 @@ EDUCATION_LEVEL_CHOICES = (
     ('6','Form 6'),
     ('7','Form 7'),
     ('8','SPFSC - Fiji School Certificate'),
+    ('9','Form 3 or below'),
 )
 
 class AttendanceBeforeTodayManager(models.Manager):
@@ -246,8 +247,8 @@ class Applicant(Person):
     education_level = models.CharField(max_length=2, blank=True, choices=EDUCATION_LEVEL_CHOICES)
     successful = models.NullBooleanField()
     short_listed = models.NullBooleanField()
-    test_ap = models.IntegerField('AP test result', blank=True, null=True)
-    test_ma = models.IntegerField('MA test result', blank=True, null=True)
+    test_ap = models.IntegerField('Application test result', blank=True, null=True)
+    test_ma = models.IntegerField('Maths test result', blank=True, null=True)
     test_eng = models.IntegerField('English test result', blank=True, null=True)
     ranking = models.IntegerField(blank=True, null=True)
     eligibility = models.NullBooleanField()
