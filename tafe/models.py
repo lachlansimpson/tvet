@@ -250,6 +250,8 @@ class Applicant(Person):
     test_ap = models.IntegerField('Application test result', blank=True, null=True)
     test_ma = models.IntegerField('Maths test result', blank=True, null=True)
     test_eng = models.IntegerField('English test result', blank=True, null=True)
+    other_courses = models.TextField('Other Courses', blank=True)
+    experience = models.TextField('Previous experience', blank=True)
     ranking = models.IntegerField(blank=True, null=True)
     eligibility = models.NullBooleanField()
     date_of_application = models.DateField(blank=True, null=True)
