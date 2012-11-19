@@ -235,11 +235,11 @@ class Person(models.Model):
         return today.year - self.dob.year
 
     def first_letter(self):
-        return self.surname and self.surname[0] or ''
+        return self.first_name and self.first_name[0] or ''
 
 class CurrentApplicantManager(models.Manager):
     def get_query_set(self):
-        return super(CurrentApplicantManager, self).get_query_set().exclude(successful='1').exclude(successful='0')
+        return super(CurrentApplicantManager, self).get_query_set().exclude(successful='1').exclude(successful='0').order_by('first_name')
 
 class Applicant(Person):
     applied_for = models.ForeignKey('Course', related_name='applicants')
