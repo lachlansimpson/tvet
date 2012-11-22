@@ -6,29 +6,29 @@ import datetime
 today = datetime.date.today() # used by the Attendance record
 
 ISLAND_CHOICES = (
-    ('01',u'Tarawa'),
-    ('02',u'Abaiang'),
-    ('03',u'Kiritimati'),
-    ('04',u'Makin'),
-    ('05',u'Butaritari'),
-    ('06',u'Marakei'),
-    ('07',u'Maiana'),
-    ('08',u'Kuria'),
-    ('09',u'Aranuka'),
-    ('10',u'Abemana'),
-    ('11',u'Nonouti'),
-    ('12',u'Tabiteua'),
-    ('13',u'Onotoa'),
-    ('14',u'Beru'),
-    ('15',u'Nikunau'),
-    ('16',u'Tamana'),
-    ('17',u'Arorae'),
-    ('18',u'Banaba'),
-    ('19',u'Teraina'),
-    ('20',u'Kanton'),
-    ('21',u'Tabuaeran'),
-    ('22',u'Other'),
-    ('23',u'International'),
+    ('Tarawa',u'Tarawa'),
+    ('Abaiang',u'Abaiang'),
+    ('Kiritimati',u'Kiritimati'),
+    ('Makin',u'Makin'),
+    ('Butaritari',u'Butaritari'),
+    ('Marakei',u'Marakei'),
+    ('Maiana',u'Maiana'),
+    ('Kuria',u'Kuria'),
+    ('Aranuka',u'Aranuka'),
+    ('Abemana',u'Abemana'),
+    ('Nonouti',u'Nonouti'),
+    ('Tabiteua',u'Tabiteua'),
+    ('Onotoa',u'Onotoa'),
+    ('Beru',u'Beru'),
+    ('Nikunau',u'Nikunau'),
+    ('Tamana',u'Tamana'),
+    ('Arorae',u'Arorae'),
+    ('Banaba',u'Banaba'),
+    ('Teraina',u'Teraina'),
+    ('Kanton',u'Kanton'),
+    ('Tabuaeran',u'Tabuaeran'),
+    ('Other',u'Other'),
+    ('Internatio',u'International'),
 )
 
 GENDER_CHOICES = (
@@ -83,19 +83,20 @@ CLASSIFICATION_CHOICES = (
 )
 
 AQF_LEVEL_CHOICES = (
-    ('BH','Bachelor Honors'),
-    ('GC','Graduate Certificate'),
-    ('GC','Graduate Diploma'), 
-    ('B','Bachelor'),
-    ('AD','Advanced Diploma'),
-    ('AE','Associate Degree'),
-    ('D','Diploma'),
-    ('4','IV'),
-    ('3','III'),
-    ('2','II'),
-    ('1','I'),
-    ('D','Doctoral'),
-    ('M','Masters'),
+    ('BHONS','Bachelor Honors'),
+    ('GCERT','Graduate Certificate'),
+    ('GDIP','Graduate Diploma'), 
+    ('BACH','Bachelor'),
+    ('ADIP','Advanced Diploma'),
+    ('ADEG','Associate Degree'),
+    ('DIP','Diploma'),
+    ('CERT4','IV'),
+    ('CERT3','III'),
+    ('CERT2','II'),
+    ('CERT1','I'),
+    ('PHD','Doctoral'),
+    ('MAST','Masters'),
+    ('OTH','Other'),
 )
 
 CREDENTIAL_TYPE_CHOICES = (
@@ -209,7 +210,7 @@ class Person(models.Model):
     slug = models.SlugField('ID number', max_length=40, editable=False, blank=True)
     dob = models.DateField('Date of Birth')  
     gender = models.CharField(max_length='1', choices=GENDER_CHOICES, default='F')
-    island = models.CharField(max_length='2', choices=ISLAND_CHOICES, default='01', blank=True, null=True)
+    island = models.CharField(max_length='10', choices=ISLAND_CHOICES, default='Tarawa', blank=True, null=True)
     phone = models.CharField(max_length=12, blank=True)
     email = models.EmailField(blank=True)
     
@@ -413,7 +414,7 @@ class Course(models.Model):
 class Credential(models.Model):
     ''' This is the class of objects to represent what qualifications the staff have'''
     name = models.CharField(max_length=50)
-    aqf_level = models.CharField(max_length=2, choices=AQF_LEVEL_CHOICES)
+    aqf_level = models.CharField('AQF Level', max_length=5, choices=AQF_LEVEL_CHOICES)
     institution = models.CharField(max_length=40)
     year = models.CharField(max_length=4)
     type = models.CharField(max_length=1, choices=CREDENTIAL_TYPE_CHOICES)

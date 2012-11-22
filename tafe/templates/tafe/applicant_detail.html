@@ -29,14 +29,17 @@ Applicant detail
     </div>
     <div id="application-details" class="grid_4">
         <h2>Applicantion Details</h2>
-        Date Applied: {{ applicant.date_of_application }} 
+        <p><strong>Date Applied</strong>: {{ applicant.date_of_application }}</p>
+        <div id='education_experience'>
+            <p>English Test: {{ applicant.test_eng }}</p>
+            <p>Maths Test: {{ applicant.test_ma }}</p>
+            <p>Experience: {{ applicant.experience }}</p>
+            <p>Other Courses: {{ applicant.other_course }}</p>
+        </div>
         {% if applicant.short_listed %}
         <div id="shortlist">
             <h4>Test Results</h4>
-            English Test: {{ applicant.test_eng }}<br />
-            AP Test: {{ applicant.test_ap }}<br />
-            MA Test: {{ applicant.test_ma }}<br />
-            
+            AP Test: {{ applicant.test_ap }}<br /> 
             <p>Ranking: {{ applicant.ranking }}<br />
             Eligibility for Enrolment: {{ applicant.eligibility }}
             Date offer sent: {{ applicant.date_offer_sent }}
