@@ -3,6 +3,7 @@ from django.contrib import admin
 from django.forms import ModelForm
 from django.forms.extras.widgets import SelectDateWidget 
 from django.forms.widgets import RadioSelect
+
 import datetime
 
 today = datetime.date.today()
@@ -70,6 +71,86 @@ class ApplicantAdminForm(ModelForm):
             'gender': RadioSelect(),
         }            
 
+class EnglishTestFilter(admin.SimpleListFilter):
+    title = 'english test' # human readable, right sidebar
+    parameter_name = 'eng-result' # used in URL query
+
+    def lookups(self, request, model_admin):
+        return ( # these are the ranges in the right sidebar
+            ('10', '0 - 10'),
+            ('20', '10 - 20'),
+            ('30', '20 - 30'),
+            ('40', '30 - 40'),
+            ('50', '40 - 50'),
+            ('60', '50 - 60'),
+            ('70', '60 - 70'),
+            ('80', '70 - 80'),
+            ('90', '80 - 90'),
+            ('100', '90 - 100'),
+        )
+
+    def queryset(self, request, queryset):
+        if self.value() == '10':
+            return queryset.filter(test_eng__lt=10)
+        if self.value() == '20':
+            return queryset.filter(test_eng__gte=10, test_eng__lt=20)
+        if self.value() == '30':
+            return queryset.filter(test_eng__gte=20, test_eng__lt=30)
+        if self.value() == '40':
+            return queryset.filter(test_eng__gte=30, test_eng__lt=40)
+        if self.value() == '50':
+            return queryset.filter(test_eng__gte=40, test_eng__lt=50)
+        if self.value() == '60':
+            return queryset.filter(test_eng__gte=50, test_eng__lt=60)
+        if self.value() == '70':
+            return queryset.filter(test_eng__gte=60, test_eng__lt=70)
+        if self.value() == '80':
+            return queryset.filter(test_eng__gte=70, test_eng__lt=80)
+        if self.value() == '90':
+            return queryset.filter(test_eng__gte=80, test_eng__lt=90)
+        if self.value() == '100':
+            return queryset.filter(test_eng__lte=100)
+
+class MathTestFilter(admin.SimpleListFilter):
+    title = 'math test' # human readable, right sidebar
+    parameter_name = 'math-result' # used in URL query
+
+    def lookups(self, request, model_admin):
+        return ( # these are the ranges in the right sidebar
+            ('10', '0 - 10'),
+            ('20', '10 - 20'),
+            ('30', '20 - 30'),
+            ('40', '30 - 40'),
+            ('50', '40 - 50'),
+            ('60', '50 - 60'),
+            ('70', '60 - 70'),
+            ('80', '70 - 80'),
+            ('90', '80 - 90'),
+            ('100', '90 - 100'),
+        )
+
+    def queryset(self, request, queryset):
+        if self.value() == '10':
+            return queryset.filter(test_ma__lt=10)
+        if self.value() == '20':
+            return queryset.filter(test_ma__gte=10, test_ma__lt=20)
+        if self.value() == '30':
+            return queryset.filter(test_ma__gte=20, test_ma__lt=30)
+        if self.value() == '40':
+            return queryset.filter(test_ma__gte=30, test_ma__lt=40)
+        if self.value() == '50':
+            return queryset.filter(test_ma__gte=40, test_ma__lt=50)
+        if self.value() == '60':
+            return queryset.filter(test_ma__gte=50, test_ma__lt=60)
+        if self.value() == '70':
+            return queryset.filter(test_ma__gte=60, test_ma__lt=70)
+        if self.value() == '80':
+            return queryset.filter(test_ma__gte=70, test_ma__lt=80)
+        if self.value() == '90':
+            return queryset.filter(test_ma__gte=80, test_ma__lt=90)
+        if self.value() == '100':
+            return queryset.filter(test_ma__lte=100)
+
 class ApplicantAdmin(admin.ModelAdmin):
     fieldsets = (
         ('Bio', {'fields':(('first_name','surname'),('dob','gender', 'island'))}),
@@ -84,7 +165,7 @@ class ApplicantAdmin(admin.ModelAdmin):
     )
     form = ApplicantAdminForm
     list_display = ('__unicode__', 'gender', 'disability', 'applied_for', 'eligibility', 'successful', 'test_ma', 'test_eng')
-    list_filter = ('gender', 'disability', 'test_ma','test_eng','successful', 'applied_for', 'eligibility')
+    list_filter = ('gender', 'disability', MathTestFilter, EnglishTestFilter,'successful', 'applied_for', 'eligibility')
     readonly_fields = ('added', 'updated','last_change_by','penultimate_change_by')
     actions = ['make_student', 'mark_unsuccessful']
 
