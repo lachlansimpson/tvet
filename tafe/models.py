@@ -535,10 +535,6 @@ class Session(models.Model):
         '''Session Reference: day of week, date, term/year (Timetable)'''
         return str(self.subject.name) + ', ' + self.day_of_week() + ', ' + self.get_session_number_display() + ', '+ ' ' + str(self.date)
 
-    def session_number_short(self):
-        short_session = {'0':'M2', '1':'M2', '2':'A1', '3':'A2', '4':'Ev', '5':'WE' }
-        return short_session[self.session_number]
-
     def timetable_listing(self):
         ''' returns date-free name for session to be put into timetable '''
         return str(self.subject.name)
