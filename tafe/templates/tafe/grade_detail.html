@@ -1,7 +1,7 @@
 {% extends "tafe/base_site.html" %}
 
 {% comment %}
-Course detail page of the portal.
+Grade detail page of the portal.
 {% endcomment %}
 
 {% block title %}
@@ -22,5 +22,15 @@ Course detail page of the portal.
     {% else %}
         No results recorded yet
     {% endif %}
+    <div id="comments" class="grid_5">
+        <h5>Comments</h5>
+        {% render_comment_list for grade %}
+        {% render_comment_form for grade %}
+    </div>
+    <div id="admin" class="grid_4">
+    </div>
+
 </div>
+
+
 {% endblock %}

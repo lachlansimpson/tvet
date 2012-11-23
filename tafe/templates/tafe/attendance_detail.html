@@ -17,6 +17,12 @@ Attendance detail page of the portal.
     {% if attendance.absent %}
         {{ attendance.get_absent_display }}<br />
     {% endif %}
+    <div id="comments" class="grid_5">
+        <h5>Comments</h5>
+        {% render_comment_list for attendance %}
+        {% render_comment_form for attendance %}
+    </div>
+    <div id="admin" class="grid_4">
     <h5>Admin</h5>
     {{ attendance.last_change_by }}
 </div>

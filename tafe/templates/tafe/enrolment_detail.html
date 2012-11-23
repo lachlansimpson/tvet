@@ -1,7 +1,7 @@
 {% extends "tafe/base_site.html" %}
 
 {% comment %}
-Course detail page of the portal.
+Enrolment detail page of the portal.
 {% endcomment %}
 
 {% block title %}
@@ -19,6 +19,12 @@ Course detail page of the portal.
     {% if enrolment.mark %}
     Mark: {{ enrolment.mark }}<br />
     {% endif %}
-
+    <div id="comments" class="grid_5">
+        <h5>Comments</h5>
+        {% render_comment_list for enrolment %}
+        {% render_comment_form for enrolment %}
+    </div>
+    <div id="admin" class="grid_4">
+    </div>
 </div>
 {% endblock %}

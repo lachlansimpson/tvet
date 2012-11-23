@@ -53,9 +53,16 @@ Staff detail
         Overall: {{ staff.get_islpr_overall_display }}<br />
     </div>
     
-    
+       <div id="comments" class="grid_5">
+        <h5>Comments</h5>
+        {% render_comment_list for staff %}
+        {% render_comment_form for staff %}
+    </div>
+    <div id="admin" class="grid_4">
+ 
     <h5>Admin</h5>
     Date added: {{ staff.added }}<br />
     Date last changed: {{ staff.updated }}
+    </div>
 </div>
 {% endblock %}

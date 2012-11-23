@@ -78,7 +78,12 @@ Student detail
         </div>
     {% endif %} <!-- endif student.attendance_before_today -->
     {% endif %} <!-- endif student.grades.all -->
-    <div id="admin" class="grid_5">
+    <div id="comments" class="grid_5">
+        <h5>Comments</h5>
+        {% render_comment_list for student %}
+        {% render_comment_form for student  %}
+    </div>
+    <div id="admin" class="grid_4">
     <h5>Admin</h5>
     Date added: {{ student.added }}<br />
     Last change: {{ student.last_change_by}}, {{ student.updated }}

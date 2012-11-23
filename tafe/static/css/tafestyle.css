@@ -21,21 +21,18 @@
     padding: 0 10px 10px 10px;
 }
 
-#bio, #attendance {
+#comments {
+    float: left;
 }
 
-#enrolment, #units, #application-details {
-}
-
-#attendance, #assessments, #units, #attendance, #admin {
+#attendance, #assessments, #units, #attendance, #admin, #comments {
     margin-top: 10px;
 }
 
-#admin {
+#comments, #admin {
     -moz-border-radius: 6px;
     -webkit-border-radius: 6px;
     border-radius: 6px;
-    clear: both;
     background-color: #ECE5DF;
     padding: 5px 10px 10px 10px;
 }

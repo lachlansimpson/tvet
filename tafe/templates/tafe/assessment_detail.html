@@ -14,5 +14,10 @@ Assessment detail page of the portal.
     {{ assessment.name }}<br />
     {{ assessment.date_given }}<br />
     {{ assessment.date_due }}<br />
+    <div id="comments" class="grid_5">
+        <h5>Comments</h5>
+        {% render_comment_list for assessment %}
+        {% render_comment_form for assessment %}
+    </div>
 </div>
 {% endblock %}
