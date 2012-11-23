@@ -1,5 +1,5 @@
 {% extends "tafe/base_site.html" %}
-
+{% load comments %}
 {% comment %}
 Student detail page of the portal.
 {% endcomment %}
@@ -16,16 +16,16 @@ Student detail
         Gender: {{ student.get_gender_display }}<br />
         Island: {{ student.get_island_display }}<br />
         {% if student.phone %}
-            Phone: {{ student.phone }}<br />
+        Phone: {{ student.phone }}<br />
         {% endif %}
         {% if student.phone2 %}
-            Phone: {{ student.phone2 }}<br />
+        Phone: {{ student.phone2 }}<br />
         {% endif %}
         {% if student.email %}
-            Email: {{ student.email }}<br /> 
+        Email: {{ student.email }}<br /> 
         {% endif %}
         {% if student.disability %}
-            Disability: {{ student.disbility_description }}<br />
+        Disability: {{ student.disbility_description }}<br />
         {% endif %}
         {% if student.education_level %}
         Highest Education level: {{ student.get_education_level_display }}<br />
@@ -35,17 +35,17 @@ Student detail
     <div id="enrolment" class="grid_5">
         <h3>Enrolment details</h3>
         {% for enrolment in student.enrolments.all %}
-            <p>Qualification: <a href="{{ enrolment.course.get_absolute_url }}">{{ enrolment.course.name }}</a><br />
-            Date started: {{ enrolment.date_started }}<br />
+        <p>Qualification: <a href="{{ enrolment.course.get_absolute_url }}">{{ enrolment.course.name }}</a><br />
+        Date started: {{ enrolment.date_started }}<br />
 
-            {% if enrolment.date_ended %}
-                Date ended: {{ enrolment.date_ended }}<br />
-            {% endif %}
+        {% if enrolment.date_ended %}
+        Date ended: {{ enrolment.date_ended }}<br />
+        {% endif %}
 
-            {% if enrolment.mark %}
-                Mark received: {{ enrolment.mark }}<br />
-            {% endif %}
-            </p>
+        {% if enrolment.mark %}
+        Mark received: {{ enrolment.mark }}<br />
+        {% endif %}
+        </p>
         {% endfor %}
     </div>
     <div class="clear"></div>
@@ -53,40 +53,42 @@ Student detail
     <div id="units" class="grid_5">
         <h3>Units of Competence</h3>
         {% for unit in student.grades.all %}
-            <p>Units: <a href="{{unit.subject.get_absolute_url}}">{{ unit.subject.name }}</a>, {{ unit.subject.year }}, semester: {{ unit.subject.semester }}<br />
-            Date Started: {{ unit.date_started }}<br /> 
-            {% if unit.results.count != 0 %}
-                {% for result in unit.results.all %}
-                    {{ result }}
-                {% endfor %}
-            {% endif %} 
-            </p>
+        <p>Units: <a href="{{unit.subject.get_absolute_url}}">{{ unit.subject.name }}</a>, {{ unit.subject.year }}, semester: {{ unit.subject.semester }}<br />
+        Date Started: {{ unit.date_started }}<br /> 
+        {% if unit.results.count != 0 %}
+        {% for result in unit.results.all %}
+        {{ result }}
         {% endfor %}
-    
+        {% endif %} 
+        </p>
+        {% endfor %}
+
     </div>
     {% if student.attendance_before_today %}
-        <div id="attendance" class="grid_5">
-            <h3>Attendence record</h3> 
-            {% for record in student.attendance_before_today %}
-                {% if record.reason == '0' %}
-                    {{ record.session.date|date:"d/m" }}, {{ record.session.subject.name }}, {{ record.get_reason_display }}<br />
-                {% else %}
-                    {{ record.session.date|date:"d/m" }}, {{ record.session.subject.name }}, {{ record.get_reason_display }},  {{ record.get_absent_display }}<br />
-                {% endif %}
-            {% endfor %}
-   
-        </div>
+    <div id="attendance" class="grid_5">
+        <h3>Attendence record</h3> 
+        {% for record in student.attendance_before_today %}
+        {% if record.reason == '0' %}
+        {{ record.session.date|date:"d/m" }}, {{ record.session.subject.name }}, {{ record.get_reason_display }}<br />
+        {% else %}
+        {{ record.session.date|date:"d/m" }}, {{ record.session.subject.name }}, {{ record.get_reason_display }},  {{ record.get_absent_display }}<br />
+        {% endif %}
+        {% endfor %}
+
+    </div>
     {% endif %} <!-- endif student.attendance_before_today -->
+    <div class="clear"></div>
     {% endif %} <!-- endif student.grades.all -->
+    
     <div id="comments" class="grid_5">
         <h5>Comments</h5>
         {% render_comment_list for student %}
         {% render_comment_form for student  %}
     </div>
     <div id="admin" class="grid_4">
-    <h5>Admin</h5>
-    Date added: {{ student.added }}<br />
-    Last change: {{ student.last_change_by}}, {{ student.updated }}
+        <h5>Admin</h5>
+        Date added: {{ student.added }}<br />
+        Last change: {{ student.last_change_by}}, {{ student.updated }}
     </div>
 </div>
 {% endblock %}
