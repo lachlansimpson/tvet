@@ -190,7 +190,7 @@ class IslandFilter(admin.SimpleListFilter):
 class ApplicantAdmin(admin.ModelAdmin):
     fieldsets = (
         ('Bio', {'fields':(('first_name','surname'),('dob','gender', 'island'))}),
-        ('Contact Information', { 'fields':(('phone','email'),)}),
+        ('Contact Information', { 'fields':(('phone', 'phone2', 'email'),)}),
         ('Other Information', { 'fields':(('disability','disability_description'), 'education_level')}),
         ('Course Applied For', { 'fields':(('applied_for', 'date_of_application'),)}),
         ('Education and experience information', {'fields':(('test_ma','test_eng'),('experience','other_courses'))}),
@@ -400,7 +400,7 @@ class StaffAdminForm(ModelForm):
 class StaffAdmin(admin.ModelAdmin):
     fieldsets = (
         ('Bio', { 'fields':(('first_name','surname'),('dob','gender'), ('island',))}),
-        ('Contact Information', { 'fields':(('phone','email'),)}),
+        ('Contact Information', { 'fields':(('phone','phone2','email'),)}),
         ('Other Information', { 'fields':(('disability','disability_description'),('classification'))}),
         ('ISLPR', { 'fields':(('islpr_reading', 'islpr_writing', 'islpr_speaking', 'islpr_listening', 'islpr_overall'),)}),
         ('Admin (non editable)', {'fields':(('added', 'updated','last_change_by','penultimate_change_by'),)}),
@@ -452,7 +452,7 @@ class StudentAdmin(admin.ModelAdmin):
               )
     fieldsets = (
         ('Bio', { 'fields':(('first_name','surname'),('dob','gender'), ('island', 'slug'))}),
-        ('Contact Information', { 'fields':(('phone','email'),)}),
+        ('Contact Information', { 'fields':(('phone','phone2','email'),)}),
         ('Other Information', { 'fields':(('disability','disability_description'), 'education_level', 'application_details')}),
         ('Admin (non editable)', {'fields':(('added', 'updated','last_change_by','penultimate_change_by'),)}),
     )
