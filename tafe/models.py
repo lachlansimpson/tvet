@@ -134,6 +134,14 @@ EDUCATION_LEVEL_CHOICES = (
     ('9','Form 3 or below'),
 )
 
+ROOM_CHOICES = (
+    ('Room 1', 'Room 1'),
+    ('Room 2', 'Room 2'),
+    ('Room 3', 'Room 3'),
+    ('Room 4', 'Room 4'),
+    ('Room 5', 'Room 5'),
+    ('Room 6', 'Room 6'),
+)
 class AttendanceBeforeTodayManager(models.Manager):
     def get_query_set(self):
         attendance_list = super(AttendanceBeforeTodayManager, self).get_query_set().filter(session_date__gte=today)
@@ -528,8 +536,9 @@ class Session(models.Model):
     subject = models.ForeignKey('Subject', related_name='sessions')
     timetable = models.ForeignKey('Timetable', related_name='sessions')
     date = models.DateField()
-    slug = models.SlugField(max_length=50,blank=True)
+    slug = models.SlugField(max_length=50, blank=True)
     students = models.ManyToManyField('Student', through='StudentAttendance', blank=True, null=True)
+    room_number = models.CharField(max_length=7, choices=ROOM_CHOICES, blank=True)
 
     def __unicode__(self):
         '''Session Reference: day of week, date, term/year (Timetable)'''

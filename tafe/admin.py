@@ -38,7 +38,7 @@ class ResultInline(admin.StackedInline):
 class SessionInline(admin.TabularInline):
     model = Session
     extra = 1
-    fields = ('date', 'session_number','subject','timetable')
+    fields = ('date', 'session_number','subject','timetable', 'room_number')
     template = 'admin/collapsed_tabular_inline.html'
 
 class StaffAttendanceInline(admin.TabularInline):
@@ -364,10 +364,10 @@ class ResultAdmin(admin.ModelAdmin):
     
 class SessionAdmin(admin.ModelAdmin):
     fieldsets = (
-        ('Subject and time', { 'fields': (('subject','date','session_number',),'timetable',)}),
+        ('Subject and time', { 'fields': (('subject','date','session_number','room_number'),'timetable',)}),
     )
     list_display = ('subject', 'day_of_week','date','timetable','get_session_number_display')
-    list_filter = ('date','session_number','students')
+    list_filter = ('date','session_number','students', 'room_number')
     inlines = [
         StaffAttendanceInline,
         StudentAttendanceInline,
