@@ -76,18 +76,28 @@ class EnglishTestFilter(admin.SimpleListFilter):
     parameter_name = 'eng-result' # used in URL query
 
     def lookups(self, request, model_admin):
-        return ( # these are the ranges in the right sidebar
-            ('10', '0 - 10'),
-            ('20', '10 - 20'),
-            ('30', '20 - 30'),
-            ('40', '30 - 40'),
-            ('50', '40 - 50'),
-            ('60', '50 - 60'),
-            ('70', '60 - 70'),
-            ('80', '70 - 80'),
-            ('90', '80 - 90'),
-            ('100', '90 - 100'),
-        )
+        '''Note: only show the field if there is someone with a mark in that range'''
+        qs = model_admin.queryset(request) # these are the ranges in the right sidebar 
+        if qs.filter(test_eng__lt=10).exists():
+            yield ('10', '0 - 10')
+        if qs.filter(test_eng__gte=10, test_ma__lt=20):
+            yield ('20', '10 - 20')
+        if qs.filter(test_eng__gte=20, test_eng__lt=30):
+            yield ('30', '20 - 30')
+        if qs.filter(test_eng__gte=30, test_eng__lt=40):
+            yield ('40', '30 - 40')
+        if qs.filter(test_eng__gte=40, test_eng__lt=50):
+            yield ('50', '40 - 50')
+        if qs.filter(test_eng__gte=50, test_eng__lt=60):
+            yield ('60', '50 - 60')
+        if qs.filter(test_eng__gte=60, test_eng__lt=70):
+            yield ('70', '60 - 70')
+        if qs.filter(test_eng__gte=70, test_eng__lt=80):
+            yield ('80', '70 - 80')
+        if qs.filter(test_eng__gte=80, test_eng__lt=90):
+            yield ('90', '80 - 90')
+        if qs.filter(test_eng__lte=100):
+            yield ('100', '90 - 100')
 
     def queryset(self, request, queryset):
         if self.value() == '10':
@@ -116,18 +126,28 @@ class MathTestFilter(admin.SimpleListFilter):
     parameter_name = 'math-result' # used in URL query
 
     def lookups(self, request, model_admin):
-        return ( # these are the ranges in the right sidebar
-            ('10', '0 - 10'),
-            ('20', '10 - 20'),
-            ('30', '20 - 30'),
-            ('40', '30 - 40'),
-            ('50', '40 - 50'),
-            ('60', '50 - 60'),
-            ('70', '60 - 70'),
-            ('80', '70 - 80'),
-            ('90', '80 - 90'),
-            ('100', '90 - 100'),
-        )
+        '''Note: only show the field if there is someone with a mark in that range'''
+        qs = model_admin.queryset(request)
+        if qs.filter(test_ma__lt=10).exists():
+            yield ('10', '0 - 10')
+        if qs.filter(test_ma__gte=10, test_ma__lt=20):
+            yield ('20', '10 - 20')
+        if qs.filter(test_ma__gte=20, test_ma__lt=30):
+            yield ('30', '20 - 30')
+        if qs.filter(test_ma__gte=30, test_ma__lt=40):
+            yield ('40', '30 - 40')
+        if qs.filter(test_ma__gte=40, test_ma__lt=50):
+            yield ('50', '40 - 50')
+        if qs.filter(test_ma__gte=50, test_ma__lt=60):
+            yield ('60', '50 - 60')
+        if qs.filter(test_ma__gte=60, test_ma__lt=70):
+            yield ('70', '60 - 70')
+        if qs.filter(test_ma__gte=70, test_ma__lt=80):
+            yield ('80', '70 - 80')
+        if qs.filter(test_ma__gte=80, test_ma__lt=90):
+            yield ('90', '80 - 90')
+        if qs.filter(test_ma__lte=100):
+            yield ('100', '90 - 100')
 
     def queryset(self, request, queryset):
         if self.value() == '10':
@@ -151,6 +171,22 @@ class MathTestFilter(admin.SimpleListFilter):
         if self.value() == '100':
             return queryset.filter(test_ma__lte=100)
 
+class IslandFilter(admin.SimpleListFilter):
+    title = 'islands'
+    parameter_name = 'island'
+    
+    def lookups(self, request, model_admin):
+        return (
+            ('tarawa', 'Tarawa'),
+            ('outer-islands', 'Outer Islands'),
+        )
+
+    def queryset(self, request, queryset):
+        if self.value == 'tarawa':
+            return queryset.filter(island__iexact='tarawa')
+        if self.value == 'outer-islands':
+            return queryset.exclude(island__iexact='tarawa')
+
 class ApplicantAdmin(admin.ModelAdmin):
     fieldsets = (
         ('Bio', {'fields':(('first_name','surname'),('dob','gender', 'island'))}),
@@ -164,8 +200,8 @@ class ApplicantAdmin(admin.ModelAdmin):
         ('Admin (non editable)', {'fields':(('added', 'updated','last_change_by','penultimate_change_by'),)}),
     )
     form = ApplicantAdminForm
-    list_display = ('__unicode__', 'gender', 'disability', 'applied_for', 'eligibility', 'successful', 'test_ma', 'test_eng')
-    list_filter = ('gender', 'disability', MathTestFilter, EnglishTestFilter,'successful', 'applied_for', 'eligibility')
+    list_display = ('__unicode__', 'gender', 'disability', 'applied_for', 'island', 'successful', 'test_ma', 'test_eng')
+    list_filter = ('gender', 'disability', MathTestFilter, EnglishTestFilter, IslandFilter, 'successful', 'applied_for', 'eligibility')
     readonly_fields = ('added', 'updated','last_change_by','penultimate_change_by')
     actions = ['make_student', 'mark_unsuccessful']
 

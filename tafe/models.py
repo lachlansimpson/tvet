@@ -212,6 +212,7 @@ class Person(models.Model):
     gender = models.CharField(max_length='1', choices=GENDER_CHOICES, default='F')
     island = models.CharField(max_length='10', choices=ISLAND_CHOICES, default='Tarawa', blank=True, null=True)
     phone = models.CharField(max_length=12, blank=True)
+    phone2 = models.CharField(max_length=12, blank=True)
     email = models.EmailField(blank=True)
     
     disability = models.NullBooleanField()
