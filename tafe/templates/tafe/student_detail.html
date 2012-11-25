@@ -30,7 +30,7 @@ Student detail
         {% if student.education_level %}
         Highest Education level: {{ student.get_education_level_display }}<br />
         {% endif %}
-        <a href="{{ student.tsiapplication_details.get_absolute_url }}">Application Record</a>
+        <a href="{{ student.application_details.get_absolute_url }}">Application Record</a>
     </div>
     <div id="enrolment" class="grid_5">
         <h3>Enrolment details</h3>
@@ -49,6 +49,20 @@ Student detail
         {% endfor %}
     </div>
     <div class="clear"></div>
+    {% if student.islpr_record.count > 0 %} 
+    <div id="ISLPR" class="grid_5">
+        <h4>ISLPR records</h4>
+        {% for i in student.islpr_record.all %}
+        <strong>{{ i.date_tested }}:</strong><br />
+        Reading: {{ i.get_islpr_reading_display }}<br />
+        Writing: {{ i.get_islpr_writing_display }}<br />
+        Speaking: {{ i.get_islpr_speaking_display }} <br />
+        Listening: {{ i.get_islpr_listening_display }}<br />
+        Overall: {{ i.get_islpr_overall_display }}<br />
+        {% endfor %}
+    </div>
+    {% endif %}
+    <div class="clear"></div>
     {% if student.grades.all %}
     <div id="units" class="grid_5">
         <h3>Units of Competence</h3>
@@ -56,13 +70,12 @@ Student detail
         <p>Units: <a href="{{unit.subject.get_absolute_url}}">{{ unit.subject.name }}</a>, {{ unit.subject.year }}, semester: {{ unit.subject.semester }}<br />
         Date Started: {{ unit.date_started }}<br /> 
         {% if unit.results.count != 0 %}
-        {% for result in unit.results.all %}
-        {{ result }}
-        {% endfor %}
+            {% for result in unit.results.all %}
+                {{ result }}
+            {% endfor %}
         {% endif %} 
         </p>
         {% endfor %}
-
     </div>
     {% if student.attendance_before_today %}
     <div id="attendance" class="grid_5">

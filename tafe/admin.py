@@ -1,4 +1,4 @@
-from tafe.models import Student, Course, Subject, Enrolment, Grade, StaffAttendance, StudentAttendance, Result, Session, Timetable, Applicant, Staff, Credential, Assessment
+from tafe.models import Student, Course, Subject, Enrolment, Grade, StaffAttendance, StudentAttendance, Result, Session, Timetable, Applicant, Staff, Credential, Assessment, StaffISLPR, StudentISLPR
 from django.contrib import admin
 from django.forms import ModelForm
 from django.forms.extras.widgets import SelectDateWidget 
@@ -9,6 +9,14 @@ import datetime
 today = datetime.date.today()
 this_year = datetime.date.today().year
 BIRTH_YEARS = range(this_year-51, this_year-15)
+
+class StudentISLPRInline(admin.StackedInline):
+    model = StudentISLPR
+    extra = 1
+
+class StaffISLPRInline(admin.StackedInline):
+    model = StaffISLPR
+    extra = 1
 
 class ApplicantInline(admin.TabularInline):
     model = Applicant
@@ -22,6 +30,7 @@ class CourseInline(admin.TabularInline):
 
 class CredentialInline(admin.TabularInline):
     model = Staff.credential.through
+    extra = 1
 
 class EnrolmentInline(admin.TabularInline):
     model = Enrolment 
@@ -368,10 +377,7 @@ class SessionAdmin(admin.ModelAdmin):
     )
     list_display = ('subject', 'day_of_week','date','timetable','get_session_number_display')
     list_filter = ('date','session_number','students', 'room_number')
-    inlines = [
-        StaffAttendanceInline,
-        StudentAttendanceInline,
-    ]
+    inlines = (StaffAttendanceInline, StudentAttendanceInline,)
     model = Session
     
     def save_formset(self, request, form, formset, change): 
@@ -402,15 +408,13 @@ class StaffAdmin(admin.ModelAdmin):
         ('Bio', { 'fields':(('first_name','surname'),('dob','gender'), ('island',))}),
         ('Contact Information', { 'fields':(('phone','phone2','email'),)}),
         ('Other Information', { 'fields':(('disability','disability_description'),('classification'))}),
-        ('ISLPR', { 'fields':(('islpr_reading', 'islpr_writing', 'islpr_speaking', 'islpr_listening', 'islpr_overall'),)}),
         ('Admin (non editable)', {'fields':(('added', 'updated','last_change_by','penultimate_change_by'),)}),
     )
     form = StaffAdminForm
     list_display = ('__unicode__', 'gender', 'disability')
     list_filter = ('gender', 'disability')
     readonly_fields = ('added', 'updated','last_change_by','penultimate_change_by')
-    inlines = (CredentialInline,
-              )
+    inlines = (CredentialInline, StaffISLPRInline,)
     
     def save_model(self, request, obj, form, change): 
         try:
@@ -446,10 +450,7 @@ class StudentAdminForm(ModelForm):
         }            
 
 class StudentAdmin(admin.ModelAdmin):
-    inlines = (EnrolmentInline,
-               GradeInline,
-               StudentAttendanceInline,
-              )
+    inlines = (EnrolmentInline, StudentISLPRInline, GradeInline, StudentAttendanceInline, )
     fieldsets = (
         ('Bio', { 'fields':(('first_name','surname'),('dob','gender'), ('island', 'slug'))}),
         ('Contact Information', { 'fields':(('phone','phone2','email'),)}),
@@ -527,6 +528,8 @@ admin.site.register(Grade, GradeAdmin)
 admin.site.register(Result, ResultAdmin)
 admin.site.register(Session, SessionAdmin)
 admin.site.register(Staff, StaffAdmin)
+admin.site.register(StudentISLPR)
+admin.site.register(StaffISLPR)
 admin.site.register(StaffAttendance)
 admin.site.register(Student, StudentAdmin)
 admin.site.register(StudentAttendance, StudentAttendanceAdmin)

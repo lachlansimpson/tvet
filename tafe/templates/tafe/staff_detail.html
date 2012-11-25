@@ -10,31 +10,28 @@ Staff detail
 {% block coltype %}colMS{% endblock %}
 {% block content %}
 <div id="content-left">
-    <div id="bio">
-    <h2>{{ staff }}</h2>
-    Date of birth: {{ staff.dob }}<br />
-    Age: {{ staff.age_today }}<br />
-    Gender: {{ staff.get_gender_display }}<br />
-    Island: {{ staff.get_island_display }}<br />
-    {% if staff.phone %}
-    Phone: {{ staff.phone }}<br />
-    {% endif %}
-    {% if staff.phone2 %}
-    Phone: {{ staff.phone2 }}<br />
-    {% endif %}
-    {% if staff.email %}
-    Email: {{ staff.email }}<br /> 
-    {% endif %}
-    {% if staff.disability %}
-    Disability: {{ staff.disbility_description }}<br /><br />
-    {% endif %}
+    <div id="bio" class="grid_5">
+        <h2>{{ staff }} - {{ staff.get_classification_display }}</h2>
+        Date of birth: {{ staff.dob }}<br />
+        Age: {{ staff.age_today }}<br />
+        Gender: {{ staff.get_gender_display }}<br />
+        Island: {{ staff.get_island_display }}<br />
+        {% if staff.phone %}
+        Phone: {{ staff.phone }}<br />
+        {% endif %}
+        {% if staff.phone2 %}
+        Phone: {{ staff.phone2 }}<br />
+        {% endif %}
+        {% if staff.email %}
+        Email: {{ staff.email }}<br /> 
+        {% endif %}
+        {% if staff.disability %}
+        Disability: {{ staff.disbility_description }}<br /><br />
+        {% endif %}
     </div>
-    <hr> 
-    <div id="Credentials">
-        Classification: {{ staff.get_classification_display }}<br />
-        
+    {% if staff.credential.count > 0 %}
+    <div id="credentials" class="grid_5">
         <h4>Credentials</h4>
-        {% if staff.credential.count > 0 %}
         {% for cred in staff.credential.all %}
         <p>
         Name: {{ cred.name }}<br />
@@ -43,27 +40,34 @@ Staff detail
         Year: {{ cred.year }}<br />
         </p>
         {% endfor %}
-        {% endif %}
-
-        <h4>ISLPR records</h4>
-        Reading: {{ staff.get_islpr_reading_display }}<br />
-        Writing: {{ staff.get_islpr_writing_display }}<br />
-        Speaking: {{ staff.get_islpr_speaking_display }} <br />
-        Listening: {{ staff.get_islpr_listening_display }}<br />
-        Overall: {{ staff.get_islpr_overall_display }}<br />
     </div>
-    
-       <div id="comments" class="grid_5">
+    {% endif %}
+    <div class="clear"></div>     
+    {% if staff.islpr_record.count > 0 %}    
+    <div id="ISLPR" class="grid_5">
+        <h4>ISLPR records</h4>
+        {% for i in staff.islpr_record.all %}
+        <strong>{{ i.date_tested }}:</strong><br />
+        Reading: {{ i.get_islpr_reading_display }}<br />
+        Writing: {{ i.get_islpr_writing_display }}<br />
+        Speaking: {{ i.get_islpr_speaking_display }} <br />
+        Listening: {{ i.get_islpr_listening_display }}<br />
+        Overall: {{ i.get_islpr_overall_display }}<br />
+        {% endfor %}
+        
+    </div>
+    {% endif %}
+    <div class="clear"></div>
+    <div id="comments" class="grid_5">
         <h5>Comments</h5>
         {% render_comment_list for staff %}
         <div class="clear"></div>
         {% render_comment_form for staff %}
     </div>
     <div id="admin" class="grid_4">
- 
-    <h5>Admin</h5>
-    Date added: {{ staff.added }}<br />
-    Date last changed: {{ staff.updated }}
+        <h5>Admin</h5>
+        Date added: {{ staff.added }}<br />
+        Date last changed: {{ staff.updated }}
     </div>
 </div>
 {% endblock %}

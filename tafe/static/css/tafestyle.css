@@ -13,7 +13,7 @@
     display: none;
 }
 
-#assessments, #sessions, #bio, #enrolment, #units, #attendance, #application-details {
+#assessments, #sessions, #bio, #enrolment, #units, #attendance, #application-details, #credentials, #ISLPR {
     -moz-border-radius: 6px;
     -webkit-border-radius: 6px;
     border-radius: 6px;
@@ -21,11 +21,11 @@
     padding: 0 10px 10px 10px;
 }
 
-#comments {
+#comments, #ISLPR {
     float: left;
 }
 
-#attendance, #assessments, #units, #attendance, #admin, #comments {
+#attendance, #assessments, #units, #attendance, #admin, #comments, #ISLPR {
     margin-top: 10px;
 }
 

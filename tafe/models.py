@@ -142,6 +142,7 @@ ROOM_CHOICES = (
     ('Room 5', 'Room 5'),
     ('Room 6', 'Room 6'),
 )
+
 class AttendanceBeforeTodayManager(models.Manager):
     def get_query_set(self):
         attendance_list = super(AttendanceBeforeTodayManager, self).get_query_set().filter(session_date__gte=today)
@@ -211,6 +212,26 @@ class MaleManager(models.Manager):
     def get_query_set(self):
         return super(MaleManager, self).get_query_set().filter(gender='M')
 
+class ISLPR_record(models.Model):
+    islpr_reading = models.CharField('Reading Level', max_length=2, choices=ISLPR_CHOICES)
+    islpr_writing = models.CharField('Writing Level', max_length=2, choices=ISLPR_CHOICES)
+    islpr_speaking = models.CharField('Speaking Level', max_length=2, choices=ISLPR_CHOICES)
+    islpr_listening = models.CharField('Listening Level', max_length=2, choices=ISLPR_CHOICES)
+    islpr_overall = models.CharField('Overall', max_length=2, choices=ISLPR_CHOICES)
+    date_tested = models.DateField()
+    
+    class Meta:
+        abstract = True
+        '''TODO: HOWTO make ISLPR all caps'''
+        verbose_name = 'ISLPR record'
+        verbose_name_plural = 'ISLPR records'
+
+class StudentISLPR(ISLPR_record):
+    student = models.ForeignKey('Student', related_name='islpr_record')
+
+class StaffISLPR(ISLPR_record):
+    staff_member = models.ForeignKey('Staff', related_name='islpr_record')
+
 class Person(models.Model):
     '''Abstract Class under Applicant, Student and Staff'''
     first_name = models.CharField(max_length=30)
@@ -251,6 +272,7 @@ class Person(models.Model):
 class CurrentApplicantManager(models.Manager):
     def get_query_set(self):
         return super(CurrentApplicantManager, self).get_query_set().exclude(successful='1').exclude(successful='0').order_by('first_name')
+
 
 class Applicant(Person):
     applied_for = models.ForeignKey('Course', related_name='applicants')
@@ -569,11 +591,6 @@ class Staff(Person):
     '''Respresents each Staff member'''
     classification = models.CharField(max_length=2, choices=CLASSIFICATION_CHOICES)
     credential = models.ManyToManyField('Credential', blank=True, null=True, related_name='credentials')
-    islpr_reading = models.CharField('ISLPR Level Reading', max_length=2, choices=ISLPR_CHOICES)
-    islpr_writing = models.CharField('ISLPR Level Writing', max_length=2, choices=ISLPR_CHOICES)
-    islpr_speaking = models.CharField('ISLPR Level Speaking', max_length=2, choices=ISLPR_CHOICES)
-    islpr_listening = models.CharField('ISLPR Level Listening', max_length=2, choices=ISLPR_CHOICES)
-    islpr_overall = models.CharField('ISLPR Level Overall', max_length=2, choices=ISLPR_CHOICES)
 
     class Meta:
         verbose_name='Staff'
