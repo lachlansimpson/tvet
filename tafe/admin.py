@@ -381,7 +381,8 @@ class SessionAdmin(admin.ModelAdmin):
     list_filter = ('date','session_number','students', 'room_number')
     inlines = (StaffAttendanceInline, StudentAttendanceInline,)
     model = Session
-    
+    unique_together = ('subject','date','session_number')
+
     def save_formset(self, request, form, formset, change): 
         if formset.model == StudentAttendance:
             instances = formset.save(commit=False)
