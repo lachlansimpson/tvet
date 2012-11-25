@@ -10,7 +10,7 @@ Applicant detail
 {% endblock %}
 {% block coltype %}colMS{% endblock %}
 {% block content %}
-<div id="content-left grid_12">
+<div id="content-left" class="grid_12">
     <div id="bio" class="grid_5">
     <h2>{{ applicant }} - {{ applicant.applied_for }}</h2>
     <p>Date of birth: {{ applicant.dob }}</p>
@@ -40,6 +40,12 @@ Applicant detail
             <p>Experience: {{ applicant.experience }}</p>
             <p>Other Courses: {{ applicant.other_course }}</p>
         </div>
+        {% if applicant.student_set.count > 0 %}
+        {% for student in applicant.student_set.all %} 
+        <a href="{{ student.get_absolute_url }}">Previous student #{{ student.get_id }}</a>
+        {% endfor %}
+        {% endif %}
+        
         {% if applicant.short_listed %}
         <div id="shortlist">
             <h4>Test Results</h4>

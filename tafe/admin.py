@@ -65,6 +65,7 @@ class StudentAttendanceInline(admin.TabularInline):
 
 class StudentInline(admin.StackedInline):
     model = Student
+    extra = 1
 
 class StaffInline(admin.StackedInline):
     model = Staff
@@ -213,6 +214,7 @@ class ApplicantAdmin(admin.ModelAdmin):
     list_filter = ('gender', 'disability', MathTestFilter, EnglishTestFilter, IslandFilter, 'successful', 'applied_for', 'eligibility')
     readonly_fields = ('added', 'updated','last_change_by','penultimate_change_by')
     actions = ['make_student', 'mark_unsuccessful']
+    inlines = ( StudentInline, )
 
     def mark_unsuccessful(self, request, queryset):
         '''Marks a group of applicants as unsuccessful'''

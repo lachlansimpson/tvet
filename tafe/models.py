@@ -80,6 +80,8 @@ COURSE_RESULTS = (
 CLASSIFICATION_CHOICES = (
     ('T', 'Trainer'),
     ('M', 'Manager'),
+    ('A', 'Administration'),
+    ('F', 'Facilities'),
 )
 
 AQF_LEVEL_CHOICES = (
