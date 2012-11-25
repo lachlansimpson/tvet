@@ -137,13 +137,24 @@ EDUCATION_LEVEL_CHOICES = (
 )
 
 ROOM_CHOICES = (
-    ('Room 1', 'Room 1'),
-    ('Room 2', 'Room 2'),
-    ('Room 3', 'Room 3'),
-    ('Room 4', 'Room 4'),
-    ('Room 5', 'Room 5'),
-    ('Room 6', 'Room 6'),
+    ('ITL','IT Lab'),
+    ('R8','Room 8'),
+    ('R4','Room 4'),
+    ('R3','Room 3'),
+    ('R2','Room 2'),
+    ('R1','Room 1'),
+    ('AW','Automotive workshop'),
+    ('UA','Upstairs Automotive'),
+    ('AWC','Auto Workshop classroom'),
+    ('ENG','English'),
+    ('EW','Electro Technology Workshop'),
+    ('UE','Upstairs Electrical'),
+    ('CW','Carpentry Workshop'),
+    ('UC','Upstairs Carpentry'),
 )
+
+
+
 
 class AttendanceBeforeTodayManager(models.Manager):
     def get_query_set(self):
