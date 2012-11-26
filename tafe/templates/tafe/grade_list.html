@@ -10,12 +10,17 @@ List of grades available
 {% endblock %}
 {% block coltype %}colMS{% endblock %}
 {% block content %}
+<div class="grid_12">
+    <div id="bio" class="grid_5"> 
     <h3>Grade register</h3>
+
     {% if grade_list %}
         {% for grade in grade_list %}
             <li><a href="{{ grade.get_absolute_url }}">{{ grade }}</a></li>
         {% endfor %}
     {% else %}
         <p>No grades are available.</p>
-    {% endif %}
+        {% endif %}
+    </div>
+</div>
 {% endblock %}

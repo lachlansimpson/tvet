@@ -1,8 +1,6 @@
 {% extends "tafe/base_site.html" %}
 {% comment %}
-
 Timetable list page of the portal.
-
 {% endcomment %}
 
 {% block title %}
@@ -10,6 +8,7 @@ Timetable list page of the portal.
 {% endblock %}
 {% block coltype %}colMS{% endblock %}
 {% block content %}
+<div class="grid_12">
 <div id="bio" class="grid_5">
     <h3>Timetables</h3>
     {% if timetable_list %}
@@ -18,6 +17,7 @@ Timetable list page of the portal.
         {% endfor %}
     {% else %}
         <p>No timetables are available.</p>
-        {% endif %}
+    {% endif %}
+    </div>
 </div>
 {% endblock %}

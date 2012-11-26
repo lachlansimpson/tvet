@@ -10,23 +10,28 @@ List of Staff
 {% endblock %}
 {% block coltype %}colMS{% endblock %}
 {% block content %}
-<h3>Staff register</h3>
-{% if staff_list %}
-    {% regroup staff_list by first_letter as letter_list %} 
-    {% for letter in letter_list %}
-        <a href="#{{ letter.grouper }}">{{ letter.grouper }}</a>
-    {% endfor %}
-        
-    {% for letter in letter_list %}
-        <h3 id="{{ letter.grouper }}">{{ letter.grouper }}</h3>
-        <ul>
-            {% for staff in letter.list %}
-                <li><a href="{{ staff.get_absolute_url }}">{{ staff }}</a></li>
-            {% endfor %}
-        </ul>
-        </li>
-    {% endfor %}
-{% else %}
-    <p>No staff listed in the database.</p>
-{% endif %}
+<div class="grid_12">
+    <div id="bio" class="grid_5">
+    <h3>Staff register</h3>
+    {% if staff_list %}
+        {% regroup staff_list by first_letter as letter_list %} 
+        {% for letter in letter_list %}
+            <a href="#{{ letter.grouper }}">{{ letter.grouper }}</a>
+        {% endfor %}
+            
+        {% for letter in letter_list %}
+            <h3 id="{{ letter.grouper }}">{{ letter.grouper }}</h3>
+            <ul>
+                {% for staff in letter.list %}
+                    <li><a href="{{ staff.get_absolute_url }}">{{ staff }}</a> | 
+                <a href="/admin/tafe/staff/{{ staff.pk }}/"><i>edit</i></a></li>
+                {% endfor %}
+            </ul>
+            </li>
+        {% endfor %}
+    {% else %}
+        <p>No staff listed in the database.</p>
+    {% endif %}
+</div>
+</div>
 {% endblock %}

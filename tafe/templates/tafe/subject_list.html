@@ -1,8 +1,6 @@
 {% extends "tafe/base_site.html" %}
 {% comment %}
-
 Subject list page of the portal.
-
 {% endcomment %}
 
 {% block title %}
@@ -10,22 +8,28 @@ Units of Competance list
 {% endblock %}
 {% block coltype %}colMS{% endblock %}
 {% block content %}
-{% if subject_list %}
-    {% regroup subject_list|dictsort:"first_letter" by first_letter as letter_list %} 
-    {% for letter in letter_list %}
-        <a href="#{{ letter.grouper }}">{{ letter.grouper }}</a>
-    {% endfor %}
-        
-    {% for letter in letter_list %}
-        <h3 id="{{ letter.grouper }}">{{ letter.grouper }}</h3>
-        <ul>
-            {% for subject in letter.list %}
-                <li><a href="{{ subject.get_absolute_url }}">{{ subject }}</a></li>
-            {% endfor %}
-        </ul>
-        </li>
-    {% endfor %}
-{% else %}
-    <p>No people are available.</p>
-{% endif %}
+<div class="grid_12">
+    <div id="bio" class="grid_5">
+    <h3>Units Available</h3>
+    {% if subject_list %}
+        {% regroup subject_list|dictsort:"first_letter" by first_letter as letter_list %} 
+        {% for letter in letter_list %}
+            <a href="#{{ letter.grouper }}">{{ letter.grouper }}</a>
+        {% endfor %}
+            
+        {% for letter in letter_list %}
+            <h3 id="{{ letter.grouper }}">{{ letter.grouper }}</h3>
+            <ul>
+                {% for subject in letter.list %}
+                <li><a href="{{ subject.get_absolute_url }}">{{ subject }}</a> | 
+                <a href="/admin/tafe/study/{{ study.pk }}/"><i>edit</i></a></li>
+                {% endfor %}
+            </ul>
+            </li>
+        {% endfor %}
+    {% else %}
+        <p>No people are available.</p>
+    {% endif %}
+    </div>
+</div>
 {% endblock %}

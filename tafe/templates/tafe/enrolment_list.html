@@ -10,6 +10,8 @@ List of enrolments
 {% endblock %}
 {% block coltype %}colMS{% endblock %}
 {% block content %}
+<div class="grid_12">
+    <div id="bio" class="grid_5">
     <h3>Student register</h3>
     {% if enrolment_list %}
         {% for enrolment in enrolment_list %}
@@ -18,4 +20,6 @@ List of enrolments
     {% else %}
         <p>No enrolment are available.</p>
     {% endif %}
+    </div>
+</div>
 {% endblock %}

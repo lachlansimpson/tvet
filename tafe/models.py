@@ -343,6 +343,7 @@ class Applicant(Person):
             new_student.gender = self.gender
             new_student.island = self.island
             new_student.phone = self.phone
+            new_student.phone2 = self.phone2
             new_student.email = self.email
             new_student.disability = self.disability
             new_student.disability_description = self.disability_description

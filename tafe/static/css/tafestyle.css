@@ -13,7 +13,7 @@
     display: none;
 }
 
-#assessments, #sessions, #bio, #enrolment, #units, #attendance, #application-details, #credentials, #ISLPR {
+#assessments, #sessions, #bio, #enrolment, #units, #attendance, #application-details, #credentials, #ISLPR, #list {
     -moz-border-radius: 6px;
     -webkit-border-radius: 6px;
     border-radius: 6px;

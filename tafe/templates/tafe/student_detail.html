@@ -37,14 +37,14 @@ Student detail
         {% for enrolment in student.enrolments.all %}
         <p>Qualification: <a href="{{ enrolment.course.get_absolute_url }}">{{ enrolment.course.name }}</a><br />
         Date started: {{ enrolment.date_started }}<br />
-
         {% if enrolment.date_ended %}
         Date ended: {{ enrolment.date_ended }}<br />
         {% endif %}
-
         {% if enrolment.mark %}
         Mark received: {{ enrolment.mark }}<br />
         {% endif %}
+        <a href="{{ enrolment.get_absolute_url }}">Enrolment record</a>|
+        <a href="/admin/tafe/enrolment/{{ enrolment.pk }}/"><i>edit</i></a>
         </p>
         {% endfor %}
     </div>
