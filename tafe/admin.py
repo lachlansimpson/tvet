@@ -325,7 +325,7 @@ class CredentialAdmin(admin.ModelAdmin):
 
 class EnrolmentAdmin(admin.ModelAdmin):
     fieldsets = [
-        ('',{'fields':['student','course','date_started','date_ended','mark']}),
+        ('',{'fields':['student','course','date_started','date_ended','mark','withdrawal_reason']}),
         ('Admin (non editable)', {'fields':(('last_change_by','penultimate_change_by'),)}),
     ]
     list_display = ('student', 'course', 'date_started')

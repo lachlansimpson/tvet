@@ -12,6 +12,7 @@ Course/Qualification detail page of the portal.
 <div id="content-left" class="grid_12">
     <div id="bio" class="grid_5">
         <h3>{{ course.name }}</h3>
+        <a href="/admin/tafe/course/{{ course.pk }}/">Edit this record</a>
         <h4>Subjects:</h4>
         {% for subject in course.subjects.all %}
             <a href="{{ subject.get_absolute_url}}">{{ subject.name }}</a><br />

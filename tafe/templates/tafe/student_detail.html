@@ -30,7 +30,8 @@ Student detail
         {% if student.education_level %}
         Highest Education level: {{ student.get_education_level_display }}<br />
         {% endif %}
-        <a href="{{ student.application_details.get_absolute_url }}">Application Record</a>
+        <a href="{{ student.application_details.get_absolute_url }}">Application Record</a><br />
+        <a href="/admin/tafe/student/{{ student.pk }}/">Edit this record</a>
     </div>
     <div id="enrolment" class="grid_5">
         <h3>Enrolment details</h3>

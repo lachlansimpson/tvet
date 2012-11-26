@@ -428,7 +428,10 @@ class Subject(models.Model):
         no_of_students = 0
         for course in self.course.all():
             for student in course.students.all():
-                if not student.enrolment.withdrawn_reason:
+                ''' Tedious, but we need to exclude those that are withdrawn'''
+                '''TODO investigate if this is done better via enrolment.date_ended'''
+                current = Enrolment.objects.get(course=course, student=student)
+                if not current.withdrawal_reason:
                    grade, created = Grade.objects.get_or_create(student=student, subject=self, date_started=today)
                    if created:
                        no_of_students += 1

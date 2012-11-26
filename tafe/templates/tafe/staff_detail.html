@@ -28,6 +28,7 @@ Staff detail
         {% if staff.disability %}
         Disability: {{ staff.disbility_description }}<br /><br />
         {% endif %}
+        <a href="/admin/tafe/staff/{{ staff.pk }}/">Edit this record</a>
     </div>
     {% if staff.credential.count > 0 %}
     <div id="credentials" class="grid_5">
