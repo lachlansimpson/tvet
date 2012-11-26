@@ -428,9 +428,10 @@ class Subject(models.Model):
         no_of_students = 0
         for course in self.course.all():
             for student in course.students.all():
-               grade, created = Grade.objects.get_or_create(student=student, subject=self, date_started=today)
-               if created:
-                   no_of_students += 1
+                if not student.enrolment.withdrawn_reason:
+                   grade, created = Grade.objects.get_or_create(student=student, subject=self, date_started=today)
+                   if created:
+                       no_of_students += 1
         return no_of_students    
 
 class Course(models.Model):
@@ -495,7 +496,7 @@ class Enrolment(models.Model):
     date_started = models.DateField(default=today)
     date_ended = models.DateField(blank=True, null=True)
     mark = models.CharField(max_length=1, choices=COURSE_RESULTS, blank=True)
-    withdrawn_reason = models.CharField(max_length=8, choices=WITHDRAWAL_REASONS, blank=True)
+    withdrawal_reason = models.CharField(max_length=8, choices=WITHDRAWAL_REASONS, blank=True)
     slug = models.SlugField(max_length=40, blank=True)
 
     last_change_by = models.ForeignKey(User, related_name='%(class)s_last_change_by', editable=False, blank=True, null=True)
