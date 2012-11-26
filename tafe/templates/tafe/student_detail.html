@@ -43,7 +43,7 @@ Student detail
         {% if enrolment.mark %}
         Mark received: {{ enrolment.mark }}<br />
         {% endif %}
-        <a href="{{ enrolment.get_absolute_url }}">Enrolment record</a>|
+        <a href="{{ enrolment.get_absolute_url }}">Enrolment record</a> | 
         <a href="/admin/tafe/enrolment/{{ enrolment.pk }}/"><i>edit</i></a>
         </p>
         {% endfor %}

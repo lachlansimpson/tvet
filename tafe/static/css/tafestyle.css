@@ -13,7 +13,7 @@
     display: none;
 }
 
-#assessments, #sessions, #bio, #enrolment, #units, #attendance, #attendance_results, #application-details, #credentials, #ISLPR, #list {
+#assessments, #sessions, #bio, #enrolment, #units, #attendance, #attendance_results, #application-details, #credentials, #ISLPR, #list, #grades {
     -moz-border-radius: 6px;
     -webkit-border-radius: 6px;
     border-radius: 6px;
@@ -21,7 +21,7 @@
     padding: 0 10px 10px 10px;
 }
 
-#comments, #ISLPR {
+#comments, #ISLPR, #grades {
     float: left;
 }
 

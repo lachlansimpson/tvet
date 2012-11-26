@@ -21,8 +21,9 @@ Enrolment detail page of the portal.
         {% endif %}
     </div>
     <div id="grades" class="grid_4">
-        {% for unit in enrolment.course.subjects %}
-            
+        <h4>Classes Available</h4>
+        {% for unit in enrolment.course.subjects.all %}
+        <a href="{{ unit.get_absolute_url }}">{{ unit }}</a><br />
         {% endfor %}
     </div>
     <div class="clear"></div>     

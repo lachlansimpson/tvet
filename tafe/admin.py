@@ -350,7 +350,8 @@ class GradeAdmin(admin.ModelAdmin):
     list_display = ('student','subject','date_started','results')
     list_filter = ('subject','date_started','results')
     readonly_fields = ('last_change_by','penultimate_change_by')
-     
+    unique_together = ('student','subject')
+ 
     def save_model(self, request, obj, form, change): 
         try:
             obj.last_change_by
@@ -504,7 +505,21 @@ class SubjectAdmin(admin.ModelAdmin):
     model = Subject
     prepopulated_fields = {'slug': ('name','year')}
     inlines = [ AssessmentInline, SessionInline, GradeInline,]
+    actions = ['add_all_students',]
     
+    def add_all_students(self, request, queryset):
+        ''' this function adds all the students enrolled in the course'''
+        rows_updated = 0
+        for unit in queryset:
+            no_of_students = unit.add_all_students()
+            rows_updated += 1
+            
+        if rows_updated == 1:
+            message_bit = "1 unit had"
+        else:
+            message_bit = "%s units have had" % rows_updated
+        self.message_user(request, "%s %s student(s) added." %(message_bit,no_of_students))
+
     def save_formset(self, request, form, formset, change): 
         if formset.model == Grade:
             instances = formset.save(commit=False)

@@ -12,7 +12,8 @@ Subject/Unit detail page of the portal.
 <div id="content-left">
     <div id="bio" class="grid_5">
         <h2>{{ unit.name }}</h2>
-        <h2>Semester: {{ unit.get_semester_display }}, {{ unit.year }}</h2>
+        <h3>Semester: {{ unit.get_semester_display }}, {{ unit.year }}</h3>
+        <a href="/admin/tafe/subject/{{ unit.pk }}">Edit this Unit</a>
     </div>
     <div id="sessions" class="grid_5">
         <h3>This week's classes</h3>
@@ -29,7 +30,7 @@ Subject/Unit detail page of the portal.
     </div>
     <div class="clear"></div>
     <div id="attendance_results" class="grid_10">
-        <h4>Student attendance records</h4>
+        <h4>Student attendance and results records</h4>
         {% for grade in unit.grades.all %}
         <a href="{{ grade.student.get_absolute_url}}">{{ grade.student }}</a>: <a href="{{ grade.get_absolute_url }}">{{ grade.subject }}</a><br />
         {% endfor %}

@@ -422,6 +422,16 @@ class Subject(models.Model):
             if session.date > last_monday and session.date < this_friday:
                 this_weeks_sessions.append(session)
         return this_weeks_sessions
+    
+    def add_all_students(self):
+        ''' this function adds all the students enrolled in the course'''
+        no_of_students = 0
+        for course in self.course.all():
+            for student in course.students.all():
+               grade, created = Grade.objects.get_or_create(student=student, subject=self, date_started=today)
+               if created:
+                   no_of_students += 1
+        return no_of_students    
 
 class Course(models.Model):
     '''Represents Courses - a collection of subjects leading to a degree'''
@@ -429,7 +439,7 @@ class Course(models.Model):
     year = models.CharField(max_length=4)
     slug = models.SlugField(max_length=40)
     students = models.ManyToManyField('Student', through='Enrolment', blank=True, null=True)
-    subjects = models.ManyToManyField('Subject', related_name='courses', blank=True, null=True, verbose_name=Subject._meta.verbose_name_plural)
+    subjects = models.ManyToManyField('Subject', related_name='course', blank=True, null=True, verbose_name=Subject._meta.verbose_name_plural)
 
     class Meta:
         verbose_name='Qualification'
@@ -525,7 +535,7 @@ class Grade(models.Model):
     results = models.ForeignKey('Result', related_name='grades', blank=True, null=True)
     slug = models.SlugField(max_length=60)
 
-    last_change_by = models.ForeignKey(User, related_name='%(class)s_last_change_by', editable=False)
+    last_change_by = models.ForeignKey(User, related_name='%(class)s_last_change_by', editable=False, blank=True, null=True)
     penultimate_change_by = models.ForeignKey(User, related_name='%(class)s_penultimate_change_by', blank=True, null=True, editable=False)
     
     def __unicode__(self):
