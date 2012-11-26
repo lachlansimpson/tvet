@@ -9,23 +9,28 @@ Session detail page of the portal.
 {% endblock %}
 {% block coltype %}colMS{% endblock %}
 {% block content %}
-<div id="content-left">
-    <h3>{{ session.date }}: {{ session.get_session_number_display }}</h3>
+<div id="content-left" class="grid_12">
+    <div id="bio" class="grid_5">
+        <h3>{{ session.date }}: {{ session.get_session_number_display }}</h3>
 
     <h2><a href="{{ session.subject.get_absolute_url }}">{{ session.subject.name }}</a></h2>
     Room Number: {{ session.get_room_number_display }}<br />
 
     {% if staff_attendance %}
-        {{ staff_attendance }}
+    Staff Member: <a href="{{ staff_attendance.staff_member.get_bsolute_url }}">{{ staff_attendance.staff_member }}</a>
     {% else %}
         No staff assigned yet
     {% endif %}
 
     <p><a href="{{ session.get_absolute_url }}attendance">Mark attendance for this class</a></p>
+</div>
+<div id="attendance" class="grid_4">
     <h4>Students and attendance</h4> 
     {% for record in attendance.all %}
     <a href="/tafe/attendance/{{ session.date.year}}/{{ session.date.month }}/{{ session.date.day }}/{{ record.slug }}">{{ record.student }}, {{ record.get_reason_display }}</a><br />
     {% endfor %}
+</div>
+    <div class="clear"></div>     
     <div id="comments" class="grid_5">
         <h5>Comments</h5>
         {% render_comment_list for session %}

@@ -78,12 +78,12 @@ def session_view(request, year, month, day, slug):
     req_date = datetime.date(int(year), int(month), int(day))
     session = get_object_or_404(Session, slug=slug, date=req_date)
     '''moving attendance record creation to here from convert_to_student in models'''
-    for student in session.subject.students.all():
+    for student in session.subject.students.filter(enrolments__withdrawn_reason=''):
         new_attendance, created = StudentAttendance.objects.get_or_create(session=session,student=student, last_change_by=request.user)
     student_attendance = StudentAttendance.objects.filter(session=session)
     staff_member = session.subject.staff_member
     if staff_member is not None:
-        staff_attendance = StaffAttendance.objects.get_or_create(session=session, staff_member=staff_member, last_change_by=request.user)
+        staff_attendance, created = StaffAttendance.objects.get_or_create(session=session, staff_member=staff_member, last_change_by=request.user)
     else:
         staff_attendance = {}
 

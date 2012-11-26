@@ -66,6 +66,14 @@ ABSENCE_CHOICES = (
     (u'U',u'Unexplained'),
 )
 
+WITHDRAWAL_REASONS = (
+    ('personal','Personal'),
+    ('family','Family'),
+    ('job','Employment'),
+    ('study','Study'),
+    ('health','Health'),
+)
+
 SUBJECT_RESULTS = (
     (u'P',u'Pass'),
     (u'F',u'Fail'),
@@ -153,9 +161,6 @@ ROOM_CHOICES = (
     ('UC','Upstairs Carpentry'),
 )
 
-
-
-
 class AttendanceBeforeTodayManager(models.Manager):
     def get_query_set(self):
         attendance_list = super(AttendanceBeforeTodayManager, self).get_query_set().filter(session_date__gte=today)
@@ -210,7 +215,7 @@ class StaffAttendance(Attendance):
     
     def __unicode__(self):
         '''Attendance reference: returns date, session and reason'''
-        return self.staff + ' ' + self.session + ' ' + self.get_reason_display()
+        return str(self.staff_member) + ' ' + str(self.session) + ' ' + self.get_reason_display()
 
     def save(self, *args, **kwargs):
         slug_temp = self.session.slug + ' ' + self.staff_member.slug
@@ -479,7 +484,7 @@ class Enrolment(models.Model):
     date_started = models.DateField(default=today)
     date_ended = models.DateField(blank=True, null=True)
     mark = models.CharField(max_length=1, choices=COURSE_RESULTS, blank=True)
-    withdrawn_reason = models.CharField(max_length=200, blank=True)
+    withdrawn_reason = models.CharField(max_length=8, choices=WITHDRAWAL_REASONS, blank=True)
     slug = models.SlugField(max_length=40, blank=True)
 
     last_change_by = models.ForeignKey(User, related_name='%(class)s_last_change_by', editable=False, blank=True, null=True)
@@ -510,13 +515,6 @@ class Enrolment(models.Model):
         slug_str = str(self.student) + ' ' + str(self.course) + ' ' + str(year_started)
         self.slug = slugify(slug_str)
         super(Enrolment, self).save(*args, **kwargs) 
-#        if self.mark == 'W':
-#            pass
-    
-#    def is_valid(self):
-#        if self.mark == 'W':
-#
-#        super(Enrolment, self)
 
 class Grade(models.Model):
     '''Represents a Student's interactions with a Subject. ie, being in a class.'''
@@ -610,7 +608,7 @@ class Staff(Person):
         verbose_name_plural='Staff'
 
     def __unicode__(self):
-        return self.first_name +' ' + self.surname
+        return self.first_name + ' ' + self.surname
     
     def get_id(self):
         return self

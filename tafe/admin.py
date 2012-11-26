@@ -291,6 +291,7 @@ class CourseAdmin(admin.ModelAdmin):
     list_display = ('name', 'count_students', 'count_males', 'count_females', 'subjects_available')
     model = Course 
     prepopulated_fields = {'slug': ('name',)}
+    save_on_top = True
 
     def save_formset(self, request, form, formset, change): 
         if formset.model == Enrolment:
@@ -309,7 +310,7 @@ class CourseAdmin(admin.ModelAdmin):
 
 class CredentialAdmin(admin.ModelAdmin):
     fieldsets = [
-        ('',{'fields':[('name','year'),('institution','aqf_level'),'type']}),
+        ('',{'fields':[('aqf_level','institution'),('name','year'),'type']}),
     ]
 
     def save_model(self, request, obj, form, change): 
@@ -382,9 +383,10 @@ class SessionAdmin(admin.ModelAdmin):
     inlines = (StaffAttendanceInline, StudentAttendanceInline,)
     model = Session
     unique_together = ('subject','date','session_number')
+    save_on_top = True
 
     def save_formset(self, request, form, formset, change): 
-        if formset.model == StudentAttendance:
+        if formset.model == StudentAttendance or formset.model == StaffAttendance:
             instances = formset.save(commit=False)
             for instance in instances:
                 try:
