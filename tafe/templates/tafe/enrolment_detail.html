@@ -20,6 +20,11 @@ Enrolment detail page of the portal.
         Mark: {{ enrolment.mark }}<br />
         {% endif %}
     </div>
+    <div id="grades" class="grid_4">
+        {% for unit in enrolment.course.subjects %}
+            
+        {% endfor %}
+    </div>
     <div class="clear"></div>     
     <div id="comments" class="grid_5">
         <h5>Comments</h5>
