@@ -189,14 +189,14 @@ class Attendance(models.Model):
             'day': self.date.day,
             'session': self.session.slug, 
             'slug': self.slug})
-        
+
 class StudentAttendance(Attendance):
     student = models.ForeignKey('Student', related_name='attendance_records')
 
     class Meta:
         verbose_name='Student Attendence Record'
         verbose_name_plural='Student Attendence Records'
-    
+
     def __unicode__(self):
         '''Attendance reference: returns date, session and reason'''
         return str(self.session) + ', ' + self.get_reason_display()
@@ -205,14 +205,14 @@ class StudentAttendance(Attendance):
         slug_temp = self.session.slug + ' ' + self.student.slug
         self.slug = slugify(slug_temp)
         super(StudentAttendance, self).save(*args, **kwargs)
-    
+
 class StaffAttendance(Attendance):
     staff_member = models.ForeignKey('Staff', related_name='attendance_records')
-    
+
     class Meta:
         verbose_name='Staff Attendence Record'
         verbose_name_plural='Staff Attendence Records'
-    
+
     def __unicode__(self):
         '''Attendance reference: returns date, session and reason'''
         return str(self.staff_member) + ' ' + str(self.session) + ' ' + self.get_reason_display()
@@ -221,7 +221,7 @@ class StaffAttendance(Attendance):
         slug_temp = self.session.slug + ' ' + self.staff_member.slug
         self.slug = slugify(slug_temp)
         super(StaffAttendance, self).save(*args, **kwargs)
-    
+
 class FemaleManager(models.Manager):
     def get_query_set(self):
         return super(FemaleManager, self).get_query_set().filter(gender='F')
@@ -237,7 +237,7 @@ class ISLPR_record(models.Model):
     islpr_listening = models.CharField('Listening Level', max_length=2, choices=ISLPR_CHOICES)
     islpr_overall = models.CharField('Overall', max_length=2, choices=ISLPR_CHOICES)
     date_tested = models.DateField()
-    
+
     class Meta:
         abstract = True
         '''TODO: HOWTO make ISLPR all caps'''
@@ -261,7 +261,7 @@ class Person(models.Model):
     phone = models.CharField(max_length=12, blank=True)
     phone2 = models.CharField(max_length=12, blank=True)
     email = models.EmailField(blank=True)
-    
+
     disability = models.NullBooleanField()
     disability_description = models.CharField('Description', max_length=50, blank=True)
 
@@ -273,7 +273,7 @@ class Person(models.Model):
     people = models.Manager()
     men = MaleManager()
     women = FemaleManager()
-    
+
     class Meta:
         abstract = True
 
@@ -314,7 +314,7 @@ class Applicant(Person):
     @models.permalink
     def get_absolute_url(self):
         return ('applicant_view', [str(self.slug)])
-    
+
     def save(self, *args, **kwargs):
         if not self.pk:
             super(Applicant, self).save(*args, **kwargs) # Call the first save() method to get pk
@@ -327,6 +327,13 @@ class Applicant(Person):
         elif self.age_today < 36:
             return '25-35'
         return '35+'
+
+    def mark_unsuccessful(self, request):
+        ''' Marks this Application unsuccessful'''
+        self.successful = 0
+        self.penultimate_change_by = self.last_change_by
+        self.last_change_by = request.user
+        self.save(force_update=True)
     
     def convert_to_student(self):
         '''Turn an applicant into a student, create all required associated objects'''
@@ -357,7 +364,7 @@ class Applicant(Person):
             new_enrolment.student = new_student
             new_enrolment.course = self.applied_for
             new_enrolment.save()
-            
+
             '''At the moment all units/subjects in a course are compulsory - 
             this method will need to change for greater flexibility in the future'''
             ''' Create the Grade object for each unit in the course, related to the 
@@ -368,9 +375,9 @@ class Applicant(Person):
                 new_grade.subject = unit
                 new_grade.date_started = today
                 new_grade.save()
-                
+
             '''Converted successfully, move along'''
-            self.successful= 1 
+            self.successful = 1 
             self.save()
 
 class Assessment(models.Model):
@@ -401,7 +408,7 @@ class Subject(models.Model):
     class Meta:
         verbose_name='Unit of Competence'
         verbose_name_plural='Units of Competence'
-    
+
     def __unicode__(self):
         '''Subject reference: subject name and the year given'''
         return self.name + ', ' + str(self.year) 
@@ -422,20 +429,22 @@ class Subject(models.Model):
             if session.date > last_monday and session.date < this_friday:
                 this_weeks_sessions.append(session)
         return this_weeks_sessions
-    
+
     def add_all_students(self):
         ''' this function adds all the students enrolled in the course'''
-        no_of_students = 0
+        no_of_students = existing_students = 0
         for course in self.course.all():
             for student in course.students.all():
                 ''' Tedious, but we need to exclude those that are withdrawn'''
                 '''TODO investigate if this is done better via enrolment.date_ended'''
                 current = Enrolment.objects.get(course=course, student=student)
                 if not current.withdrawal_reason:
-                   grade, created = Grade.objects.get_or_create(student=student, subject=self, date_started=today)
-                   if created:
-                       no_of_students += 1
-        return no_of_students    
+                    grade, created = Grade.objects.get_or_create(student=student, subject=self, defaults={'date_started':today})
+                    if created:
+                        no_of_students += 1
+                    else: 
+                        existing_students += 1
+        return no_of_students, existing_students    
 
 class Course(models.Model):
     '''Represents Courses - a collection of subjects leading to a degree'''
@@ -488,7 +497,7 @@ class Credential(models.Model):
 
     class Meta:
         verbose_name_plural='Credentials'
-    
+
     def __unicode__(self):
         return str(self.get_aqf_level_display()) +', '+self.name+', '+self.institution
 
@@ -504,18 +513,18 @@ class Enrolment(models.Model):
 
     last_change_by = models.ForeignKey(User, related_name='%(class)s_last_change_by', editable=False, blank=True, null=True)
     penultimate_change_by = models.ForeignKey(User, related_name='%(class)s_penultimate_change_by', blank=True, null=True, editable=False)
-    
+
     def __unicode__(self):
         '''
         Enrolment reference: return the student's name, the course name, the date started
-            if the Enrolment has a end date, add it to the end
-            if the Enrolment has a mark/grade, add it to the end
+        if the Enrolment has a end date, add it to the end
+        if the Enrolment has a mark/grade, add it to the end
         '''
         enrol = str(self.student) +', ' + str(self.course) + ', ' + str(self.date_started) 
         if self.date_ended:
             enrol + ', ' + self.date_ended
-        if self.mark:
-            enrol + ', ' + self.get_course_results_display()
+            if self.mark:
+                enrol + ', ' + self.get_course_results_display()
         return enrol
 
     @models.permalink	
@@ -541,11 +550,11 @@ class Grade(models.Model):
 
     last_change_by = models.ForeignKey(User, related_name='%(class)s_last_change_by', editable=False, blank=True, null=True)
     penultimate_change_by = models.ForeignKey(User, related_name='%(class)s_penultimate_change_by', blank=True, null=True, editable=False)
-    
+
     def __unicode__(self):
         '''Grade reference: student's name and subject '''
         return str(self.student) + ', ' + str(self.subject)
-    
+
     @models.permalink	
     def get_absolute_url(self):
         return ('grade_view', [str(self.slug)])
@@ -563,14 +572,14 @@ class Result(models.Model):
     assessment = models.ForeignKey('Assessment')
     date_submitted = models.DateField()
     mark = models.CharField(max_length=2, choices=SUBJECT_RESULTS)    
-    
+
     last_change_by = models.ForeignKey(User, related_name='%(class)s_last_change_by', editable=False)
     penultimate_change_by = models.ForeignKey(User, related_name='%(class)s_penultimate_change_by', blank=True, null=True,editable=False)
-    
+
     class Meta:
         verbose_name='Result'
         verbose_name_plural='Results'
-    
+
     def __unicode__(self):
         '''Result reference: the assignment name, due date and grade given'''
         return self.assessment.name + ', ' + str(self.date_submitted)
@@ -607,7 +616,7 @@ class Session(models.Model):
             'month': self.date.month,
             'day': self.date.day,
             'slug': self.slug})
-    
+
     def save(self, *args, **kwargs):
         slug_temp = str(self.subject.name) + " " + self.get_session_number_display()
         self.slug = slugify(slug_temp)
@@ -624,7 +633,7 @@ class Staff(Person):
 
     def __unicode__(self):
         return self.first_name + ' ' + self.surname
-    
+
     def get_id(self):
         return self
 
@@ -644,7 +653,7 @@ class Student(Person):
     '''Represents each student '''
     education_level = models.CharField(max_length=2, blank=True, choices=EDUCATION_LEVEL_CHOICES)
     application_details = models.ForeignKey('Applicant')
-    
+
     objects = models.Manager()
     new_students = NewStudentManager()
 
@@ -669,7 +678,7 @@ class Student(Person):
         return ('student_view', [str(self.slug)])
 
     def attendance_before_today(self):
-        l = self.attendance_records.exclude(session__date__gte =today).order_by('-session__date')
+        l = self.attendance_records.exclude(session__date__gte=today).order_by('-session__date')
         return l
 
 class Timetable(models.Model):
@@ -678,14 +687,14 @@ class Timetable(models.Model):
     start_date = models.DateField()
     end_date = models.DateField()
     slug = models.SlugField(max_length=12)
-    
+
     class Meta:
         unique_together = ('year','term')
 
     def __unicode__(self):
         '''Timetable reference: year and term number'''
         return str(self.year) + ', Term ' + str(self.term)
-    
+
     @models.permalink	
     def get_absolute_url(self):
         return ('timetable_view', [str(self.slug)])

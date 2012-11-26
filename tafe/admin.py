@@ -3,6 +3,7 @@ from django.contrib import admin
 from django.forms import ModelForm
 from django.forms.extras.widgets import SelectDateWidget 
 from django.forms.widgets import RadioSelect
+from django.db.models import F
 
 import datetime
 
@@ -65,6 +66,7 @@ class StudentAttendanceInline(admin.TabularInline):
 
 class StudentInline(admin.StackedInline):
     model = Student
+    max_num = 0
     extra = 1
 
 class StaffInline(admin.StackedInline):
@@ -218,12 +220,8 @@ class ApplicantAdmin(admin.ModelAdmin):
 
     def mark_unsuccessful(self, request, queryset):
         '''Marks a group of applicants as unsuccessful'''
-        rows_updated = 0
-        for applicant in queryset:
-            applicant.successful = 0 #0 == FALSE
-            applicant.save()
-            rows_updated += 1
-
+        rows_updated = queryset.update(successful=0, penultimate_change_by=F('last_change_by'), last_change_by=request.user)
+        
         if rows_updated == 1:
             message_bit = "1 applicant was"
         else:
@@ -238,10 +236,12 @@ class ApplicantAdmin(admin.ModelAdmin):
             rows_updated += 1
 
         if rows_updated == 1:
-            message_bit = "1 applicant was"
+            start_message_bit = "1 applicant was"
+            end_message_bit = "student."
         else:
-            message_bit = "%s applicants were" % rows_updated
-        self.message_user(request, "%s successfuly converted to students." % message_bit)
+            start_message_bit = "%s applicants were" % rows_updated
+            end_message_bit = "students."
+        self.message_user(request, "%s successfuly converted to %s" %(start_message_bit, end_message_bit))
     
     def save_model(self, request, obj, form, change): 
         try:
@@ -468,7 +468,8 @@ class StudentAdmin(admin.ModelAdmin):
     list_filter = ('gender', 'disability')
     ordering = ('-slug',) 
     readonly_fields = ('slug','added', 'updated','last_change_by','penultimate_change_by',)
-    
+    unique_together = ('first_name', 'surname', 'dob')
+
     def save_model(self, request, obj, form, change): 
         try:
             obj.last_change_by
@@ -511,14 +512,14 @@ class SubjectAdmin(admin.ModelAdmin):
         ''' this function adds all the students enrolled in the course'''
         rows_updated = 0
         for unit in queryset:
-            no_of_students = unit.add_all_students()
+            no_of_students, existing_students = unit.add_all_students()
             rows_updated += 1
             
         if rows_updated == 1:
             message_bit = "1 unit had"
         else:
             message_bit = "%s units have had" % rows_updated
-        self.message_user(request, "%s %s student(s) added." %(message_bit,no_of_students))
+        self.message_user(request, "%s %s student(s) added. %s students were already set up." %(message_bit, no_of_students, existing_students))
 
     def save_formset(self, request, form, formset, change): 
         if formset.model == Grade:
