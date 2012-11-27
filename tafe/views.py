@@ -1,6 +1,6 @@
 # Create your views here.
 
-from tafe.models import Timetable, Session, Course, StudentAttendance, Subject, Assessment, StaffAttendance, Applicant, Student, Enrolment
+from tafe.models import Timetable, Session, Course, StudentAttendance, Subject, Assessment, StaffAttendance, Applicant, Student, Enrolment, Grade, Result
 from tafe.forms import SessionRecurringForm, ApplicantSuccessForm, ReportRequestForm
 from django.utils.datastructures import SortedDict
 from django.shortcuts import render_to_response, get_object_or_404
@@ -131,12 +131,14 @@ def unit_view(request, slug):
     unit = get_object_or_404(Subject, slug=slug)
     unit_students = unit.students.all()
     unit_attendance_matrix = []
-    weekly_classes = [] 
     sessions = []
+    assessments = []
 
     '''We need to get the headers for each session - date and session_number for the attendance record header row'''
     for session in unit.sessions.all().order_by('date'):
         sessions.append(session)
+    for assessment in unit.assessments.all().order_by('date_due'): 
+        assessments.append(assessment)
 
     '''Add each student and their attendance record, per session, to the matrix'''
     for student in unit_students:
@@ -158,10 +160,14 @@ def unit_view(request, slug):
                 student_details.append('W')
             else:
                 student_details.append('NA')
-        
+        student_details.append('|')
+        results = Result.objects.filter(grades__student=student,grades__subject=unit)
+        for result in results:
+            student_details.append(result.mark)
+                
         unit_attendance_matrix.append(student_details)
     
-    return render_to_response('tafe/unit_detail.html', {'unit':unit,'unit_attendance_matrix':unit_attendance_matrix, 'sessions':sessions, 'weekly_classes':weekly_classes}, RequestContext(request))
+    return render_to_response('tafe/unit_detail.html', {'unit':unit,'unit_attendance_matrix':unit_attendance_matrix, 'sessions':sessions, 'assessments':assessments}, RequestContext(request))
 
 ############### Applicants ###############
 
