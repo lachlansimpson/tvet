@@ -291,7 +291,6 @@ class CurrentApplicantManager(models.Manager):
     def get_query_set(self):
         return super(CurrentApplicantManager, self).get_query_set().exclude(successful='1').exclude(successful='0').order_by('first_name')
 
-
 class Applicant(Person):
     applied_for = models.ForeignKey('Course', related_name='applicants')
     education_level = models.CharField(max_length=2, blank=True, choices=EDUCATION_LEVEL_CHOICES)
@@ -333,7 +332,7 @@ class Applicant(Person):
         self.successful = 0
         self.penultimate_change_by = self.last_change_by
         self.last_change_by = request.user
-        self.save(force_update=True)
+        self.save()
     
     def convert_to_student(self):
         '''Turn an applicant into a student, create all required associated objects'''

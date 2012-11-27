@@ -3,7 +3,6 @@ from django.contrib import admin
 from django.forms import ModelForm
 from django.forms.extras.widgets import SelectDateWidget 
 from django.forms.widgets import RadioSelect
-from django.db.models import F
 
 import datetime
 
@@ -220,8 +219,11 @@ class ApplicantAdmin(admin.ModelAdmin):
 
     def mark_unsuccessful(self, request, queryset):
         '''Marks a group of applicants as unsuccessful'''
-        rows_updated = queryset.update(successful=0, penultimate_change_by=F('last_change_by'), last_change_by=request.user)
-        
+        rows_updated = 0
+        for applicant in queryset:
+            applicant.mark_unsuccessful(request)
+            rows_updated += 1
+
         if rows_updated == 1:
             message_bit = "1 applicant was"
         else:
