@@ -1,6 +1,6 @@
 # Create your views here.
 
-from tafe.models import Timetable, Session, Course, StudentAttendance, Subject, Assessment, StaffAttendance, Applicant, Student, Enrolment
+from tafe.models import Timetable, Session, Course, StudentAttendance, Subject, Assessment, StaffAttendance, Applicant, Student
 from tafe.forms import SessionRecurringForm, ApplicantSuccessForm, ReportRequestForm
 from django.utils.datastructures import SortedDict
 from django.shortcuts import render_to_response, get_object_or_404
