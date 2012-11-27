@@ -78,7 +78,7 @@ def session_view(request, year, month, day, slug):
     req_date = datetime.date(int(year), int(month), int(day))
     session = get_object_or_404(Session, slug=slug, date=req_date)
     '''moving attendance record creation to here from convert_to_student in models'''
-    for student in session.subject.students.filter(enrolments__withdrawn_reason=''):
+    for student in session.subject.students.filter(enrolments__withdrawal_reason=''):
         new_attendance, created = StudentAttendance.objects.get_or_create(session=session,student=student, last_change_by=request.user)
     student_attendance = StudentAttendance.objects.filter(session=session)
     staff_member = session.subject.staff_member
@@ -97,7 +97,7 @@ def session_attendance_view(request, year, month, day, slug):
     req_date = datetime.date(int(year), int(month), int(day))
     session = get_object_or_404(Session, slug=slug, date=req_date)
     StaffAttendanceFormSet = modelformset_factory(StaffAttendance, fields = ('staff_member', 'reason', 'absent'), extra=0)
-    StudentAttendanceFormSet = modelformset_factory(StudentAttendance, fields = ('student', 'reason', 'absent'))
+    StudentAttendanceFormSet = modelformset_factory(StudentAttendance, fields = ('student', 'reason', 'absent'), extra=0)
     if request.method == 'POST':
         student_formset = StudentAttendanceFormSet(request.POST, queryset=StudentAttendance.objects.filter(session=session), prefix='students')
         staff_formset = StaffAttendanceFormSet(request.POST, prefix='staff')
@@ -105,9 +105,11 @@ def session_attendance_view(request, year, month, day, slug):
             student_formset.save()
         if staff_formset.is_valid():
             staff_formset.save()
+        return HttpResponseRedirect('/tafe/session/%s/%s/%s/%s/' %(year,month,day,slug))
+
     else:
         student_formset = StudentAttendanceFormSet(queryset=StudentAttendance.objects.filter(session=session).order_by('student'), prefix='students')
-        staff_formset = StaffAttendanceFormSet(prefix='staff')
+        staff_formset = StaffAttendanceFormSet(queryset=StaffAttendance.objects.filter(session=session), prefix='staff')
     return render_to_response('tafe/attendance_record.html',{'student_formset':student_formset, 'staff_formset':staff_formset, 'session':session,}, RequestContext(request))
 
 ############### Units ###############

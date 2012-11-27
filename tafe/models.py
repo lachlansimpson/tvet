@@ -521,9 +521,9 @@ class Enrolment(models.Model):
         '''
         enrol = str(self.student) +', ' + str(self.course) + ', ' + str(self.date_started) 
         if self.date_ended:
-            enrol + ', ' + self.date_ended
+            enrol + ', ' + str(self.date_ended)
             if self.mark:
-                enrol + ', ' + self.get_course_results_display()
+                enrol + ', ' + self.get_mark_display()
         return enrol
 
     @models.permalink	
@@ -581,7 +581,7 @@ class Result(models.Model):
 
     def __unicode__(self):
         '''Result reference: the assignment name, due date and grade given'''
-        return self.assessment.name + ', ' + str(self.date_submitted)
+        return self.assessment.name + ', ' + str(self.date_submitted) + ', ' + str(self.get_mark_display())
 
     @models.permalink	
     def get_absolute_url(self):

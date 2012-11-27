@@ -11,10 +11,9 @@ List of applicants enrolled
 {% endblock %}
 {% block coltype %}colMS{% endblock %}
 {% block content %}
-<div id="list" class="grid_12">
-    <div class="grid_5">
+<div class="grid_12">
+    <div id="list" class="grid_5">
     <h3>Applicant register</h3>
-    <br />
     <p><a href="/tafe/applicants/successful/">Mark applicants as successful here</a></p>
     {% if applicant_list %}
         {% regroup applicant_list by first_letter as letter_list %} 

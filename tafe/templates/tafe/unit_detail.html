@@ -31,10 +31,11 @@ Subject/Unit detail page of the portal.
     <div class="clear"></div>
     <div id="attendance_results" class="grid_10">
         <h4>Student attendance and results records</h4>
+        {% comment %}
         {% for grade in unit.grades.all %}
         <a href="{{ grade.student.get_absolute_url}}">{{ grade.student }}</a>: <a href="{{ grade.get_absolute_url }}">{{ grade.subject }}</a><br />
         {% endfor %}
-
+        {% endcomment %}
         <table>
             <tr><td>Student Name</td>
                 {% for session in sessions %}

@@ -333,8 +333,20 @@ class EnrolmentAdmin(admin.ModelAdmin):
     list_display = ('student', 'course', 'date_started')
     list_filter = ('course', 'date_started')
     readonly_fields = ('last_change_by','penultimate_change_by')
-    
+
     def save_model(self, request, obj, form, change): 
+        # If the enrolment has mark withdrawn but no reason, 
+        # reset mark to nothing
+        if obj.mark == 'W' and len(obj.withdrawal_reason)==0:
+            obj.mark = '';
+        
+        # If the enrolment has a withdrawal reason, but the mark isn't set to withdrawn
+        # set mark to withdrawn, then start the withdrawal process (remove grades, etc)
+        if len(obj.withdrawal_reason)>0:
+            if obj.mark != 'W':
+                obj.mark = 'W'
+                obj.date_ended = today
+        # Adjust the last change by dates and users
         try:
             obj.last_change_by
         except:
