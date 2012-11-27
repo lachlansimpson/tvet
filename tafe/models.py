@@ -168,7 +168,7 @@ class AttendanceBeforeTodayManager(models.Manager):
 
 class Attendance(models.Model):
     '''Represents the "roll call" or attendance record'''
-    reason = models.CharField(max_length=1, choices=REASON_CHOICES, blank=True)
+    reason = models.CharField(max_length=1, choices=REASON_CHOICES, default='P', blank=True)
     absent = models.CharField(max_length=1, choices=ABSENCE_CHOICES, blank=True)
     slug = models.SlugField(blank=True)
     session = models.ForeignKey('Session', related_name='%(class)s_attendance_records')

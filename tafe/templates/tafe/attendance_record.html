@@ -9,7 +9,8 @@ Session detail page of the portal.
 {% endblock %}
 {% block coltype %}colMS{% endblock %}
 {% block content %}
-<div id="content-left">
+<div id="content-left" class="grid_12">
+    <div id="list" class="grid_8">
     {{ session.get_session_number_display }}<br />
 
     {{ session.subject.name }}<br />
@@ -20,12 +21,14 @@ Session detail page of the portal.
     <form method="post" action="">{% csrf_token %}
         <h5>Staff</h5>
         {{ staff_formset }}
+    <div class="clear"></div>     
         <h5>Students</h5>
         {{ student_formset.management_form }}
         {% for form in student_formset %}
-            {{ form }}<br />
+        <p>{{ form }}</p>
         {% endfor %}
     <p><input type="submit" value="Submit" /></p>
-    </form>
+</form>
+</div>
 </div>
 {% endblock %}

@@ -1,6 +1,6 @@
 # Create your views here.
 
-from tafe.models import Timetable, Session, Course, StudentAttendance, Subject, Assessment, StaffAttendance, Applicant, Student
+from tafe.models import Timetable, Session, Course, StudentAttendance, Subject, Assessment, StaffAttendance, Applicant, Student, Enrolment
 from tafe.forms import SessionRecurringForm, ApplicantSuccessForm, ReportRequestForm
 from django.utils.datastructures import SortedDict
 from django.shortcuts import render_to_response, get_object_or_404
@@ -154,8 +154,10 @@ def unit_view(request, slug):
                 attendance_record = StudentAttendance.objects.get(student=student,session=session) 
                 student_details.append(attendance_record.reason)
             # if it's not in the future or a Session doesn't exist, then they are withdrawn
+            elif Enrolment.objects.get(student=student, course__subjects=unit).mark=='W':
+                student_details.append('W')
             else:
-                student_details.append('W')        
+                student_details.append('NA')
         
         unit_attendance_matrix.append(student_details)
     
