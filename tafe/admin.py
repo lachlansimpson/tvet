@@ -193,9 +193,9 @@ class IslandFilter(admin.SimpleListFilter):
         )
 
     def queryset(self, request, queryset):
-        if self.value == 'tarawa':
+        if self.value() == 'tarawa':
             return queryset.filter(island__iexact='tarawa')
-        if self.value == 'outer-islands':
+        if self.value() == 'outer-islands':
             return queryset.exclude(island__iexact='tarawa')
 
 class ApplicantAdmin(admin.ModelAdmin):
