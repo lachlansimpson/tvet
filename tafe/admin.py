@@ -343,9 +343,10 @@ class EnrolmentAdmin(admin.ModelAdmin):
         # If the enrolment has a withdrawal reason, but the mark isn't set to withdrawn
         # set mark to withdrawn, then start the withdrawal process (remove grades, etc)
         if len(obj.withdrawal_reason)>0:
+            obj.date_ended = today 
             if obj.mark != 'W':
                 obj.mark = 'W'
-                obj.date_ended = today
+            # create attendance records, marked W     
         # Adjust the last change by dates and users
         try:
             obj.last_change_by

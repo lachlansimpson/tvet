@@ -425,7 +425,7 @@ class Subject(models.Model):
         this_friday = today + datetime.timedelta( (4-today.weekday()) % 7 )
         this_weeks_sessions = []
         for session in self.sessions.all(): 
-            if session.date > last_monday and session.date < this_friday:
+            if session.date >= last_monday and session.date <= this_friday:
                 this_weeks_sessions.append(session)
         return this_weeks_sessions
 

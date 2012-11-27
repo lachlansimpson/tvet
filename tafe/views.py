@@ -1,6 +1,6 @@
 # Create your views here.
 
-from tafe.models import Timetable, Session, Course, StudentAttendance, Subject, Assessment, StaffAttendance, Applicant, Student
+from tafe.models import Timetable, Session, Course, StudentAttendance, Subject, Assessment, StaffAttendance, Applicant, Student, Enrolment
 from tafe.forms import SessionRecurringForm, ApplicantSuccessForm, ReportRequestForm
 from django.utils.datastructures import SortedDict
 from django.shortcuts import render_to_response, get_object_or_404
@@ -92,9 +92,11 @@ def session_view(request, year, month, day, slug):
 @login_required
 def session_attendance_view(request, year, month, day, slug):
     ''' Shows the session, students and staff - for marking attendance.
-    TODO: Check to see if this is still used
     '''
     req_date = datetime.date(int(year), int(month), int(day))
+    # Don't allow attendance to be marked for classes that haven't happened yet 
+    if req_date > today:
+        return HttpResponseRedirect('/tafe/session/%s/%s/%s/%s/' %(year,month,day,slug))
     session = get_object_or_404(Session, slug=slug, date=req_date)
     StaffAttendanceFormSet = modelformset_factory(StaffAttendance, fields = ('staff_member', 'reason', 'absent'), extra=0)
     StudentAttendanceFormSet = modelformset_factory(StudentAttendance, fields = ('student', 'reason', 'absent'), extra=0)
@@ -131,24 +133,27 @@ def unit_view(request, slug):
     unit_attendance_matrix = []
     weekly_classes = [] 
     sessions = []
-    
+
     '''We need to get the headers for each session - date and session_number for the attendance record header row'''
-    for session in Session.objects.filter(subject=unit).order_by('date'):
+    for session in unit.sessions.all().order_by('date'):
         sessions.append(session)
 
     '''Add each student and their attendance record, per session, to the matrix'''
     for student in unit_students:
         '''the student is the first item in the list'''
         student_details = [student]
-        all_sessions = Session.objects.filter(subject=unit, students=student).order_by('date')
+        all_sessions = unit.sessions.all().order_by('date')
+        
         '''then add the attendance reason from each session in date order'''
         for session in all_sessions:
-            attendance_records = StudentAttendance.objects.filter(student=student, session=session).order_by('session')
-            for attendance_record in attendance_records:   
-                if today < session.date:
-                    student_details.append('-')
-                else:
-                    student_details.append(attendance_record.reason)
+            if today < session.date:
+                 student_details.append('-')
+            elif StudentAttendance.objects.filter(session=session).filter(student=student).exists():
+                attendance_record = StudentAttendance.objects.get(student=student,session=session) 
+                student_details.append(attendance_record.reason)
+            else:
+                student_details.append('W')        
+        
         unit_attendance_matrix.append(student_details)
     
     return render_to_response('tafe/unit_detail.html', {'unit':unit,'unit_attendance_matrix':unit_attendance_matrix, 'sessions':sessions, 'weekly_classes':weekly_classes}, RequestContext(request))
