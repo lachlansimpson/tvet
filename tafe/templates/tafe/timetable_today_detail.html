@@ -10,7 +10,8 @@ Timetable detail
 {% block coltype %}colMS{% endblock %}
 
 {% block content %}
-<div id="content-left">
+<div id="content-left" class="grid_12">
+    <div id="timetable" class="grid_7">
     <h3>Today's Timetable: {{ date|date:"l, d F Y" }}</h3>
     <table> 
         <tr>
@@ -29,5 +30,6 @@ Timetable detail
         {% endfor %}
     
     </table>
+    </div>
 </div>
 {% endblock %}

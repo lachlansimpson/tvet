@@ -13,7 +13,7 @@ Timetable list page of the portal.
     <h3>Timetables</h3>
     {% if timetable_list %}
         {% for timetable in timetable_list %}
-            <a href="{{ timetable.get_absolute_url }}">{{ timetable }}</a><br />
+        <p><a href="{{ timetable.get_absolute_url }}">{{ timetable }}</a></p>
         {% endfor %}
     {% else %}
         <p>No timetables are available.</p>

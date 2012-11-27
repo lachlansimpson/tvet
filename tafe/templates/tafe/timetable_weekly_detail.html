@@ -1,7 +1,7 @@
 {% extends "tafe/base_site.html" %}
 
 {% comment %}
-Timetable detail page of the portal.
+This week's Timetable detail page of the portal.
 {% endcomment %}
 
 {% block title %}
@@ -9,7 +9,8 @@ Timetable detail
 {% endblock %}
 {% block coltype %}colMS{% endblock %}
 {% block content %}
-<div id="content-left">
+<div id="content-left" class="grid_12">
+    <div id="timetable" class="grid_7">
     <h3>{{ timetable.year }}, Term {{ timetable.term }} Timetable</h3>
     <table> 
         <tr>
@@ -36,5 +37,6 @@ Timetable detail
         </tr>
         {% endfor %}
     </table>
+    </div>
 </div>
 {% endblock %}

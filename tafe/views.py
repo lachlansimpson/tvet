@@ -205,13 +205,18 @@ def timetable_daily_view(request, year, month, day):
     return render_to_response('tafe/timetable_daily_detail.html',{'daily_sessions':daily_sessions, 'date':date}, RequestContext(request))
 
 @login_required
-def timetable_weekly_view(request, slug):
+def timetable_weekly_view(request, slug, year=None, month=None, day=None):
     '''
     View of this week's timetable. 
     '''
+    year = year or datetime.date.today().year
+    month = month or datetime.date.today().month
+    day = day or datetime.date.today().day
+    start_date = datetime.date(int(year), int(month), int(day))
+    
     timetable = get_object_or_404(Timetable, slug=slug)
     all_sessions = []
-    start_date = timetable.start_date
+    #start_date = timetable.start_date
     
     monday = start_date - datetime.timedelta(days=start_date.weekday())
 
