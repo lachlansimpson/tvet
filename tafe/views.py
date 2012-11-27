@@ -142,15 +142,18 @@ def unit_view(request, slug):
     for student in unit_students:
         '''the student is the first item in the list'''
         student_details = [student]
+            
         all_sessions = unit.sessions.all().order_by('date')
         
         '''then add the attendance reason from each session in date order'''
         for session in all_sessions:
+            # Sessions after today are marked -
             if today < session.date:
                  student_details.append('-')
             elif StudentAttendance.objects.filter(session=session).filter(student=student).exists():
                 attendance_record = StudentAttendance.objects.get(student=student,session=session) 
                 student_details.append(attendance_record.reason)
+            # if it's not in the future or a Session doesn't exist, then they are withdrawn
             else:
                 student_details.append('W')        
         
