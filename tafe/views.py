@@ -161,7 +161,7 @@ def unit_view(request, slug):
             else:
                 student_details.append('NA')
         student_details.append('|')
-        results = Result.objects.filter(grades__student=student,grades__subject=unit)
+        results = Result.objects.filter(grade__student=student,grade__subject=unit)
         for result in results:
             student_details.append(result.mark)
                 

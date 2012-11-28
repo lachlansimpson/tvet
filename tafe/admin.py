@@ -362,7 +362,7 @@ class GradeAdmin(admin.ModelAdmin):
         ('',{'fields':['student','subject','date_started',]}),
         ('Admin (non editable)', {'fields':(('last_change_by','penultimate_change_by'),)}),
     ]
-    list_display = ('student','subject','date_started','results')
+    list_display = ('student','subject','date_started',)
     list_filter = ('subject','date_started','results')
     readonly_fields = ('last_change_by','penultimate_change_by')
     unique_together = ('student','subject')
