@@ -9,6 +9,7 @@
 {% endblock %}
 
 {% block breadcrumbs %}
+<div class="grid_12">
 <ul class="sf-menu grid_11">
     <li class="current"><a href="/tafe/">Home</a></li>
         {% if title %} &rsaquo; {{ title }}{% endif %}
@@ -57,5 +58,6 @@
     {% if user.is_active and user.is_staff %}
         <li><a href="/admin/">Admin</a></li>
     {% endif %}
-</ul>  
+</ul>
+</div>
 {% endblock %}
