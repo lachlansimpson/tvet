@@ -12,11 +12,18 @@ Assessment detail page of the portal.
 <div id="content-left" class="grid_12">
     <div id="bio" class="grid_5">
         <h4>{{ assessment.subject }}</h4>
-    {{ assessment.name }}<br />
-    {{ assessment.date_given }}<br />
-    {{ assessment.date_due }}<br />
+        <p>Name of assessment: {{ assessment.name }}</p>
+        <p>Date assessment given: {{ assessment.date_given }}</p>
+        <p>Date assessment is due: {{ assessment.date_due }}</p>
     </div>
-    <div class="clear"></div>     
+    <div id="results" class="grid_6">
+        <h5>Results</h5>
+    {% for result in assessment.results.all %}
+    <p><a href="{{ result.grade.student.get_absolute_url}}">{{ result.grade.student }}</a>: {{ result.get_mark_display }}</p>
+    {% endfor %}
+    </div>
+    <div class="clear"></div>
+
     <div id="comments" class="grid_5">
         <h5>Comments</h5>
         {% render_comment_list for assessment %}

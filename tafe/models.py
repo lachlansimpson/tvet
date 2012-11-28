@@ -567,7 +567,7 @@ class Grade(models.Model):
 
 class Result(models.Model):
     '''Represents an Assignment and it's results'''
-    assessment = models.ForeignKey('Assessment', related_name='result')
+    assessment = models.ForeignKey('Assessment', related_name='results')
     date_submitted = models.DateField()
     mark = models.CharField(max_length=2, choices=SUBJECT_RESULTS)    
     grade = models.ForeignKey('Grade', related_name='results')

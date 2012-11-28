@@ -25,7 +25,7 @@ Subject/Unit detail page of the portal.
     <div id="assessments" class="grid_5">
         <h4>Assessments</h4>
         {% for test in unit.assessments.all %}
-        <a href="{{ test.get_absolute_url }}">{{ test }}</a><br />
+        <a href="{{ test.get_absolute_url }}">{{ test.name }}</a> {{ test.date_due }}<br />
         {% endfor %} 
     </div>
     <div class="clear"></div>
