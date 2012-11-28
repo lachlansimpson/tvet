@@ -38,7 +38,7 @@ class EnrolmentInline(admin.TabularInline):
 
 class GradeInline(admin.TabularInline):
     model = Grade
-    fields = ('student','date_started','results')
+    fields = ('student','date_started',)
 
 class ResultInline(admin.StackedInline):
     model = Result
@@ -359,14 +359,15 @@ class EnrolmentAdmin(admin.ModelAdmin):
 
 class GradeAdmin(admin.ModelAdmin):
     fieldsets = [
-        ('',{'fields':['student','subject','date_started','results',]}),
+        ('',{'fields':['student','subject','date_started',]}),
         ('Admin (non editable)', {'fields':(('last_change_by','penultimate_change_by'),)}),
     ]
     list_display = ('student','subject','date_started','results')
     list_filter = ('subject','date_started','results')
     readonly_fields = ('last_change_by','penultimate_change_by')
     unique_together = ('student','subject')
- 
+    inlines = (ResultInline,)
+
     def save_model(self, request, obj, form, change): 
         try:
             obj.last_change_by

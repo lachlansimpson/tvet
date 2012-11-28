@@ -544,7 +544,6 @@ class Grade(models.Model):
     student = models.ForeignKey('Student', related_name='grades')
     subject = models.ForeignKey('Subject', related_name='grades')
     date_started = models.DateField()
-    results = models.ForeignKey('Result', related_name='grades', blank=True, null=True)
     slug = models.SlugField(max_length=60)
 
     last_change_by = models.ForeignKey(User, related_name='%(class)s_last_change_by', editable=False, blank=True, null=True)
@@ -568,9 +567,10 @@ class Grade(models.Model):
 
 class Result(models.Model):
     '''Represents an Assignment and it's results'''
-    assessment = models.ForeignKey('Assessment', related_name='results')
+    assessment = models.ForeignKey('Assessment', related_name='result')
     date_submitted = models.DateField()
     mark = models.CharField(max_length=2, choices=SUBJECT_RESULTS)    
+    grade = models.ForeignKey('Grade', related_name='results')
 
     last_change_by = models.ForeignKey(User, related_name='%(class)s_last_change_by', editable=False)
     penultimate_change_by = models.ForeignKey(User, related_name='%(class)s_penultimate_change_by', blank=True, null=True,editable=False)
