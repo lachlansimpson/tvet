@@ -38,7 +38,7 @@ Subject/Unit detail page of the portal.
                 {% endfor %}
                 <td>|</td>
                 {% for assessment in assessments %}
-                <td>x</td>
+                <td>{{ forloop.counter }}</td>
                 {% endfor %}
             </tr>
             {% for student in unit_attendance_matrix %}
