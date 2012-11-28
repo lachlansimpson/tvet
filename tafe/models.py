@@ -240,15 +240,22 @@ class ISLPR_record(models.Model):
 
     class Meta:
         abstract = True
-        '''TODO: HOWTO make ISLPR all caps'''
         verbose_name = 'ISLPR record'
         verbose_name_plural = 'ISLPR records'
 
 class StudentISLPR(ISLPR_record):
     student = models.ForeignKey('Student', related_name='islpr_record')
 
+    class Meta:
+        verbose_name = 'Student ISLPR record'
+        verbose_name_plural = 'Student ISLPR records'
+
 class StaffISLPR(ISLPR_record):
     staff_member = models.ForeignKey('Staff', related_name='islpr_record')
+
+    class Meta:
+        verbose_name = 'Staff ISLPR record'
+        verbose_name_plural = 'Staff ISLPR records'
 
 class Person(models.Model):
     '''Abstract Class under Applicant, Student and Staff'''
