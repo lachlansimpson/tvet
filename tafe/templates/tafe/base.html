@@ -42,10 +42,10 @@
             <!-- Header -->
             <div id="header" class="grid_12">
                 <div id="branding">
-                    {% block branding %}{% endblock %}
+                {% block branding %}{% endblock %}
                 {% if user.is_active and user.is_staff %}
                 </div>
-                <div id="user-tools" class="grid_5 push_7" >
+                <div id="user-tools" class="grid_5" >
                     {% trans 'Welcome,' %}
                     <strong>{% filter force_escape %}{% firstof user.first_name user.username %}{% endfilter %}</strong>.
                     {% block userlinks %}

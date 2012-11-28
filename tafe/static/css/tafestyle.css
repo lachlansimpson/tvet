@@ -919,7 +919,7 @@ table#change-history tbody th {
     /*position: absolute;*/
     top: 0;
     right: 0;
-    padding: /*1.2em*/ 0 10px;
+    padding: /*1.2em*/ 15px 10px 0px;
     font-size: 11px;
     /*text-align: right;*/
 }
