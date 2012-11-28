@@ -9,10 +9,10 @@ Student Reports
 {% endblock %}
 {% block coltype %}colMS{% endblock %}
 {% block content %}
-<div id="content-left">
-    <div id="stats">
+<div id="content-left" class="grid_12">
+    <div id="stats" class="grid_10">
     {%  if not stats %}
-    Sorry, there are no enrollments at the moment.
+    <h5>Sorry, there are no enrollments at the moment.</h5>
     {% else %}
         {% for name, stat in stats.items %}    
             <div id="statblock">

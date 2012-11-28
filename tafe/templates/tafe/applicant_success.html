@@ -10,10 +10,13 @@ List of applicants enrolled
 {% endblock %}
 {% block coltype %}colMS{% endblock %}
 {% block content %}
-<h3>Applicant register</h3>
-<form action='.' method='POST'>{% csrf_token %}
-    {{ form.as_p }}
-    <input type="submit" value="Submit">
-</form>
-
+<div id="content-left" class="grid_12">
+  <div id="list" class="grid_7">
+    <h3>Applicant register</h3>
+    <form action='.' method='POST'>{% csrf_token %}
+        {{ form.as_p }}
+        <input type="submit" value="Submit">
+    </form>
+</div>
+</div>
 {% endblock %}

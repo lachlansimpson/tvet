@@ -9,7 +9,8 @@ Attendance detail page of the portal.
 {% endblock %}
 {% block coltype %}colMS{% endblock %}
 {% block content %}
-<div id="content-left">
+<div id="content-left" class="grid_12">
+    <div id="list" class="grid_5">
     {{ attendance.session.subject.name }}<br />
     {{ attendance.session.date }}<br />
     {{ attendance.student }}<br />
@@ -26,5 +27,6 @@ Attendance detail page of the portal.
     <div id="admin" class="grid_4">
     <h5>Admin</h5>
     {{ attendance.last_change_by }}
+    </div>
 </div>
 {% endblock %}

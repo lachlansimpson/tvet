@@ -4,12 +4,13 @@ The Main page for all of the reports with a choosing method
 {% endcomment %}
 {% block coltype %}colMS{% endblock %}
 {% block content %}
+<div class="grid_12">
 <div id="bio" class="grid_5">
     <h3>Report Generator</h3>
         <form action="/tafe/reports/" method="post">{% csrf_token %} 
             {{ form.as_p }}
             <input type="submit" value="Submit">
         </form>
-        Note that Applicant reports are based on the year of the course for which they apply. So to find the applicants entered in 2012 for courses in 2013, we must search for Applicants in 2013.
     </div>
+</div>
 {% endblock %}

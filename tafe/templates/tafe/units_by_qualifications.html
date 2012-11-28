@@ -10,13 +10,18 @@ Course list page of the portal.
 {% endblock %}
 {% block coltype %}colMS{% endblock %}
 {% block content %}
-<h3>Units Available by Qualification</h3>    
-{% for course in courses %}
-    <h3><a href="{{ course.get_absolute_url }}">{{ course.name }}</a></h3>
-    <ul>
-    {% for subject in course.subjects.all %}
-        <li><a href="{{ subject.get_absolute_url }}">{{ subject.name }}</a></li>
-    {% endfor %}
-    </ul>
+<div id="content-left" class="grid_12">
+    <div id="list" class="grid_7">
+
+        <h3>Units Available by Qualification</h3>    
+        {% for course in courses %}
+            <h3><a href="{{ course.get_absolute_url }}">{{ course.name }}</a></h3>
+            <ul>
+            {% for subject in course.subjects.all %}
+                <li><a href="{{ subject.get_absolute_url }}">{{ subject.name }}</a></li>
+            {% endfor %}
+            </ul>
+    </div>
+</div>
 {% endfor %}
 {% endblock %}
