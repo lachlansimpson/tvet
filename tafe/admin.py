@@ -19,8 +19,10 @@ class StaffISLPRInline(admin.StackedInline):
     extra = 1
 
 class ApplicantInline(admin.TabularInline):
+    fields = ('first_name','surname', 'applied_for', 'date_of_application')
+    readonly_fields = ('first_name', 'surname', 'applied_for', 'date_of_application')
+    max_num = 0
     model = Applicant
-    extra = 1
 
 class AssessmentInline(admin.TabularInline):
     model = Assessment 
@@ -63,7 +65,9 @@ class StudentAttendanceInline(admin.TabularInline):
     exclude = ('slug',)
     template = 'admin/collapsed_tabular_inline.html'
 
-class StudentInline(admin.StackedInline):
+class StudentInline(admin.TabularInline):
+    fields = ('first_name','surname',)
+    readonly_fields = ('first_name', 'surname')
     model = Student
     max_num = 0
     extra = 1
@@ -204,7 +208,7 @@ class ApplicantAdmin(admin.ModelAdmin):
         ('Contact Information', { 'fields':(('phone', 'phone2', 'email'),)}),
         ('Other Information', { 'fields':(('disability','disability_description'), 'education_level')}),
         ('Course Applied For', { 'fields':(('applied_for', 'date_of_application'),)}),
-        ('Education and experience information', {'fields':(('test_ma','test_eng'),('experience','other_courses'))}),
+        ('Education and experience information', {'fields':(('test_ma','test_eng'),('experience','other_courses'), 'student_details')}),
         ('Short Listing', {'fields':(('short_listed','test_ap'),)}),
         ('Ranking, Eligibility and Success', {'fields':(('ranking','eligibility','successful'),)}),
         ('Offer details', {'fields':(('date_offer_sent','date_offer_accepted'),)}),
@@ -215,7 +219,7 @@ class ApplicantAdmin(admin.ModelAdmin):
     list_filter = ('gender', 'disability', MathTestFilter, EnglishTestFilter, IslandFilter, 'successful', 'applied_for', 'eligibility')
     readonly_fields = ('added', 'updated','last_change_by','penultimate_change_by')
     actions = ['make_student', 'mark_unsuccessful']
-    inlines = ( StudentInline, )
+    date_hierarchy = 'dob'
 
     def mark_unsuccessful(self, request, queryset):
         '''Marks a group of applicants as unsuccessful'''
@@ -392,6 +396,7 @@ class ResultAdmin(admin.ModelAdmin):
         obj.save()
     
 class SessionAdmin(admin.ModelAdmin):
+    date_hierarchy = 'date'
     fieldsets = (
         ('Subject and time', { 'fields': (('subject','date','session_number','room_number'),'timetable',)}),
     )
@@ -426,6 +431,7 @@ class StaffAdminForm(ModelForm):
         }            
 
 class StaffAdmin(admin.ModelAdmin):
+    date_hierarchy = 'dob'
     fieldsets = (
         ('Bio', { 'fields':(('first_name','surname'),('dob','gender'), ('island',))}),
         ('Contact Information', { 'fields':(('phone','phone2','email'),)}),
@@ -472,11 +478,12 @@ class StudentAdminForm(ModelForm):
         }            
 
 class StudentAdmin(admin.ModelAdmin):
-    inlines = (EnrolmentInline, StudentISLPRInline, GradeInline, StudentAttendanceInline, )
+    inlines = (EnrolmentInline, StudentISLPRInline, GradeInline, StudentAttendanceInline, ApplicantInline)
+    date_hierarchy = 'dob'
     fieldsets = (
         ('Bio', { 'fields':(('first_name','surname'),('dob','gender'), ('island', 'slug'))}),
         ('Contact Information', { 'fields':(('phone','phone2','email'),)}),
-        ('Other Information', { 'fields':(('disability','disability_description'), 'education_level', 'application_details')}),
+        ('Other Information', { 'fields':(('disability','disability_description'), 'education_level',)}),
         ('Admin (non editable)', {'fields':(('added', 'updated','last_change_by','penultimate_change_by'),)}),
     )
     form = StudentAdminForm

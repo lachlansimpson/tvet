@@ -313,7 +313,7 @@ class Applicant(Person):
     date_of_application = models.DateField(blank=True, null=True)
     date_offer_sent = models.DateField(blank=True, null=True)
     date_offer_accepted = models.DateField(blank=True, null=True)
-
+    student_details = models.ForeignKey('Student', blank=True, null=True)
     objects = models.Manager()
     current = CurrentApplicantManager()
 
@@ -346,6 +346,15 @@ class Applicant(Person):
         if self.successful:
             '''already converted'''
             pass 
+        if self.student_details:
+            '''
+            TODO will have to break all this down, but the essential assumption is: 
+            if there's a student details attached, this is an application by a 
+            returning student. We will not need to create a new student, but we will 
+            need to check that the details are current/same and to create an enrolment 
+            record etc.
+            '''
+            pass
         else:
             '''not converted, let's go!'''
             '''create the Student object, transfer all data'''
@@ -364,6 +373,8 @@ class Applicant(Person):
             new_student.education_level = self.education_level            
             new_student.application_details_id = self.pk
             new_student.save()
+            self.student_details = new_student
+            self.save()
 
             '''Create the Enrolment record for the Student and the Course they applied for'''
             new_enrolment = Enrolment()
@@ -658,7 +669,6 @@ class NewStudentManager(models.Manager):
 class Student(Person):
     '''Represents each student '''
     education_level = models.CharField(max_length=2, blank=True, choices=EDUCATION_LEVEL_CHOICES)
-    application_details = models.ForeignKey('Applicant')
 
     objects = models.Manager()
     new_students = NewStudentManager()
