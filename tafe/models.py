@@ -324,7 +324,7 @@ class Applicant(Person):
     def save(self, *args, **kwargs):
         if not self.pk:
             super(Applicant, self).save(*args, **kwargs) # Call the first save() method to get pk
-            self.slug = slugify(str(self))
+        self.slug = slugify(str(self)) # should re-slugify after name change
         super(Applicant, self).save(*args, **kwargs) # Call the "real" save() method.
 
     def age_group(self):
@@ -344,7 +344,8 @@ class Applicant(Person):
     def convert_to_student(self):
         '''Turn an applicant into a student, create all required associated objects'''
         if self.successful:
-            '''already converted'''
+            '''Already converted. Note that this is on the Application itself, 
+            which is why it preceeeds the student check'''
             pass 
         if self.student_details:
             '''
@@ -354,7 +355,18 @@ class Applicant(Person):
             need to check that the details are current/same and to create an enrolment 
             record etc.
             '''
-            pass
+            self.first_name = self.student_details.first_name
+            self.surname = self.student_details.surname
+            self.dob = self.student_details.dob
+            self.gender = self.student_details.gender
+            self.island = self.student_details.island
+            self.phone = self.student_details.phone
+            self.phone2 = self.student_details.phone2
+            self.email = self.student_details.email
+            self.disability = self.student_details.disability
+            self.disability_description = self.student_details.disability_description
+            self.education_level = self.student_details.education_level            
+            self.save() 
         else:
             '''not converted, let's go!'''
             '''create the Student object, transfer all data'''
@@ -369,10 +381,9 @@ class Applicant(Person):
             new_student.email = self.email
             new_student.disability = self.disability
             new_student.disability_description = self.disability_description
-
             new_student.education_level = self.education_level            
-            new_student.application_details_id = self.pk
             new_student.save()
+            
             self.student_details = new_student
             self.save()
 
