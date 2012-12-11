@@ -1,0 +1,18 @@
+{% extends "base_site.html" %}
+{% comment %}
+
+
+{% block extrastyle %}{{ block.super }}<link rel="stylesheet" type="text/css" href="{% static "admin/css/dashboard.css" %}" />{% endblock %}
+
+
+{% block bodyclass %}dashboard{% endblock %}
+{% block breadcrumbs %}{% endblock %}
+{% endcomment %}
+{% block coltype %}colMS{% endblock %}
+{% block content %}
+<div id="content-left" class="grid_12">
+    <h1>403</h1>
+    <h5>Sorry, you don't have permission to view that page</h5>
+    <img src="{{ STATIC_URL }}images/403.jpg" />    
+</div>
+{% endblock %}

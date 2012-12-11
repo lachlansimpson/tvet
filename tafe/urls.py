@@ -1,4 +1,5 @@
 from django.conf.urls import patterns, url
+from django.contrib.auth.decorators import permission_required
 from django.views.generic import DetailView, ListView, CreateView
 from tafe.models import Student, Subject, Enrolment, Course, Grade, Timetable, Applicant, Staff
 from tafe.views import session_create, session_view, session_attendance_view, timetable_daily_view, units_by_qualifications_view, unit_view, assessment_view, student_reports, applicant_reports, reports
@@ -14,8 +15,8 @@ urlpatterns = patterns('tafe.views',
     url(r'^students/$', ListView.as_view(queryset=Student.objects.all().order_by('surname'))),
     url(r'^student/(?P<slug>[-\w]+)/$', DetailView.as_view(model=Student), name='student_view'),
 
-    url(r'^staff/$', ListView.as_view(queryset=Staff.people.all().order_by('surname'))),
-    url(r'^staff/(?P<slug>[-\w]+)/$', DetailView.as_view(model=Staff), name='staff_view'),
+    url(r'^staff/$', permission_required('staff.can_change', raise_exception=True)(ListView.as_view(queryset=Staff.people.all().order_by('surname')))),
+    url(r'^staff/(?P<slug>[-\w]+)/$', permission_required('staff.can_change', raise_exception=True)(DetailView.as_view(model=Staff)), name='staff_view'),
                        
     url(r'^qualifications/$', ListView.as_view(queryset=Course.objects.all())),
     url(r'^qualification/(?P<slug>[-\w]+)/$', DetailView.as_view(model=Course), name='course_view'),

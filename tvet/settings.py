@@ -1,7 +1,8 @@
 # Django settings for tvet project.
 import os
 
-PROJECT_PATH = os.path.realpath(os.path.dirname(__file__))
+SETTINGS_PATH = os.path.dirname(os.path.abspath(__file__))
+PROJECT_PATH = os.path.abspath(os.path.join(SETTINGS_PATH,'../'))
 
 ADMINS = (
      ('Lachlan Musiman', 'datakid@gmail.com'),
@@ -59,7 +60,7 @@ STATICFILES_DIRS = (
     # Put strings here, like "/home/html/static" or "C:/www/django/static".
     # Always use forward slashes, even on Windows.
     # Don't forget to use absolute paths, not relative paths.
-    os.path.join(PROJECT_PATH, '../tafe/static/'),
+    os.path.abspath(os.path.join(PROJECT_PATH, 'tafe/static/')),
     
 )
 
@@ -68,7 +69,7 @@ STATICFILES_DIRS = (
 STATICFILES_FINDERS = (
     'django.contrib.staticfiles.finders.FileSystemFinder',
     'django.contrib.staticfiles.finders.AppDirectoriesFinder',
-#    'django.contrib.staticfiles.finders.DefaultStorageFinder',
+    'django.contrib.staticfiles.finders.DefaultStorageFinder',
 )
 
 # Make this unique, and don't share it with anybody.
@@ -97,7 +98,7 @@ ROOT_URLCONF = 'tvet.urls'
 WSGI_APPLICATION = 'tvet.wsgi.application'
 
 TEMPLATE_DIRS = (
-    os.path.join(PROJECT_PATH, '../tafe/templates'),
+    os.path.abspath(os.path.join(PROJECT_PATH, 'tafe/templates')),
 )
 
 INSTALLED_APPS = (

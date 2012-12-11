@@ -1,0 +1,18 @@
+{% extends "base_site.html" %}
+{% comment %}
+
+
+{% block extrastyle %}{{ block.super }}<link rel="stylesheet" type="text/css" href="{% static "admin/css/dashboard.css" %}" />{% endblock %}
+
+
+{% block bodyclass %}dashboard{% endblock %}
+{% block breadcrumbs %}{% endblock %}
+{% endcomment %}
+{% block coltype %}colMS{% endblock %}
+{% block content %}
+<div id="content-left" class="grid_12">
+    <h1>500</h1>
+    <h5>Well, this is embarrassing. There seems to have been a server error.</h5>
+    <img src="{{ STATIC_URL }}images/500.jpg" />    
+</div>
+{% endblock %}
