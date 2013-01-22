@@ -294,7 +294,7 @@ def applicant_reports(request, year=None, format=None):
         courses = Course.objects.filter(year=year)
         for course in courses: 
             name = course.__unicode__()
-            queryset = course.applicants.exclude(successful=1).exclude(successful=0)
+            queryset = course.applicants.all()
             if queryset.count()==0:
                 continue
             stats[name] = total_stats(queryset)
