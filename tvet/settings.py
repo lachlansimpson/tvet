@@ -54,7 +54,7 @@ STATIC_ROOT = ''
 # URL prefix for static files.
 # Example: "http://media.lawrence.com/static/"
 STATIC_URL = '/static/'
-
+ADMIN_MEDIA_PREFIX = '/static/admin/'
 # Additional locations of static files
 STATICFILES_DIRS = (
     # Put strings here, like "/home/html/static" or "C:/www/django/static".
@@ -113,7 +113,16 @@ INSTALLED_APPS = (
     'tafe',
     'south',
     'django_extensions',
+    'haystack',
 )
+
+# needed settings for Haystack
+HAYSTACK_CONNECTIONS = {
+        'default': {
+            'ENGINE': 'haystack.backends.solr_backend.SolrEngine',
+            'URL': 'http://127.0.0.1:8983/solr'
+            },
+        }
 
 # A sample logging configuration. The only tangible logging
 # performed by this configuration is to send an email to
