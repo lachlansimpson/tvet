@@ -1,0 +1,73 @@
+{% extends "tafe/base.html" %}
+{% load admin_static %}{% load url from future %}
+
+{% block title %}{{ title }}KIT Student Management System{% endblock %}
+
+{% block branding %}{{ block.super }}
+<a href="/tafe/"><div id="site-name">KIT Student Management System</div>
+    <img src="{{ STATIC_URL }}images/kit-header.jpg" /></a>
+{% endblock %}
+
+{% block breadcrumbs %}
+<div class="grid_12">
+<ul class="sf-menu grid_11">
+    <li class="current"><a href="/tafe/">Home</a></li>
+        {% if title %} &rsaquo; {{ title }}{% endif %}
+        <li><a href="/tafe/applicants/" title="The list of all applicants">Applicants</a>
+        <ul>
+            <li><a href="/admin/tafe/applicant/add/">New Applicants</a> 
+            <li><a href="/tafe/applicants/successful/">Mark as succesful</a>
+        </ul>
+    </li>
+    <li><a href="/tafe/students/" title="The list of all students">Students</a>
+        <ul>
+            <li><a href="/admin/tafe/student/add/">Add a new Student</a></li>
+        </ul>        
+    </li>
+    {% if perms.staff.can_add %}
+    <li><a href="/tafe/staff/" title="The list of all staff">Staff</a>
+        <ul>
+            <li><a href="/admin/tafe/staff/add/">Add a new Staff Member</a></li>
+        </ul>        
+    </li>
+    {% endif %}
+    <li><a href="/tafe/qualifications/">Qualifications</a>
+        <ul>
+            <li><a href="/admin/tafe/qualification/add/">Add a new Qualification</a></li>
+            <li><a href="/tafe/units/qualifications/">List available units by qualification</a></li>
+            <li><a href="/tafe/enrolments/">Enrolments</a></li>
+        </ul>
+    </li>
+    <li><a href="/tafe/units/">Units</a>
+        <ul>
+            <li><a href="/admin/tafe/subject/add/">Add a new Unit</a></li>
+            <li><a href="/tafe/session/create/">Create a new recurring session</a></li>
+            <li><a href="/tafe/grades/">Grades</a></li>
+        </ul>
+    </li>
+    <li><a href="/tafe/timetables/">Timetables</a>
+        <ul>
+            <li><a href="/tafe/timetable/today/">Today's timetable</a></li>
+        </ul>
+    </li>
+    <li><a href="/tafe/reports/">Reports</a>
+        <ul>
+            <li><a href="/tafe/report/students/">Student report</a></li>
+            <li><a href="/tafe/report/applicants/">Applicant report</a></li>
+        </ul>
+    </li>
+    <li><a href="/search/">Search</a></li>
+    {% if user.is_active and user.is_staff %}
+        <li><a href="/admin/">Admin</a></li>
+    {% endif %}
+</ul>
+</div>
+{% endblock %}
+{% block sidebar %}
+    <div id="sidebar-nav" class="grid_5">
+      <h4>Links</h4>
+      <p><a href="/tafe/applicants/successful/">Mark applicants as successful here</a></p>
+      <p><a href="/tafe/applicants/qualifications/">List Applicants by qualification applied for</a></p>
+    </div>
+</div>
+{% endblock %}

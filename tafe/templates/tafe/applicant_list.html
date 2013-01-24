@@ -1,4 +1,4 @@
-{% extends "tafe/base_site.html" %}
+{% extends "tafe/base_site_applicants.html" %}
 {% load admin_urls %}
 {% comment %}
 
@@ -14,7 +14,6 @@ List of applicants enrolled
 <div class="grid_12">
     <div id="list" class="grid_5">
     <h3>Applicant register</h3>
-    
     {% if applicant_list %}
         {% regroup applicant_list by first_letter as letter_list %} 
         {% for letter in letter_list %}
@@ -35,10 +34,4 @@ List of applicants enrolled
         <p>No applicants are available.</p>
         {% endif %}
     </div>
-    <div id="sidebar-nav" class="grid_5">
-      <h4>Links</h4>
-      <p><a href="/tafe/applicants/successful/">Mark applicants as successful here</a></p>
-      <p><a href="/tafe/applicants/qualifications/">List Applicants by qualification applied for</a></p>
-    </div>
-</div>
 {% endblock %}
