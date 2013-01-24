@@ -1,0 +1,37 @@
+{% extends "tafe/base_site_applicants.html" %}
+{% load admin_urls %}
+{% comment %}
+
+Applicant list page of the portal.
+
+{% endcomment %}
+
+{% block title %}
+List of applicants enrolled
+{% endblock %}
+{% block coltype %}colMS{% endblock %}
+{% block content %}
+<div class="grid_12">
+    <div id="list" class="grid_5">
+    <h3>Applicant register</h3>
+    {% if applicant_list %}
+        {% regroup applicant_list by first_letter as letter_list %} 
+        {% for letter in letter_list %}
+            <a href="#{{ letter.grouper }}">{{ letter.grouper }}</a>
+        {% endfor %}
+        
+        {% for letter in letter_list %}
+            <h3 id="{{ letter.grouper }}">{{ letter.grouper }}</h3>
+            <ul>
+                {% for applicant in letter.list %}
+                <li><a href="{{ applicant.get_absolute_url }}">{{ applicant }}</a> | 
+                <a href="/admin/tafe/applicant/{{ applicant.pk }}/"><i>edit</i></a></li>
+                {% endfor %}
+            </ul>
+            </li>
+        {% endfor %}
+    {% else %}
+        <p>No applicants are available.</p>
+        {% endif %}
+    </div>
+{% endblock %}

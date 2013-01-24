@@ -298,6 +298,10 @@ class CurrentApplicantManager(models.Manager):
     def get_query_set(self):
         return super(CurrentApplicantManager, self).get_query_set().order_by('first_name')
 
+class ShortListedApplicantManager(models.Manager):
+    def get_query_set(self):
+        return super(ShortListedApplicantManager, self).get_query_set().exclude(short_listed='0').exclude(short_listed='')
+
 class Applicant(Person):
     applied_for = models.ForeignKey('Course', related_name='applicants')
     education_level = models.CharField(max_length=2, blank=True, choices=EDUCATION_LEVEL_CHOICES)
@@ -316,6 +320,7 @@ class Applicant(Person):
     student_details = models.ForeignKey('Student', blank=True, null=True)
     objects = models.Manager()
     current = CurrentApplicantManager()
+    all_short_listed = ShortListedApplicantManager()
 
     @models.permalink
     def get_absolute_url(self):
