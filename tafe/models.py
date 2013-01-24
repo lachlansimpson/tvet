@@ -300,7 +300,7 @@ class CurrentApplicantManager(models.Manager):
 
 class ShortListedApplicantManager(models.Manager):
     def get_query_set(self):
-        return super(ShortListedApplicantManager, self).get_query_set().exclude(short_listed='0').exclude(short_listed='')
+        return super(ShortListedApplicantManager, self).get_query_set().filter(short_listed="1")
 
 class Applicant(Person):
     applied_for = models.ForeignKey('Course', related_name='applicants')
