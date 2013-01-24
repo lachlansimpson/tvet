@@ -23,12 +23,20 @@ def index(request):
     take them to the login page.
     """
     daily_sessions = []
+    
+    class_day = True
 
     for session in range(4):
         daily_sessions.append([])
         daily_sessions[session] = Session.objects.filter(date=today).filter(session_number=session)
-
-    return render_to_response('tafe/timetable_today_detail.html',{'daily_sessions':daily_sessions}, RequestContext(request))
+        class_day = len(daily_sessions[session])
+        #if (not empty_day) and len(daily_sessions[session])!=0:
+        #  empty_day = False
+    
+    if not class_day:
+      return render_to_response('tafe/timetable_empty.html',{}, RequestContext(request))
+    else:
+      return render_to_response('tafe/timetable_today_detail.html',{'daily_sessions':daily_sessions}, RequestContext(request))
 
 ############### Sessions ###############
 
