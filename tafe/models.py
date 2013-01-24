@@ -296,7 +296,7 @@ class Person(models.Model):
 
 class CurrentApplicantManager(models.Manager):
     def get_query_set(self):
-        return super(CurrentApplicantManager, self).get_query_set().exclude(successful='1').exclude(successful='0').order_by('first_name')
+        return super(CurrentApplicantManager, self).get_query_set().order_by('first_name')
 
 class Applicant(Person):
     applied_for = models.ForeignKey('Course', related_name='applicants')
@@ -326,6 +326,9 @@ class Applicant(Person):
             super(Applicant, self).save(*args, **kwargs) # Call the first save() method to get pk
         self.slug = slugify(str(self)) # should re-slugify after name change
         super(Applicant, self).save(*args, **kwargs) # Call the "real" save() method.
+
+    def course_applied_for(self):
+        return self.applied_for
 
     def age_group(self):
         if self.age_today < 25:

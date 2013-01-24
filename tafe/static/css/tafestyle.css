@@ -29,7 +29,7 @@
     margin-top: 10px;
 }
 
-#comments, #admin {
+#sidebar-nav, #comments, #admin {
     -moz-border-radius: 6px;
     -webkit-border-radius: 6px;
     border-radius: 6px;

@@ -14,17 +14,15 @@ List of applicants enrolled
 <div class="grid_12">
     <div id="list" class="grid_5">
     <h3>Applicant register</h3>
-    
-    {% if applicant_list %}
-        {% regroup applicant_list by first_letter as letter_list %} 
-        {% for letter in letter_list %}
-            <a href="#{{ letter.grouper }}">{{ letter.grouper }}</a>
+    {% if applicants_by_course %}
+        {% for course in applicants_by_course.keys %}
+            <a href="#{{ course.name }}">{{ course.name }}</a> | 
         {% endfor %}
         
-        {% for letter in letter_list %}
-            <h3 id="{{ letter.grouper }}">{{ letter.grouper }}</h3>
+        {% for course, list in applicants_by_course.items %}
+            <h3 id="{{ course.name }}">{{ course.name }}</h3>
             <ul>
-                {% for applicant in letter.list %}
+                {% for applicant in list|dictsort:"first_name" %}
                 <li><a href="{{ applicant.get_absolute_url }}">{{ applicant }}</a> | 
                 <a href="/admin/tafe/applicant/{{ applicant.pk }}/"><i>edit</i></a></li>
                 {% endfor %}
@@ -34,11 +32,6 @@ List of applicants enrolled
     {% else %}
         <p>No applicants are available.</p>
         {% endif %}
-    </div>
-    <div id="sidebar-nav" class="grid_5">
-      <h4>Links</h4>
-      <p><a href="/tafe/applicants/successful/">Mark applicants as successful here</a></p>
-      <p><a href="/tafe/applicants/qualifications/">List Applicants by qualification applied for</a></p>
     </div>
 </div>
 {% endblock %}

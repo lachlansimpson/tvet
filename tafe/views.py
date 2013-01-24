@@ -190,6 +190,23 @@ def applicant_success(request):
 
     return render_to_response('tafe/applicant_success.html', {'form':form}, RequestContext(request))
 
+@login_required
+def applicant_qualification(request):
+    ''' All applicants will be listed by qualification '''
+    applicants = Applicant.current.all().order_by('applied_for')
+    courses = Course.objects.all().order_by('name')
+
+    applicants_by_course = {}
+    for course in courses:
+      #applicants_by_course.append(course)
+      course_applicants = [] 
+      for applicant in applicants:
+        if applicant.applied_for == course:
+          course_applicants.append(applicant)
+      #applicants_by_course.append(course_applicants)
+      applicants_by_course[course] = course_applicants
+    
+    return render_to_response('tafe/applicant_qualifications.html', {'applicants_by_course':applicants_by_course}, RequestContext(request))
 ############### Timetables ###############
 
 @login_required
