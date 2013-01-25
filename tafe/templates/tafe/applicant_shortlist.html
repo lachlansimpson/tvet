@@ -14,8 +14,8 @@ List of applicants enrolled
 <div class="grid_12">
     <div id="list" class="grid_5">
     <h3>Applicant register</h3>
-    {% if applicant_list %}
-        {% regroup applicant_list by first_letter as letter_list %} 
+    {% if applicants %}
+        {% regroup applicants by first_letter as letter_list %} 
         {% for letter in letter_list %}
             <a href="#{{ letter.grouper }}">{{ letter.grouper }}</a>
         {% endfor %}
