@@ -356,6 +356,20 @@ class Applicant(Person):
         self.last_change_by = request.user
         self.save()
     
+    def send_an_offer(self,request):
+        ''' Marks an applicant as shortlisted '''
+        self.date_offer_sent = today
+        self.penultimate_change_by = self.last_change_by
+        self.last_change_by = request.user
+        self.save()
+    
+    def accept_an_offer(self,request):
+        ''' Marks an applicant as shortlisted '''
+        self.date_offer_accepted = today
+        self.penultimate_change_by = self.last_change_by
+        self.last_change_by = request.user
+        self.save()
+    
     def convert_to_student(self):
         '''Turn an applicant into a student, create all required associated objects'''
         if self.successful:
