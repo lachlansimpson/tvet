@@ -349,6 +349,13 @@ class Applicant(Person):
         self.last_change_by = request.user
         self.save()
     
+    def short_list_applicant(self,request):
+        ''' Marks an applicant as shortlisted '''
+        self.short_listed = 1
+        self.penultimate_change_by = self.last_change_by
+        self.last_change_by = request.user
+        self.save()
+    
     def convert_to_student(self):
         '''Turn an applicant into a student, create all required associated objects'''
         if self.successful:
