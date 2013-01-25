@@ -249,6 +249,20 @@ class ApplicantAdmin(admin.ModelAdmin):
             end_message_bit = "students."
         self.message_user(request, "%s successfuly converted to %s" %(start_message_bit, end_message_bit))
     
+    def short_list_applicants(self, request, queryset):
+        ''' Marks a group of applicants as shortlisted'''
+        rows_updated = 0
+        for applicant in queryset:
+            applicant.short_list_applicant(request)
+            rows_updated += 1
+        
+        if rows_updated == 1:
+            message_bit = "1 applicant was"
+        else:
+            message_bit = "%s applicants were" % rows_updated
+        self.message_user(request, "%s short listed." % message_bit)
+
+    
     def save_model(self, request, obj, form, change): 
         try:
             obj.last_change_by
