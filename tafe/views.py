@@ -23,12 +23,20 @@ def index(request):
     take them to the login page.
     """
     daily_sessions = []
+    
+    class_day = True
 
     for session in range(4):
         daily_sessions.append([])
         daily_sessions[session] = Session.objects.filter(date=today).filter(session_number=session)
-
-    return render_to_response('tafe/timetable_today_detail.html',{'daily_sessions':daily_sessions}, RequestContext(request))
+        class_day = len(daily_sessions[session])
+        #if (not empty_day) and len(daily_sessions[session])!=0:
+        #  empty_day = False
+    
+    if not class_day:
+      return render_to_response('tafe/timetable_empty.html',{}, RequestContext(request))
+    else:
+      return render_to_response('tafe/timetable_today_detail.html',{'daily_sessions':daily_sessions}, RequestContext(request))
 
 ############### Sessions ###############
 
@@ -190,6 +198,44 @@ def applicant_success(request):
 
     return render_to_response('tafe/applicant_success.html', {'form':form}, RequestContext(request))
 
+@login_required
+def applicant_shortlist(request):
+    ''' All applicants will be listed by qualification '''
+    applicants = Applicant.all_short_listed.all()
+    
+    return render_to_response('tafe/applicant_shortlist.html', {'applicants':applicants}, RequestContext(request))
+
+@login_required
+def applicant_qualification(request):
+    ''' All applicants will be listed by qualification '''
+    applicants = Applicant.current.all().order_by('applied_for')
+    courses = Course.objects.all().order_by('name')
+
+    applicants_by_course = {}
+    for course in courses:
+      course_applicants = [] 
+      for applicant in applicants:
+        if applicant.applied_for == course:
+          course_applicants.append(applicant)
+      applicants_by_course[course] = course_applicants
+    
+    return render_to_response('tafe/applicant_qualifications.html', {'applicants_by_course':applicants_by_course}, RequestContext(request))
+
+@login_required
+def applicant_shortlist_qualification(request):
+    ''' All applicants will be listed by qualification '''
+    applicants = Applicant.all_short_listed.all().order_by('applied_for')
+    courses = Course.objects.all().order_by('name')
+
+    applicants_by_course = {}
+    for course in courses:
+      course_applicants = [] 
+      for applicant in applicants:
+        if applicant.applied_for == course:
+          course_applicants.append(applicant)
+      applicants_by_course[course] = course_applicants
+    
+    return render_to_response('tafe/applicant_shortlist_qualifications.html', {'applicants_by_course':applicants_by_course}, RequestContext(request))
 ############### Timetables ###############
 
 @login_required
@@ -294,7 +340,7 @@ def applicant_reports(request, year=None, format=None):
         courses = Course.objects.filter(year=year)
         for course in courses: 
             name = course.__unicode__()
-            queryset = course.applicants.exclude(successful=1).exclude(successful=0)
+            queryset = course.applicants.all()
             if queryset.count()==0:
                 continue
             stats[name] = total_stats(queryset)

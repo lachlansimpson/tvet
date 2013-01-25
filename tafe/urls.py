@@ -2,13 +2,16 @@ from django.conf.urls import patterns, url
 from django.contrib.auth.decorators import permission_required
 from django.views.generic import DetailView, ListView, CreateView
 from tafe.models import Student, Subject, Enrolment, Course, Grade, Timetable, Applicant, Staff
-from tafe.views import session_create, session_view, session_attendance_view, timetable_daily_view, units_by_qualifications_view, unit_view, assessment_view, student_reports, applicant_reports, reports
+from tafe.views import session_create, session_view, session_attendance_view, timetable_daily_view, units_by_qualifications_view, unit_view, assessment_view, student_reports, applicant_reports, reports, applicant_qualification, applicant_shortlist, applicant_shortlist_qualification
 
 urlpatterns = patterns('tafe.views',
     url(r'^$', 'index'),
     
     url(r'^applicants/$', ListView.as_view(queryset=Applicant.current.order_by('first_name'))),
     url(r'^applicants/successful/$', 'applicant_success'),
+    url(r'^applicants/qualifications/$', applicant_qualification),
+    url(r'^applicants/short-list/$', applicant_shortlist),
+    url(r'^applicants/short-list/qualifications/$', applicant_shortlist_qualification),
     url(r'^applicant/add/$', CreateView.as_view(model=Applicant)),
     url(r'^applicant/(?P<slug>[-\w]+)/$', DetailView.as_view(model=Applicant), name='applicant_view'),
 

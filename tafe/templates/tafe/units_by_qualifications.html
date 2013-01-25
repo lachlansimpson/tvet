@@ -12,7 +12,6 @@ Course list page of the portal.
 {% block content %}
 <div id="content-left" class="grid_12">
     <div id="list" class="grid_7">
-
         <h3>Units Available by Qualification</h3>    
         {% for course in courses %}
             <h3><a href="{{ course.get_absolute_url }}">{{ course.name }}</a></h3>
@@ -21,7 +20,7 @@ Course list page of the portal.
                 <li><a href="{{ subject.get_absolute_url }}">{{ subject.name }}</a></li>
             {% endfor %}
             </ul>
-    </div>
+        {% endfor %}
+      </div>
 </div>
-{% endfor %}
 {% endblock %}
