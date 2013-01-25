@@ -1,0 +1,9 @@
+{% extends "tafe/base_site.html" %}
+{% load admin_static %}{% load url from future %}
+{% block sidebar %}
+<div id="sidebar-nav" class="grid_5">
+  <h5>Links</h5>
+  <a href="../raw">This report's raw data as a csv file</a>
+  <a href="../csv">This report as a csv file</a>
+</div>  
+{% endblock %}
