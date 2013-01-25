@@ -218,7 +218,7 @@ class ApplicantAdmin(admin.ModelAdmin):
     list_display = ('__unicode__', 'gender', 'disability', 'applied_for', 'island', 'successful', 'test_ma', 'test_eng')
     list_filter = ('gender', 'disability', MathTestFilter, EnglishTestFilter, IslandFilter, 'successful', 'applied_for', 'eligibility')
     readonly_fields = ('added', 'updated','last_change_by','penultimate_change_by')
-    actions = ['make_student', 'mark_unsuccessful', 'short_list_applicants']
+    actions = ['mark_unsuccessful', 'short_list_applicants','send_an_offer','accept_an_offer','make_student']
     date_hierarchy = 'dob'
 
     def mark_unsuccessful(self, request, queryset):
@@ -262,6 +262,35 @@ class ApplicantAdmin(admin.ModelAdmin):
             message_bit = "%s applicants were" % rows_updated
         self.message_user(request, "%s short listed." % message_bit)
 
+    def send_an_offer(self, request, queryset):
+        '''Marks the date offer sent as today to group of applicants'''
+        rows_updated = 0
+        for applicant in queryset:
+            if not applicant.short_listed:
+                raise Error
+            applicant.send_an_offer(request)
+            rows_updated += 1
+        
+        if rows_updated == 1:
+            message_bit = "1 applicant was"
+        else:
+            message_bit = "%s applicants were" % rows_updated
+        self.message_user(request, "%s sent an offer with today's date." % message_bit)
+    
+    def accept_an_offer(self, request, queryset):
+        '''Marks the date offer was accepted as today to group of applicants'''
+        rows_updated = 0
+        for applicant in queryset:
+            if not applicant.short_listed and not applicant.date_offer_sent:
+                raise Error
+            applicant.accept_an_offer(request)
+            rows_updated += 1
+        
+        if rows_updated == 1:
+            message_bit = "1 applicant was"
+        else:
+            message_bit = "%s applicants were" % rows_updated
+        self.message_user(request, "%s accepting an offer with today's date." % message_bit)
     
     def save_model(self, request, obj, form, change): 
         try:
