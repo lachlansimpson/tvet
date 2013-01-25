@@ -1,0 +1,7 @@
+{{ object.first_name }}
+{{ object.surname }}
+{{ object.dob }}
+{{ object.applied_for }}
+{{ object.gender }}
+{{ object.island }}
+
