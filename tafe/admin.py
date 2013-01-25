@@ -218,7 +218,7 @@ class ApplicantAdmin(admin.ModelAdmin):
     list_display = ('__unicode__', 'gender', 'disability', 'applied_for', 'island', 'successful', 'test_ma', 'test_eng')
     list_filter = ('gender', 'disability', MathTestFilter, EnglishTestFilter, IslandFilter, 'successful', 'applied_for', 'eligibility')
     readonly_fields = ('added', 'updated','last_change_by','penultimate_change_by')
-    actions = ['make_student', 'mark_unsuccessful']
+    actions = ['make_student', 'mark_unsuccessful', 'short_list_applicants']
     date_hierarchy = 'dob'
 
     def mark_unsuccessful(self, request, queryset):
