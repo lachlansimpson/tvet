@@ -282,7 +282,8 @@ class Person(models.Model):
     women = FemaleManager()
 
     class Meta:
-        abstract = True
+       ordering = ['first_name','surname'] 
+       abstract = True
 
     def __unicode__(self):
         """Person reference: full name """
@@ -322,9 +323,6 @@ class Applicant(Person):
     current = CurrentApplicantManager()
     all_short_listed = ShortListedApplicantManager()
 
-    class Meta:
-        ordering = ['first_name','surname']
-    
     @models.permalink
     def get_absolute_url(self):
         return ('applicant_view', [str(self.slug)])
@@ -687,7 +685,7 @@ class Staff(Person):
     classification = models.CharField(max_length=2, choices=CLASSIFICATION_CHOICES)
     credential = models.ManyToManyField('Credential', blank=True, null=True, related_name='credentials')
 
-    class Meta:
+    class Meta(Person.Meta):
         verbose_name='Staff'
         verbose_name_plural='Staff'
 
