@@ -322,6 +322,9 @@ class Applicant(Person):
     current = CurrentApplicantManager()
     all_short_listed = ShortListedApplicantManager()
 
+    class Meta:
+        ordering = ['first_name','surname']
+    
     @models.permalink
     def get_absolute_url(self):
         return ('applicant_view', [str(self.slug)])
