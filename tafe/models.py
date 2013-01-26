@@ -282,7 +282,8 @@ class Person(models.Model):
     women = FemaleManager()
 
     class Meta:
-        abstract = True
+       ordering = ['first_name','surname'] 
+       abstract = True
 
     def __unicode__(self):
         """Person reference: full name """
@@ -345,6 +346,27 @@ class Applicant(Person):
     def mark_unsuccessful(self, request):
         ''' Marks this Application unsuccessful'''
         self.successful = 0
+        self.penultimate_change_by = self.last_change_by
+        self.last_change_by = request.user
+        self.save()
+    
+    def short_list_applicant(self,request):
+        ''' Marks an applicant as shortlisted '''
+        self.short_listed = 1
+        self.penultimate_change_by = self.last_change_by
+        self.last_change_by = request.user
+        self.save()
+    
+    def send_an_offer(self,request):
+        ''' Marks an applicant as shortlisted '''
+        self.date_offer_sent = today
+        self.penultimate_change_by = self.last_change_by
+        self.last_change_by = request.user
+        self.save()
+    
+    def accept_an_offer(self,request):
+        ''' Marks an applicant as shortlisted '''
+        self.date_offer_accepted = today
         self.penultimate_change_by = self.last_change_by
         self.last_change_by = request.user
         self.save()
@@ -663,7 +685,7 @@ class Staff(Person):
     classification = models.CharField(max_length=2, choices=CLASSIFICATION_CHOICES)
     credential = models.ManyToManyField('Credential', blank=True, null=True, related_name='credentials')
 
-    class Meta:
+    class Meta(Person.Meta):
         verbose_name='Staff'
         verbose_name_plural='Staff'
 

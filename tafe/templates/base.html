@@ -4,10 +4,12 @@
     <head>
         <title>{% block title %}{% endblock %}</title>
         {% block extrastyle %}
+        <link rel="stylesheet" type="text/css" href="{% static "css/tafestyle.css" %}" media="screen">
 
         <link rel="stylesheet" type="text/css" href="{% static "css/tafestyle.css" %}" media="screen">
         <link rel="stylesheet" type="text/css" href="{% static "css/960_12_col.css" %}" media="screen">
         <link rel="stylesheet" type="text/css" href="{% static "css/superfish.css" %}" media="screen">  
+        
         {% comment %}
         <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}css/tafestyle.css" media="screen">
         <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}css/960_12_col.css" media="screen">
