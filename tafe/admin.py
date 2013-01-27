@@ -202,6 +202,22 @@ class IslandFilter(admin.SimpleListFilter):
         if self.value() == 'outer-islands':
             return queryset.exclude(island__iexact='tarawa')
 
+class OfferFilter(admin.SimpleListFilter):
+    title = 'Offer sent'
+    parameter_name = 'offer-sent'
+
+    def lookups(self, request, model_admin):
+        return (
+            ('offered', 'Offer sent'),
+            ('not-offered', 'Not offered'),
+        )
+
+    def queryset(self, request, queryset):
+        if self.value() == 'offered':
+            return queryset.filter(date_offer_sent__isnull=False)
+        if self.value() == 'not-offered':
+            return queryset.filter(date_offer_sent__isnull=True)
+
 class ApplicantAdmin(admin.ModelAdmin):
     fieldsets = (
         ('Bio', {'fields':(('first_name','surname'),('dob','gender', 'island'))}),
@@ -216,7 +232,7 @@ class ApplicantAdmin(admin.ModelAdmin):
     )
     form = ApplicantAdminForm
     list_display = ('__unicode__', 'gender', 'disability', 'applied_for', 'island', 'successful', 'test_ma', 'test_eng')
-    list_filter = ('gender', 'short_listed', MathTestFilter, EnglishTestFilter, IslandFilter, 'successful', 'applied_for', 'eligibility')
+    list_filter = ('gender', 'short_listed', MathTestFilter, EnglishTestFilter, IslandFilter, OfferFilter, 'successful', 'applied_for', 'eligibility')
     readonly_fields = ('added', 'updated','last_change_by','penultimate_change_by')
     actions = ['mark_unsuccessful', 'short_list_applicants','send_an_offer','accept_an_offer','make_student']
     date_hierarchy = 'dob'
