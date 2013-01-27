@@ -100,10 +100,10 @@ AQF_LEVEL_CHOICES = (
     ('ADIP','Advanced Diploma'),
     ('ADEG','Associate Degree'),
     ('DIP','Diploma'),
-    ('CERT4','IV'),
-    ('CERT3','III'),
-    ('CERT2','II'),
-    ('CERT1','I'),
+    ('CERT4','Certificate IV'),
+    ('CERT3','Certificate III'),
+    ('CERT2','Certificate II'),
+    ('CERT1','Certificate I'),
     ('PHD','Doctoral'),
     ('MAST','Masters'),
     ('OTH','Other'),
@@ -510,7 +510,7 @@ class Course(models.Model):
     aqf_level = models.CharField('AQF Level', max_length=5, choices=AQF_LEVEL_CHOICES)
     course_code = models.CharField(max_length=8, blank=True)
     year = models.CharField(max_length=4)
-    slug = models.SlugField(max_length=40)
+    slug = models.SlugField(max_length=60)
     students = models.ManyToManyField('Student', through='Enrolment', blank=True, null=True)
     subjects = models.ManyToManyField('Subject', related_name='course', blank=True, null=True, verbose_name=Subject._meta.verbose_name_plural)
 
@@ -520,7 +520,8 @@ class Course(models.Model):
 
     def __unicode__(self):
         '''Course Reference: name of the course'''
-        return str(self.name)
+        uni = str(self.aqf_level) + ' in ' + str(self.name)
+        return str(uni)
 
     @models.permalink	
     def get_absolute_url(self):
