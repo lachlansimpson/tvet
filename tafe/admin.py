@@ -355,7 +355,7 @@ class CourseAdmin(admin.ModelAdmin):
     )
     list_display = ('name', 'count_students', 'count_males', 'count_females', 'subjects_available')
     model = Course 
-    prepopulated_fields = {'slug': ('name',)}
+    prepopulated_fields = {'slug': ('aqf_level', 'name')}
     save_on_top = True
 
     def save_formset(self, request, form, formset, change): 

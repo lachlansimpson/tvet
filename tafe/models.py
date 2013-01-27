@@ -520,7 +520,8 @@ class Course(models.Model):
 
     def __unicode__(self):
         '''Course Reference: name of the course'''
-        return str(self.name)
+        uni = str(self.aqf_level) + ' in ' + str(self.name)
+        return str(uni)
 
     @models.permalink	
     def get_absolute_url(self):
