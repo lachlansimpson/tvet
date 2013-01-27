@@ -350,12 +350,12 @@ class CourseAdmin(admin.ModelAdmin):
         )
     filter_horizontal = ('subjects',)
     fieldsets = (
-        ('', { 'fields':(('aqf_level','name', 'slug'),('year', 'course_code'))}),
+        ('', { 'fields':(('aqf_level','name', 'year'),('slug', 'course_code'))}),
         ('Subjects', { 'fields':('subjects',)}),
     )
     list_display = ('name', 'count_students', 'count_males', 'count_females', 'subjects_available')
     model = Course 
-    prepopulated_fields = {'slug': ('aqf_level', 'name')}
+    prepopulated_fields = {'slug': ('aqf_level','name','year')}
     save_on_top = True
 
     def save_formset(self, request, form, formset, change): 
