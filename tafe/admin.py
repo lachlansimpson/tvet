@@ -350,7 +350,7 @@ class CourseAdmin(admin.ModelAdmin):
         )
     filter_horizontal = ('subjects',)
     fieldsets = (
-        ('', { 'fields':(('name','year', 'slug'),)}),
+        ('', { 'fields':(('aqf_level','name', 'slug'),('year', 'course_code'))}),
         ('Subjects', { 'fields':('subjects',)}),
     )
     list_display = ('name', 'count_students', 'count_males', 'count_females', 'subjects_available')
