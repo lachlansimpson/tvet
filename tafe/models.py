@@ -507,6 +507,8 @@ class Subject(models.Model):
 class Course(models.Model):
     '''Represents Courses - a collection of subjects leading to a degree'''
     name = models.CharField(max_length=30)
+    aqf_level = models.CharField('AQF Level', max_length=5, choices=AQF_LEVEL_CHOICES)
+    course_code = models.CharField(max_length=8, blank=True)
     year = models.CharField(max_length=4)
     slug = models.SlugField(max_length=40)
     students = models.ManyToManyField('Student', through='Enrolment', blank=True, null=True)
