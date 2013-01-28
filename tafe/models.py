@@ -456,14 +456,15 @@ class Assessment(models.Model):
 
 class Subject(models.Model):
     '''Represents individual subjects, classes, cohorts'''
-    name = models.CharField(max_length=30)
-    slug = models.SlugField(max_length=40)
+    name = models.CharField(max_length=65)
+    slug = models.SlugField(max_length=70)
     semester = models.CharField(max_length=1, blank=True, choices=SEMESTER_CHOICES)
     year = models.IntegerField()
     staff_member = models.ForeignKey('Staff', blank=True, null=True)
     students = models.ManyToManyField('Student', through='Grade', blank=True, null=True)
 
     class Meta:
+        ordering= ['name','year']
         verbose_name='Unit of Competence'
         verbose_name_plural='Units of Competence'
 
