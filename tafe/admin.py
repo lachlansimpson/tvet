@@ -236,6 +236,7 @@ class ApplicantAdmin(admin.ModelAdmin):
     readonly_fields = ('added', 'updated','last_change_by','penultimate_change_by')
     actions = ['mark_unsuccessful', 'short_list_applicants','send_an_offer','accept_an_offer','make_student']
     date_hierarchy = 'dob'
+    save_on_top = True
 
     def mark_unsuccessful(self, request, queryset):
         '''Marks a group of applicants as unsuccessful'''
@@ -396,6 +397,7 @@ class EnrolmentAdmin(admin.ModelAdmin):
     list_display = ('student', 'course', 'date_started')
     list_filter = ('course', 'date_started')
     readonly_fields = ('last_change_by','penultimate_change_by')
+    save_on_top = True
 
     def save_model(self, request, obj, form, change): 
         # If the enrolment has mark withdrawn but no reason, 
@@ -502,6 +504,7 @@ class StaffAdmin(admin.ModelAdmin):
     list_filter = ('gender', 'disability')
     readonly_fields = ('added', 'updated','last_change_by','penultimate_change_by')
     inlines = (CredentialInline, StaffISLPRInline,)
+    save_on_top = True
     
     def save_model(self, request, obj, form, change): 
         try:
@@ -551,6 +554,7 @@ class StudentAdmin(admin.ModelAdmin):
     ordering = ('-slug',) 
     readonly_fields = ('slug','added', 'updated','last_change_by','penultimate_change_by',)
     unique_together = ('first_name', 'surname', 'dob')
+    save_on_top = True
 
     def save_model(self, request, obj, form, change): 
         try:
@@ -589,6 +593,7 @@ class SubjectAdmin(admin.ModelAdmin):
     prepopulated_fields = {'slug': ('name','year')}
     inlines = [ AssessmentInline, SessionInline, GradeInline,]
     actions = ['add_all_students',]
+    save_on_top = True
     
     def add_all_students(self, request, queryset):
         ''' this function adds all the students enrolled in the course'''
