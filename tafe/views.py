@@ -220,7 +220,7 @@ def applicant_qualification(request):
           course_applicants.append(applicant)
       apps_by_course[course] = course_applicants
    
-    ''' This sorts the dictionary for rendering in alphabetical order '''
+    ''' This sorts the dictionary for rendering in alphabetical order by the template '''
     key_list = apps_by_course.keys()
     key_list.sort()
     applicants_by_course = SortedDict()
@@ -241,6 +241,8 @@ def applicant_shortlist_qualification(request):
       for applicant in applicants:
         if applicant.applied_for == course:
           course_applicants.append(applicant)
+      if len(course_applicants)==0:
+        continue
       applicants_by_course[course] = course_applicants
     
     return render_to_response('tafe/applicant_shortlist_qualifications.html', {'applicants_by_course':applicants_by_course}, RequestContext(request))
@@ -270,13 +272,12 @@ def timetable_weekly_view(request, slug, year=None, month=None, day=None):
     
     timetable = get_object_or_404(Timetable, slug=slug)
     all_sessions = []
-    #start_date = timetable.start_date
     
     monday = start_date - datetime.timedelta(days=start_date.weekday())
 
     ''' For each day of the week '''
     for day in range(5):
-        ''' To show the timetable for this week we get the date of this week's  Monday '''        
+        ''' To show the timetable for this week we get the date of this week's Monday '''        
         weekday = monday + datetime.timedelta(day)
         ''' all sessions is the dataset returned to the template'''
         all_sessions.append([])
