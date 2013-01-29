@@ -1,0 +1,13 @@
+{% extends "tafe/base_site.html" %}
+{% load admin_static %}{% load url from future %}
+{% block sidebar %}
+<div id="sidebar-nav" class="grid_5">
+  <h3>Output types</h3>
+  <h5>HTML</h5>
+  <p>HTML will show you the report requested in your browser - handy for a quick check on the numbers when writing reports.</p>
+  <h5>CSV</h5>
+  <p>CSV will give you the report requested as a Comma Seperated Values file - which can then be opened in Excel. Useful when needing to embed the numbers into a report.</p>
+  <h5>RAW</h5>
+  <p>RAW will give you the original data set - all of the objects in the data type requested - as a CSV file. If you asked for the student data from 2013, you will get all the student data from 2013 as CSV. Useful when you want to run your own analysis on the data like: How many female students from Tarawa have a phone number?</p>
+</div>
+{% endblock %}

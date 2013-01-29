@@ -1,16 +1,14 @@
-{% extends "tafe/base_site.html" %}
+{% extends "tafe/base_site_report.html" %}
 {% comment %}
 The Main page for all of the reports with a choosing method
 {% endcomment %}
-{% block coltype %}colMS{% endblock %}
+{#{% block coltype %}colMS{% endblock %}#}
 {% block content %}
-<div class="grid_12">
-<div id="bio" class="grid_5">
+  <div id="bio" class="grid_6">
     <h3>Report Generator</h3>
         <form action="/tafe/reports/" method="post">{% csrf_token %} 
             {{ form.as_p }}
             <input type="submit" value="Submit">
         </form>
     </div>
-</div>
 {% endblock %}

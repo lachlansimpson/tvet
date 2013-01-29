@@ -1,4 +1,4 @@
-{% extends "tafe/base_site.html" %}
+{% extends "tafe/base_site_reports.html" %}
 
 {% comment %}
 Applicant reports page of the portal.
@@ -10,7 +10,7 @@ Applicant Reports
 {% block coltype %}colMS{% endblock %}
 {% block content %}
 <div id="content-left" class="grid_12">
-    <div id="stats" class="grid_10">
+    <div id="stats" class="grid_12">
     {%  if not stats %}
     <h5Sorry, there are no Applications at the moment.</h5>
     {% else %}
@@ -96,6 +96,6 @@ Applicant Reports
             </div><!--statblock -->
             {% endfor %}
         {% endif %}
-    </div><!-- stats -->
-</div>
+      </div><!-- stats -->
+    </div>
 {% endblock %}
