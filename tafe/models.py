@@ -100,10 +100,10 @@ AQF_LEVEL_CHOICES = (
     ('ADIP','Advanced Diploma'),
     ('ADEG','Associate Degree'),
     ('DIP','Diploma'),
-    ('CERT4','IV'),
-    ('CERT3','III'),
-    ('CERT2','II'),
-    ('CERT1','I'),
+    ('CERT4','Certificate IV'),
+    ('CERT3','Certificate III'),
+    ('CERT2','Certificate II'),
+    ('CERT1','Certificate I'),
     ('PHD','Doctoral'),
     ('MAST','Masters'),
     ('OTH','Other'),
@@ -456,14 +456,15 @@ class Assessment(models.Model):
 
 class Subject(models.Model):
     '''Represents individual subjects, classes, cohorts'''
-    name = models.CharField(max_length=30)
-    slug = models.SlugField(max_length=40)
+    name = models.CharField(max_length=65)
+    slug = models.SlugField(max_length=70)
     semester = models.CharField(max_length=1, blank=True, choices=SEMESTER_CHOICES)
     year = models.IntegerField()
     staff_member = models.ForeignKey('Staff', blank=True, null=True)
     students = models.ManyToManyField('Student', through='Grade', blank=True, null=True)
 
     class Meta:
+        ordering= ['name','year']
         verbose_name='Unit of Competence'
         verbose_name_plural='Units of Competence'
 
@@ -507,8 +508,10 @@ class Subject(models.Model):
 class Course(models.Model):
     '''Represents Courses - a collection of subjects leading to a degree'''
     name = models.CharField(max_length=30)
+    aqf_level = models.CharField('AQF Level', max_length=5, choices=AQF_LEVEL_CHOICES)
+    course_code = models.CharField(max_length=8, blank=True)
     year = models.CharField(max_length=4)
-    slug = models.SlugField(max_length=40)
+    slug = models.SlugField(max_length=60)
     students = models.ManyToManyField('Student', through='Enrolment', blank=True, null=True)
     subjects = models.ManyToManyField('Subject', related_name='course', blank=True, null=True, verbose_name=Subject._meta.verbose_name_plural)
 
@@ -518,7 +521,8 @@ class Course(models.Model):
 
     def __unicode__(self):
         '''Course Reference: name of the course'''
-        return str(self.name)
+        uni = str(self.aqf_level) + ' in ' + str(self.name)
+        return str(uni)
 
     @models.permalink	
     def get_absolute_url(self):
@@ -651,7 +655,7 @@ class Session(models.Model):
     subject = models.ForeignKey('Subject', related_name='sessions')
     timetable = models.ForeignKey('Timetable', related_name='sessions')
     date = models.DateField()
-    slug = models.SlugField(max_length=50, blank=True)
+    slug = models.SlugField(max_length=90, blank=True)
     students = models.ManyToManyField('Student', through='StudentAttendance', blank=True, null=True)
     room_number = models.CharField(max_length=7, choices=ROOM_CHOICES, blank=True)
 

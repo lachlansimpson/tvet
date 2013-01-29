@@ -202,6 +202,22 @@ class IslandFilter(admin.SimpleListFilter):
         if self.value() == 'outer-islands':
             return queryset.exclude(island__iexact='tarawa')
 
+class OfferFilter(admin.SimpleListFilter):
+    title = 'Offer sent'
+    parameter_name = 'offer-sent'
+
+    def lookups(self, request, model_admin):
+        return (
+            ('offered', 'Offer sent'),
+            ('not-offered', 'Not offered'),
+        )
+
+    def queryset(self, request, queryset):
+        if self.value() == 'offered':
+            return queryset.filter(date_offer_sent__isnull=False)
+        if self.value() == 'not-offered':
+            return queryset.filter(date_offer_sent__isnull=True)
+
 class ApplicantAdmin(admin.ModelAdmin):
     fieldsets = (
         ('Bio', {'fields':(('first_name','surname'),('dob','gender', 'island'))}),
@@ -216,10 +232,11 @@ class ApplicantAdmin(admin.ModelAdmin):
     )
     form = ApplicantAdminForm
     list_display = ('__unicode__', 'gender', 'disability', 'applied_for', 'island', 'successful', 'test_ma', 'test_eng')
-    list_filter = ('gender', 'short_listed', MathTestFilter, EnglishTestFilter, IslandFilter, 'successful', 'applied_for', 'eligibility')
+    list_filter = ('gender', 'short_listed', MathTestFilter, EnglishTestFilter, IslandFilter, OfferFilter, 'successful', 'applied_for', 'eligibility')
     readonly_fields = ('added', 'updated','last_change_by','penultimate_change_by')
     actions = ['mark_unsuccessful', 'short_list_applicants','send_an_offer','accept_an_offer','make_student']
     date_hierarchy = 'dob'
+    save_on_top = True
 
     def mark_unsuccessful(self, request, queryset):
         '''Marks a group of applicants as unsuccessful'''
@@ -334,12 +351,12 @@ class CourseAdmin(admin.ModelAdmin):
         )
     filter_horizontal = ('subjects',)
     fieldsets = (
-        ('', { 'fields':(('name','year', 'slug'),)}),
+        ('', { 'fields':(('aqf_level','name', 'year'),('slug', 'course_code'))}),
         ('Subjects', { 'fields':('subjects',)}),
     )
-    list_display = ('name', 'count_students', 'count_males', 'count_females', 'subjects_available')
+    list_display = ('aqf_level', 'name', 'count_students', 'count_males', 'count_females', 'subjects_available')
     model = Course 
-    prepopulated_fields = {'slug': ('name',)}
+    prepopulated_fields = {'slug': ('aqf_level','name','year')}
     save_on_top = True
 
     def save_formset(self, request, form, formset, change): 
@@ -380,6 +397,7 @@ class EnrolmentAdmin(admin.ModelAdmin):
     list_display = ('student', 'course', 'date_started')
     list_filter = ('course', 'date_started')
     readonly_fields = ('last_change_by','penultimate_change_by')
+    save_on_top = True
 
     def save_model(self, request, obj, form, change): 
         # If the enrolment has mark withdrawn but no reason, 
@@ -486,6 +504,7 @@ class StaffAdmin(admin.ModelAdmin):
     list_filter = ('gender', 'disability')
     readonly_fields = ('added', 'updated','last_change_by','penultimate_change_by')
     inlines = (CredentialInline, StaffISLPRInline,)
+    save_on_top = True
     
     def save_model(self, request, obj, form, change): 
         try:
@@ -535,6 +554,7 @@ class StudentAdmin(admin.ModelAdmin):
     ordering = ('-slug',) 
     readonly_fields = ('slug','added', 'updated','last_change_by','penultimate_change_by',)
     unique_together = ('first_name', 'surname', 'dob')
+    save_on_top = True
 
     def save_model(self, request, obj, form, change): 
         try:
@@ -573,6 +593,7 @@ class SubjectAdmin(admin.ModelAdmin):
     prepopulated_fields = {'slug': ('name','year')}
     inlines = [ AssessmentInline, SessionInline, GradeInline,]
     actions = ['add_all_students',]
+    save_on_top = True
     
     def add_all_students(self, request, queryset):
         ''' this function adds all the students enrolled in the course'''
