@@ -211,14 +211,22 @@ def applicant_qualification(request):
     applicants = Applicant.current.all().order_by('applied_for')
     courses = Course.objects.all().order_by('name')
 
-    applicants_by_course = {}
+    ''' This adds the courses and applicants to a dictionary '''
+    apps_by_course = {}
     for course in courses:
       course_applicants = [] 
       for applicant in applicants:
         if applicant.applied_for == course:
           course_applicants.append(applicant)
-      applicants_by_course[course] = course_applicants
-    
+      apps_by_course[course] = course_applicants
+   
+    ''' This sorts the dictionary for rendering in alphabetical order '''
+    key_list = apps_by_course.keys()
+    key_list.sort()
+    applicants_by_course = SortedDict()
+    for key in key_list:
+        applicants_by_course[key] = apps_by_course[key]
+
     return render_to_response('tafe/applicant_qualifications.html', {'applicants_by_course':applicants_by_course}, RequestContext(request))
 
 @login_required

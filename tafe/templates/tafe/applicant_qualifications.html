@@ -15,11 +15,10 @@ List of applicants enrolled
       <div id="list" class="grid_5">
       <h3>Applicant register</h3>
       {% if applicants_by_course %}
-          {% for course in applicants_by_course.keys %}
+         {% for course in applicants_by_course.keys %}
               <a href="#{{ course.name }}">{{ course.name }}</a> | 
-          {% endfor %}
-          
-          {% for course, list in applicants_by_course.items %}
+         {% endfor %}
+           {% for course, list in applicants_by_course.items %}
               <h3 id="{{ course.name }}">{{ course.name }}</h3>
               <ul>
                   {% for applicant in list|dictsort:"first_name" %}
@@ -31,6 +30,6 @@ List of applicants enrolled
           {% endfor %}
       {% else %}
           <p>No applicants are available.</p>
-          {% endif %}
+      {% endif %}
       </div>
 {% endblock %}

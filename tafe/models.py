@@ -655,7 +655,7 @@ class Session(models.Model):
     subject = models.ForeignKey('Subject', related_name='sessions')
     timetable = models.ForeignKey('Timetable', related_name='sessions')
     date = models.DateField()
-    slug = models.SlugField(max_length=50, blank=True)
+    slug = models.SlugField(max_length=90, blank=True)
     students = models.ManyToManyField('Student', through='StudentAttendance', blank=True, null=True)
     room_number = models.CharField(max_length=7, choices=ROOM_CHOICES, blank=True)
 
