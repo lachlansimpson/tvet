@@ -680,7 +680,7 @@ class Session(models.Model):
             'slug': self.slug})
 
     def save(self, *args, **kwargs):
-        slug_temp = str(self.subject.name) + " " + self.get_session_number_display()
+        slug_temp = str(self.subject.name)[:39] + " " + self.get_session_number_display()
         self.slug = slugify(slug_temp)
         super(Session, self).save(*args, **kwargs) 
 
