@@ -12,8 +12,14 @@ Subject/Unit detail page of the portal.
 <div id="content-left">
     <div id="bio" class="grid_5">
         <h2>{{ unit.name }}</h2>
-        <h3>Semester: {{ unit.get_semester_display }}, {{ unit.year }}</h3>
-        <a href="/admin/tafe/subject/{{ unit.pk }}">Edit this Unit</a>
+        <a href="/admin/tafe/subject/{{ unit.pk }}">Edit this Unit</a>        <h3>Semester: {{ unit.get_semester_display }}, {{ unit.year }}</h3>
+        {% if unit.course.count > 0 %}
+            <h3>Qualifications this subject is available in</h3>
+            {% for course in unit.course.all %}
+            <p><a href="{{ course.get_absolute_url }}">{{ course.name }}</a></p>
+            {% endfor %}
+        {% endif %}
+
     </div>
     <div id="sessions" class="grid_5">
         <h3>This week's classes</h3>
