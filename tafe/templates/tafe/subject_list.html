@@ -22,7 +22,7 @@ Units of Competance list
             <ul>
                 {% for subject in letter.list %}
                 <li><a href="{{ subject.get_absolute_url }}">{{ subject }}</a> | 
-                <a href="/admin/tafe/study/{{ study.pk }}/"><i>edit</i></a></li>
+                <a href="/admin/tafe/subject/{{ subject.pk }}/"><i>edit</i></a></li>
                 {% endfor %}
             </ul>
             </li>
