@@ -470,7 +470,7 @@ class Subject(models.Model):
     name = models.CharField(max_length=125)
     slug = models.SlugField(max_length=135)
     semester = models.CharField(max_length=1, blank=True, choices=SEMESTER_CHOICES)
-    year = models.IntegerField()
+    year = models.CharField(max_length=4)
     staff_member = models.ForeignKey('Staff', blank=True, null=True)
     students = models.ManyToManyField('Student', through='Grade', blank=True, null=True)
 
