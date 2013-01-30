@@ -778,7 +778,7 @@ class Student(Person):
         return l
 
 class Timetable(models.Model):
-    year = models.IntegerField()
+    year = models.CharField(max_length=4)
     term = models.IntegerField()
     start_date = models.DateField()
     end_date = models.DateField()
