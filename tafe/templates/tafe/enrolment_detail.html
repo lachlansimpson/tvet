@@ -16,6 +16,20 @@ Enrolment detail page of the portal.
         {% if enrolment.date_ended %}
         Date ended: {{ enrolment.date_ended }}<br />
         {% endif %}
+        <p>
+        Semester 1 payment: {{ enrolment.get_semester_1_payment_display }} <br>
+        {% if enrolment.semester_1_payment == "P" %}
+        Semester 1 payment receipt: {{ enrolment.semester_1_payment_receipt }}<br>
+        Semester 1 payment data: {{ enrolment.semester_1_payment_date }}<br>
+        {% endif %}
+        </p>
+        <p>
+        Semester 2 payment: {{ enrolment.get_semester_2_payment_display }} <br>
+        {% if enrolment.semester_2_payment == "P" %}
+        Semester 2 payment receipt: {{ enrolment.semester_2_payment_receipt }}<br>
+        Semester 2 payment data: {{ enrolment.semester_2_payment_date }}<br>
+        {% endif %}
+        </p>
         {% if enrolment.mark %}
         Mark: {{ enrolment.mark }}<br />
         {% endif %}

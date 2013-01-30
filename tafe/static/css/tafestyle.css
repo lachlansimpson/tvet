@@ -25,7 +25,7 @@
     float: left;
 }
 
-#assessments, #units, #admin, #comments, #ISLPR, #attendance_results {
+#attendance, #assessments, #units, #admin, #comments, #ISLPR, #attendance_results {
     margin-top: 10px;
 }
 

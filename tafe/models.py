@@ -161,6 +161,12 @@ ROOM_CHOICES = (
     ('UC','Upstairs Carpentry'),
 )
 
+FEE_PAYMENT_CHOICES = (
+        ('N','Not Paid'),
+        ('P','Paid'),
+        ('S','Sponsored'),
+)
+
 class AttendanceBeforeTodayManager(models.Manager):
     def get_query_set(self):
         attendance_list = super(AttendanceBeforeTodayManager, self).get_query_set().filter(session_date__gte=today)
@@ -194,8 +200,8 @@ class StudentAttendance(Attendance):
     student = models.ForeignKey('Student', related_name='attendance_records')
 
     class Meta:
-        verbose_name='Student Attendence Record'
-        verbose_name_plural='Student Attendence Records'
+        verbose_name='Student Attendance Record'
+        verbose_name_plural='Student Attendance Records'
 
     def __unicode__(self):
         '''Attendance reference: returns date, session and reason'''
@@ -210,8 +216,8 @@ class StaffAttendance(Attendance):
     staff_member = models.ForeignKey('Staff', related_name='attendance_records')
 
     class Meta:
-        verbose_name='Staff Attendence Record'
-        verbose_name_plural='Staff Attendence Records'
+        verbose_name='Staff Attendance Record'
+        verbose_name_plural='Staff Attendance Records'
 
     def __unicode__(self):
         '''Attendance reference: returns date, session and reason'''
@@ -268,6 +274,7 @@ class Person(models.Model):
     phone = models.CharField(max_length=12, blank=True)
     phone2 = models.CharField(max_length=12, blank=True)
     email = models.EmailField(blank=True)
+    address = models.TextField(blank=True)
 
     disability = models.NullBooleanField()
     disability_description = models.CharField('Description', max_length=50, blank=True)
@@ -456,8 +463,8 @@ class Assessment(models.Model):
 
 class Subject(models.Model):
     '''Represents individual subjects, classes, cohorts'''
-    name = models.CharField(max_length=65)
-    slug = models.SlugField(max_length=70)
+    name = models.CharField(max_length=125)
+    slug = models.SlugField(max_length=135)
     semester = models.CharField(max_length=1, blank=True, choices=SEMESTER_CHOICES)
     year = models.IntegerField()
     staff_member = models.ForeignKey('Staff', blank=True, null=True)
@@ -569,9 +576,18 @@ class Enrolment(models.Model):
     course = models.ForeignKey(Course, related_name='enrolments')
     date_started = models.DateField(default=today)
     date_ended = models.DateField(blank=True, null=True)
+    semester_1_payment = models.CharField(max_length=1, choices=FEE_PAYMENT_CHOICES, default='N') 
+    semester_1_payment_receipt = models.CharField(max_length=8, blank=True, null=True)
+    semester_1_payment_date = models.DateField(blank=True, null=True)
+    semester_2_payment = models.CharField(max_length=1, choices=FEE_PAYMENT_CHOICES, default='N')
+    semester_2_payment_receipt = models.CharField(max_length=8, blank=True, null=True)
+    semester_2_payment_date = models.DateField(blank=True, null=True)
+
     mark = models.CharField(max_length=1, choices=COURSE_RESULTS, blank=True)
     withdrawal_reason = models.CharField(max_length=8, choices=WITHDRAWAL_REASONS, blank=True)
+    
     slug = models.SlugField(max_length=40, blank=True)
+    
 
     last_change_by = models.ForeignKey(User, related_name='%(class)s_last_change_by', editable=False, blank=True, null=True)
     penultimate_change_by = models.ForeignKey(User, related_name='%(class)s_penultimate_change_by', blank=True, null=True, editable=False)
@@ -601,6 +617,18 @@ class Enrolment(models.Model):
         slug_str = str(self.student) + ' ' + str(self.course) + ' ' + str(year_started)
         self.slug = slugify(slug_str)
         super(Enrolment, self).save(*args, **kwargs) 
+
+    ''' Validation extensions: if fees paid, make sure receipt number entered '''
+    def clean(self):
+        from django.core.exceptions import ValidationError
+        if self.semester_1_payment == 'P' and len(self.semester_1_payment_receipt) < 6:
+            raise ValidationError('Semester 1 is marked paid, but has a bad receipt number')
+        if self.semester_1_payment == 'P' and self.semester_1_payment_date is None:
+            raise ValidationError('Semester 1 is marked paid, but there is no date of payment')
+        if self.semester_2_payment == 'P' and len(self.semester_2_payment_receipt) < 6:
+            raise ValidationError('Semester 2 is marked paid, but has a bad receipt number')
+        if self.semester_2_payment == 'P' and self.semester_2_payment_date is None:
+            raise ValidationError('Semester 2 is marked paid, but there is no date of payment')
 
 class Grade(models.Model):
     '''Represents a Student's interactions with a Subject. ie, being in a class.'''
@@ -714,7 +742,7 @@ class NewStudentManager(models.Manager):
 class Student(Person):
     '''Represents each student '''
     education_level = models.CharField(max_length=2, blank=True, choices=EDUCATION_LEVEL_CHOICES)
-
+    
     objects = models.Manager()
     new_students = NewStudentManager()
 
