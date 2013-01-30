@@ -376,6 +376,7 @@ class Applicant(Person):
     def accept_an_offer(self,request):
         ''' Marks an applicant as shortlisted '''
         self.date_offer_accepted = today
+        self.convert_to_student(self)
         self.penultimate_change_by = self.last_change_by
         self.last_change_by = request.user
         self.save()
@@ -384,7 +385,7 @@ class Applicant(Person):
         '''Turn an applicant into a student, create all required associated objects'''
         if self.successful:
             '''Already converted. Note that this is on the Application itself, 
-            which is why it preceeeds the student check'''
+            which is why it preceeds the student check'''
             pass 
         if self.student_details:
             '''
