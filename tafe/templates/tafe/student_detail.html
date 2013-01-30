@@ -14,6 +14,9 @@ Student detail
         <h2>{{ student }} - {{ student.get_id}}</h2>
         Date of birth: {{ student.dob }}    Age: {{ student.age_today }}<br />
         Gender: {{ student.get_gender_display }}<br />
+        {% if student.address %}
+        Address: {{ student.address }}<br />
+        {% endif %}
         Island: {{ student.get_island_display }}<br />
         {% if student.phone %}
         Phone: {{ student.phone }}<br />
@@ -41,6 +44,21 @@ Student detail
         {% if enrolment.date_ended %}
         Date ended: {{ enrolment.date_ended }}<br />
         {% endif %}
+            
+        <p>
+        Semester 1 payment: {{ enrolment.get_semester_1_payment_display }} <br>
+        {% if enrolment.semester_1_payment == "P" %}
+        Semester 1 payment receipt: {{ enrolment.semester_1_payment_receipt }}<br>
+        Semester 1 payment data: {{ enrolment.semester_1_payment_date }}<br>
+        {% endif %}
+        </p>
+        <p>
+        Semester 2 payment: {{ enrolment.get_semester_2_payment_display }} <br>
+        {% if enrolment.semester_2_payment == "P" %}
+        Semester 2 payment receipt: {{ enrolment.semester_2_payment_receipt }}<br>
+        Semester 2 payment data: {{ enrolment.semester_2_payment_date }}<br>
+        {% endif %}
+        </p>
         {% if enrolment.mark %}
         Mark received: {{ enrolment.mark }}<br />
         {% endif %}
@@ -80,7 +98,7 @@ Student detail
     </div>
     {% if student.attendance_before_today %}
     <div id="attendance" class="grid_5">
-        <h3>Attendence record</h3> 
+        <h3>Attendance record</h3> 
         {% for record in student.attendance_before_today %}
         {% if record.reason == '0' %}
         {{ record.session.date|date:"d/m" }}, {{ record.session.subject.name }}, {{ record.get_reason_display }}<br />

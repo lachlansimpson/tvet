@@ -221,7 +221,7 @@ class OfferFilter(admin.SimpleListFilter):
 class ApplicantAdmin(admin.ModelAdmin):
     fieldsets = (
         ('Bio', {'fields':(('first_name','surname'),('dob','gender', 'island'))}),
-        ('Contact Information', { 'fields':(('phone', 'phone2', 'email'),)}),
+        ('Contact Information', { 'fields':(('phone', 'phone2', 'email'),('address'))}),
         ('Other Information', { 'fields':(('disability','disability_description'), 'education_level')}),
         ('Course Applied For', { 'fields':(('applied_for', 'date_of_application'),)}),
         ('Education and experience information', {'fields':(('test_ma','test_eng'),('experience','other_courses'), 'student_details')}),
@@ -391,7 +391,7 @@ class CredentialAdmin(admin.ModelAdmin):
 
 class EnrolmentAdmin(admin.ModelAdmin):
     fieldsets = [
-        ('',{'fields':['student','course','date_started','date_ended','mark','withdrawal_reason']}),
+        ('',{'fields':['student','course','date_started','date_ended','mark','withdrawal_reason','semester_1_payment','semester_1_payment_receipt','semester_1_payment_date','semester_2_payment','semester_2_payment_receipt','semester_2_payment_date']}),
         ('Admin (non editable)', {'fields':(('last_change_by','penultimate_change_by'),)}),
     ]
     list_display = ('student', 'course', 'date_started')
@@ -495,7 +495,7 @@ class StaffAdmin(admin.ModelAdmin):
     date_hierarchy = 'dob'
     fieldsets = (
         ('Bio', { 'fields':(('first_name','surname'),('dob','gender'), ('island',))}),
-        ('Contact Information', { 'fields':(('phone','phone2','email'),)}),
+        ('Contact Information', { 'fields':(('phone','phone2','email'),('address'))}),
         ('Other Information', { 'fields':(('disability','disability_description'),('classification'))}),
         ('Admin (non editable)', {'fields':(('added', 'updated','last_change_by','penultimate_change_by'),)}),
     )
@@ -544,7 +544,7 @@ class StudentAdmin(admin.ModelAdmin):
     date_hierarchy = 'dob'
     fieldsets = (
         ('Bio', { 'fields':(('first_name','surname'),('dob','gender'), ('island', 'slug'))}),
-        ('Contact Information', { 'fields':(('phone','phone2','email'),)}),
+        ('Contact Information', { 'fields':(('phone','phone2','email'),('address'),)}),
         ('Other Information', { 'fields':(('disability','disability_description'), 'education_level',)}),
         ('Admin (non editable)', {'fields':(('added', 'updated','last_change_by','penultimate_change_by'),)}),
     )
