@@ -63,6 +63,8 @@ ABSENCE_CHOICES = (
     (u'M',u'Medical Certificate'),
     (u'K',u'KIT Official'),
     (u'C',u'Compassionate'),
+    (u'E',u'Left class early: authorised'),
+    (u'L',u'Left class early: unauthorised'),
     (u'U',u'Unexplained'),
 )
 
@@ -530,8 +532,8 @@ class Course(models.Model):
 
     def __unicode__(self):
         '''Course Reference: name of the course'''
-        uni = str(self.aqf_level) + ' in ' + str(self.name)
-        return str(uni)
+        fullname = str(self.aqf_level) + ' in ' + str(self.name)
+        return str(fullname)
 
     @models.permalink	
     def get_absolute_url(self):
@@ -561,7 +563,7 @@ class Credential(models.Model):
     aqf_level = models.CharField('AQF Level', max_length=5, choices=AQF_LEVEL_CHOICES)
     institution = models.CharField(max_length=40)
     year = models.CharField(max_length=4)
-    type = models.CharField(max_length=1, choices=CREDENTIAL_TYPE_CHOICES)
+    credential_type = models.CharField(max_length=1, choices=CREDENTIAL_TYPE_CHOICES)
 
     last_change_by = models.ForeignKey(User, related_name='%(class)s_last_change_by', editable=False)
     penultimate_change_by = models.ForeignKey(User, related_name='%(class)s_penultimate_change_by', blank=True, null=True, editable=False)
@@ -590,7 +592,6 @@ class Enrolment(models.Model):
     
     slug = models.SlugField(max_length=40, blank=True)
     
-
     last_change_by = models.ForeignKey(User, related_name='%(class)s_last_change_by', editable=False, blank=True, null=True)
     penultimate_change_by = models.ForeignKey(User, related_name='%(class)s_penultimate_change_by', blank=True, null=True, editable=False)
 
@@ -611,6 +612,9 @@ class Enrolment(models.Model):
     def get_absolute_url(self):
         return ('enrolment_view', [str(self.slug)])
 
+    def year_started(self):
+        return date_started.year
+    
     def save(self, *args, **kwargs):
         '''SLUG:Can't use prepopulated_fields due to function's restrictions
         using the unique combination of student, course and year started

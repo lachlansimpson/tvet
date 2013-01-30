@@ -376,7 +376,7 @@ class CourseAdmin(admin.ModelAdmin):
 
 class CredentialAdmin(admin.ModelAdmin):
     fieldsets = [
-        ('',{'fields':[('aqf_level','institution'),('name','year'),'type']}),
+        ('',{'fields':[('aqf_level','institution'),('name','year'),'credential_type']}),
     ]
 
     def save_model(self, request, obj, form, change): 
