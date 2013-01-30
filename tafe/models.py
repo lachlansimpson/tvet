@@ -63,6 +63,8 @@ ABSENCE_CHOICES = (
     (u'M',u'Medical Certificate'),
     (u'K',u'KIT Official'),
     (u'C',u'Compassionate'),
+    (u'E',u'Left class early: authorised'),
+    (u'L',u'Left class early: unauthorised'),
     (u'U',u'Unexplained'),
 )
 
