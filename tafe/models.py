@@ -397,6 +397,7 @@ class Applicant(Person):
             self.dob = self.student_details.dob
             self.gender = self.student_details.gender
             self.island = self.student_details.island
+            self.address = self.student_details.address
             self.phone = self.student_details.phone
             self.phone2 = self.student_details.phone2
             self.email = self.student_details.email
@@ -413,6 +414,7 @@ class Applicant(Person):
             new_student.dob = self.dob
             new_student.gender = self.gender
             new_student.island = self.island
+            new_student.address = self.address
             new_student.phone = self.phone
             new_student.phone2 = self.phone2
             new_student.email = self.email
