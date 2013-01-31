@@ -178,7 +178,7 @@ class Attendance(models.Model):
     '''Represents the "roll call" or attendance record'''
     reason = models.CharField(max_length=1, choices=REASON_CHOICES, default='P', blank=True)
     absent = models.CharField(max_length=1, choices=ABSENCE_CHOICES, blank=True)
-    slug = models.SlugField(blank=True)
+    slug = models.SlugField(max_length=200, blank=True)
     session = models.ForeignKey('Session', related_name='%(class)s_attendance_records')
 
     last_change_by = models.ForeignKey(User, related_name='%(class)s_last_change_by', editable=False)
@@ -269,7 +269,7 @@ class Person(models.Model):
     '''Abstract Class under Applicant, Student and Staff'''
     first_name = models.CharField(max_length=30)
     surname = models.CharField(max_length=30)
-    slug = models.SlugField('ID number', max_length=40, editable=False, blank=True)
+    slug = models.SlugField('ID number', max_length=62, editable=False, blank=True)
     dob = models.DateField('Date of Birth')  
     gender = models.CharField(max_length='1', choices=GENDER_CHOICES, default='F')
     island = models.CharField(max_length='10', choices=ISLAND_CHOICES, default='Tarawa', blank=True, null=True)
@@ -591,7 +591,7 @@ class Enrolment(models.Model):
     mark = models.CharField(max_length=1, choices=COURSE_RESULTS, blank=True)
     withdrawal_reason = models.CharField(max_length=8, choices=WITHDRAWAL_REASONS, blank=True)
     
-    slug = models.SlugField(max_length=40, blank=True)
+    slug = models.SlugField(max_length=110, blank=True)
     
     last_change_by = models.ForeignKey(User, related_name='%(class)s_last_change_by', editable=False, blank=True, null=True)
     penultimate_change_by = models.ForeignKey(User, related_name='%(class)s_penultimate_change_by', blank=True, null=True, editable=False)
@@ -642,7 +642,7 @@ class Grade(models.Model):
     student = models.ForeignKey('Student', related_name='grades')
     subject = models.ForeignKey('Subject', related_name='grades')
     date_started = models.DateField()
-    slug = models.SlugField(max_length=60)
+    slug = models.SlugField(max_length=200)
 
     last_change_by = models.ForeignKey(User, related_name='%(class)s_last_change_by', editable=False, blank=True, null=True)
     penultimate_change_by = models.ForeignKey(User, related_name='%(class)s_penultimate_change_by', blank=True, null=True, editable=False)
@@ -690,7 +690,7 @@ class Session(models.Model):
     subject = models.ForeignKey('Subject', related_name='sessions')
     timetable = models.ForeignKey('Timetable', related_name='sessions')
     date = models.DateField()
-    slug = models.SlugField(max_length=90, blank=True)
+    slug = models.SlugField(max_length=140, blank=True)
     students = models.ManyToManyField('Student', through='StudentAttendance', blank=True, null=True)
     room_number = models.CharField(max_length=7, choices=ROOM_CHOICES, blank=True)
 
