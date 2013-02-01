@@ -91,6 +91,19 @@ div.stat-title h4 {
     padding-left: 5px;
 }
 
+/* These added for the jquery.formset.js css
+ */
+
+.add-row {
+    text-size: huge;
+    color: red;
+}
+
+.delete-row {
+    color: red;
+    text-size: huge;
+}
+
 /*
     DJANGO Admin styles
     As adjusted for KIT/TVET

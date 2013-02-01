@@ -1,7 +1,7 @@
 # Create your views here.
 
 from tafe.models import Timetable, Session, Course, StudentAttendance, Subject, Assessment, StaffAttendance, Applicant, Student, Enrolment, Result
-from tafe.forms import SessionRecurringForm, ApplicantSuccessForm, ReportRequestForm
+from tafe.forms import SessionRecurringForm, ApplicantSuccessForm, ReportRequestForm, TimetableAddSessionForm
 from django.utils.datastructures import SortedDict
 from django.shortcuts import render_to_response, get_object_or_404
 from django.http import HttpResponse, HttpResponseRedirect
@@ -247,6 +247,23 @@ def applicant_shortlist_qualification(request):
     
     return render_to_response('tafe/applicant_shortlist_qualifications.html', {'applicants_by_course':applicants_by_course}, RequestContext(request))
 ############### Timetables ###############
+
+@login_required
+def add_sessions_view(request, slug):
+    timetable = get_object_or_404(Timetable, slug=slug)
+    SessionFormset = modelformset_factory(Session, fields = ('subject', 'room_number'), max_num=13, extra=2)
+
+    if request.method == 'POST':
+        form = TimetableAddSessionForm(request.POST) 
+        formset = SessionFormset(request.POST)
+        if form.is_valid():
+            form.save()
+        return HttpResponseRedirect('/tafe/timetables/%s' %(timetable.slug))
+    else:
+        form = TimetableAddSessionForm()
+        formset = SessionFormset(queryset=Session.objects.none())
+    return render_to_response('tafe/timetable_add_session.html',{'form':form, 'formset':formset, 'timetable':timetable,}, RequestContext(request))
+
 
 @login_required
 def timetable_daily_view(request, year, month, day):

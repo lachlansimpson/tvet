@@ -12,6 +12,7 @@ Timetable detail
 <div id="content-left" class="grid_12">
     <div id="timetable" class="grid_7">
     <h3>{{ timetable.year }}, Term {{ timetable.term }} Timetable</h3>
+    <a href="{{ timetable.get_absolute_url }}add_sessions/">Add sessions to this timetable</a>
     <table> 
         <tr>
             <td>Day</td>

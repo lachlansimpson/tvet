@@ -2,7 +2,7 @@ from django.conf.urls import patterns, url
 from django.contrib.auth.decorators import permission_required
 from django.views.generic import DetailView, ListView, CreateView
 from tafe.models import Student, Subject, Enrolment, Course, Grade, Timetable, Applicant, Staff
-from tafe.views import session_create, session_view, session_attendance_view, timetable_daily_view, units_by_qualifications_view, unit_view, assessment_view, student_reports, applicant_reports, reports, applicant_qualification, applicant_shortlist, applicant_shortlist_qualification
+from tafe.views import session_create, session_view, session_attendance_view, timetable_daily_view, units_by_qualifications_view, unit_view, assessment_view, student_reports, applicant_reports, reports, applicant_qualification, applicant_shortlist, applicant_shortlist_qualification, add_sessions_view
 
 urlpatterns = patterns('tafe.views',
     url(r'^$', 'index'),
@@ -35,9 +35,11 @@ urlpatterns = patterns('tafe.views',
     url(r'^grades/$', ListView.as_view(queryset=Grade.objects.all())),
     url(r'^grade/(?P<slug>[-\w]+)/$', DetailView.as_view(model=Grade), name='grade_view'),
                       
+    url(r'^timetable/create/$', CreateView.as_view(model=Timetable)),
     url(r'^timetables/$', ListView.as_view(queryset=Timetable.objects.all().order_by('-year'))),
     url(r'^timetable/today/$', 'index'), # important: ordering before the slug 
     url(r'^timetable/(?P<slug>[-\w]+)/$', 'timetable_weekly_view', name='timetable_view'),
+    url(r'^timetable/(?P<slug>[-\w]+)/add_sessions/$', 'add_sessions_view', name='add_sessions_view'),
     url(r'^timetable/(?P<slug>[-\w]+)/(?P<year>\d{4})/(?P<month>\d{1,2})/(?P<day>\d{1,2})/$', 'timetable_weekly_view', name='timetable_view'),
     url(r'^timetable/(?P<year>\d{4})/(?P<month>\d{1,2})/(?P<day>\d{1,2})/$', timetable_daily_view),
 
