@@ -257,7 +257,23 @@ def add_sessions_view(request, slug):
         form = TimetableAddSessionForm(request.POST) 
         formset = SessionFormset(request.POST)
         if form.is_valid():
-            form.save()
+            session_choice = form.cleaned_data['session_choice']
+            session_day = int(form.cleaned_data['day_choice'])
+            first_session_date = timetable.start_date + datetime.timedelta(days=session_day)
+            dates = []
+            for date in range(first_session_date, timetable.end_date):
+                dates.append(date) 
+        if formset.is_valid():
+            for smallform in formset.cleaned_data:
+                newsession = Session()
+                newsession.session_number = session_choice
+                newsession.timetable = timetable
+                newsession.subject = smallform.subject
+                newsession.room_number = smallform.room_number
+                for date in dates:
+                    newsession.date = date
+                    newsession.save()
+            
         return HttpResponseRedirect('/tafe/timetables/%s' %(timetable.slug))
     else:
         form = TimetableAddSessionForm()

@@ -28,11 +28,11 @@ class ReportRequestForm(forms.Form):
 class TimetableAddSessionForm(forms.Form):
     SessionFormset = modelformset_factory(Session, fields = ('subject', 'room_number'), max_num=13, extra=2)
     DAY_CHOICES = (
-            ('0','Monday'),
-            ('1','Tuesday'),
-            ('2','Wednesday'),
-            ('3','Thursday'),
-            ('4','Friday'),
+            (0,'Monday'),
+            (1,'Tuesday'),
+            (2,'Wednesday'),
+            (3,'Thursday'),
+            (4,'Friday'),
             )
 
     session_choice = forms.ChoiceField(choices=SESSION_CHOICES)
