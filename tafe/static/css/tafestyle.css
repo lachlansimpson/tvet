@@ -91,18 +91,6 @@ div.stat-title h4 {
     padding-left: 5px;
 }
 
-/* These added for the jquery.formset.js css
- */
-
-.add-row {
-    text-size: huge;
-    color: red;
-}
-
-.delete-row {
-    color: red;
-    text-size: huge;
-}
 
 /*
     DJANGO Admin styles
@@ -953,3 +941,24 @@ table#change-history tbody th {
     background: #eee url(../img/nav-bg.gif) bottom left repeat-x;
     color: #666;
 }
+/* These added for the jquery.formset.js css
+ */
+
+a.add-row {
+
+    border-top:             2px solid #a3ceda;
+    border-left:                2px solid #a3ceda;
+    border-right:               2px solid #4f6267;
+    border-bottom:              2px solid #4f6267;
+    padding:            10px 20px !important;
+    font-size:          14px !important;
+    background-color:   #c4f1fe;
+    font-weight:                bold;
+    color:                      #2d525d;
+}
+
+a.delete-row {
+    color: red;
+    text-size: huge;
+}
+
