@@ -248,6 +248,17 @@ def applicant_shortlist_qualification(request):
     return render_to_response('tafe/applicant_shortlist_qualifications.html', {'applicants_by_course':applicants_by_course}, RequestContext(request))
 ############### Timetables ###############
 
+def generate_dates(start_date, end_date):
+    td = datetime.timedelta(days=7)
+    current_date = start_date
+    list_dates = []
+
+    while current_date <= end_date:
+        list_dates.append(current_date)
+        current_date += td
+
+    return list_dates
+
 @login_required
 def add_sessions_view(request, slug):
     timetable = get_object_or_404(Timetable, slug=slug)
@@ -260,21 +271,19 @@ def add_sessions_view(request, slug):
             session_choice = form.cleaned_data['session_choice']
             session_day = int(form.cleaned_data['day_choice'])
             first_session_date = timetable.start_date + datetime.timedelta(days=session_day)
-            dates = []
-            for date in range(first_session_date, timetable.end_date):
-                dates.append(date) 
+            dates = generate_dates(first_session_date, timetable.end_date)
         if formset.is_valid():
             for smallform in formset.cleaned_data:
-                newsession = Session()
-                newsession.session_number = session_choice
-                newsession.timetable = timetable
-                newsession.subject = smallform.subject
-                newsession.room_number = smallform.room_number
                 for date in dates:
-                    newsession.date = date
-                    newsession.save()
+                  newsession = Session()
+                  newsession.session_number = session_choice
+                  newsession.timetable = timetable
+                  newsession.subject = smallform['subject']
+                  newsession.room_number = smallform['room_number']
+                  newsession.date = date
+                  newsession.save()
             
-        return HttpResponseRedirect('/tafe/timetables/%s' %(timetable.slug))
+        return HttpResponseRedirect('/tafe/timetable/%s' %(timetable.slug))
     else:
         form = TimetableAddSessionForm()
         formset = SessionFormset(queryset=Session.objects.none())
