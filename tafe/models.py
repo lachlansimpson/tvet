@@ -461,7 +461,7 @@ class Assessment(models.Model):
         return self.subject.name + ', ' + self.name + ', ' + str(self.date_due)
 
     def get_absolute_url(self):
-        return self.subject.get_absolute_url() + "assessment/" + self.slug
+        return self.subject.get_absolute_url() + "assessment/" + self.slug 
 
     def get_year(self):
         return self.date_due.year

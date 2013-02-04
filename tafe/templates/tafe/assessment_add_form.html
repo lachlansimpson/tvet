@@ -1,0 +1,11 @@
+{% extends "tafe/base_site.html" %}
+{% comment %}
+Create an assesment 
+{% endcomment %}
+{% block coltype %}colMS{% endblock %}
+{% block content %}
+    <form action="" method="post">{% csrf_token %} 
+        {{ form.as_p }}
+        <input type="submit" value="Submit">
+    </form>
+{% endblock %}

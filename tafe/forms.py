@@ -1,6 +1,6 @@
 ''' forms.py holds the new forms for creating objects '''
 from django import forms
-from tafe.models import Timetable, Subject, Applicant, Session
+from tafe.models import Timetable, Subject, Applicant, Session, Assessment
 from tafe.models import SESSION_CHOICES
 from django.forms.extras.widgets import SelectDateWidget
 from django.forms.widgets import CheckboxSelectMultiple
@@ -19,14 +19,12 @@ class ApplicantSuccessForm(forms.Form):
     applicants = forms.ModelMultipleChoiceField(queryset=Applicant.objects.exclude(successful='Yes'), widget=CheckboxSelectMultiple)
 
 class AssessmentAddForm(forms.ModelForm):
+    name = forms.CharField(max_length=50, label='Name of assessment')
+    date_given = forms.DateField(widget=SelectDateWidget)
+    date_due = forms.DateField(widget=SelectDateWidget)
     class Meta:
         model = Assessment
-        fields = ('name','subject','date_given','date_due')
-        widgets = (
-                'date_given': SelectDateWidget,
-                'date_due': SelectDateWidget,
-                )
-
+        fields = ('name','date_given','date_due')
 
 class ReportRequestForm(forms.Form):
     DATA_TYPES = (('students','Students'),('applicants','Applicants'),('staff','Staff'),('results','Results'))
