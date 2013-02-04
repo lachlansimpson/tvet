@@ -3,13 +3,6 @@
 {% comment %}
 Add session to timetable page of the portal.
 {% endcomment %}
-
-
-       <script type="text/javascript">
-           $(function() {
-               $('#myForm tbody tr').formset();
-           })
-       </script>
 {% block title %}
     Timetable detail
 {% endblock %}
@@ -18,7 +11,6 @@ Add session to timetable page of the portal.
 <div id="content-left" class="grid_12">
     <div id="list" class="grid_8">
     <h3>{{ timetable.year }}, Term {{ timetable.term }} Timetable</h3>    
-        
 
     <h4>Adding new sessions</h4>
     <form method="post" action="">{% csrf_token %}
@@ -27,13 +19,13 @@ Add session to timetable page of the portal.
         {{ formset.management_form }}
         {% for form in formset %}
             <div class="sessionform">
-            {{ form.id }}
-            Room: {{ form.room_number }}<br />
-            Subject: {{ form.subject }} <br />
+                {{ form.id }}
+                <div id="session-room">Room: {{ form.room_number }}</div>
+                <div id="session-subject">Subject: {{ form.subject }}</div>
             </div>
         {% endfor %}
-
-        <p><input type="submit" value="Submit" /></p>
+        <div class="clear"></div>      
+        <div class="form-submit"><p><input type="submit" value="Submit" /></p></div>
     </form>
 </div>
 </div>

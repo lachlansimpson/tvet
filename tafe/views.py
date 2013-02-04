@@ -262,7 +262,7 @@ def generate_dates(start_date, end_date):
 @login_required
 def add_sessions_view(request, slug):
     timetable = get_object_or_404(Timetable, slug=slug)
-    SessionFormset = modelformset_factory(Session, fields = ('subject', 'room_number'), max_num=13, extra=2)
+    SessionFormset = modelformset_factory(Session, fields = ('subject', 'room_number'), max_num=13, extra=1)
 
     if request.method == 'POST':
         form = TimetableAddSessionForm(request.POST) 
