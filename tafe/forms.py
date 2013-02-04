@@ -18,6 +18,16 @@ class SessionRecurringForm(forms.Form):
 class ApplicantSuccessForm(forms.Form):
     applicants = forms.ModelMultipleChoiceField(queryset=Applicant.objects.exclude(successful='Yes'), widget=CheckboxSelectMultiple)
 
+class AssessmentAddForm(forms.ModelForm):
+    class Meta:
+        model = Assessment
+        fields = ('name','subject','date_given','date_due')
+        widgets = (
+                'date_given': SelectDateWidget,
+                'date_due': SelectDateWidget,
+                )
+
+
 class ReportRequestForm(forms.Form):
     DATA_TYPES = (('students','Students'),('applicants','Applicants'),('staff','Staff'),('results','Results'))
     DATA_OUTPUT = (('html','html'),('csv','csv'),('raw','raw'))

@@ -1,7 +1,7 @@
 # Create your views here.
 
-from tafe.models import Timetable, Session, Course, StudentAttendance, Subject, Assessment, StaffAttendance, Applicant, Student, Enrolment, Result
-from tafe.forms import SessionRecurringForm, ApplicantSuccessForm, ReportRequestForm, TimetableAddSessionForm
+from tafe.models import Timetable, Session, Course, StudentAttendance, Subject, Assessment, StaffAttendance, Applicant, Student, Enrolment, Result, Assessment
+from tafe.forms import SessionRecurringForm, ApplicantSuccessForm, ReportRequestForm, TimetableAddSessionForm, AssessmentAddForm
 from django.utils.datastructures import SortedDict
 from django.shortcuts import render_to_response, get_object_or_404
 from django.http import HttpResponse, HttpResponseRedirect
@@ -339,6 +339,28 @@ def timetable_weekly_view(request, slug, year=None, month=None, day=None):
     return render_to_response('tafe/timetable_weekly_detail.html',{'timetable':timetable,'all_sessions':all_sessions}, RequestContext(request))
 
 ############### Assessments ###############
+
+@login_required
+def unit_add_assessment_view(request, slug):
+    subject = get_object_or_404(Subject, slug=slug)
+    if request.method=='POST':
+        form = AssessmentAddForm(request.POST)
+        if form.is_valid():
+            newAssessment = Assessment()
+            newAssessment.name = form.cleaned_data['name']
+            newAssessment.date_given = form.cleaned_data['date_given']
+            newAssessment.date_due = form.cleaned_data['date_due']
+            newAssessment.subject = form.cleaned_data['subject']
+            newAssessment.slug = slugify(newAssessment.name)
+            newAssessment.save()
+            return HttpResponseRedirect('/tafe/unit/%s/' % (newAssessment.subject.slug))
+        else:
+            pass
+    else:
+        form = AssessmentAddForm()
+
+    return render_to_response('tafe/assessment_add_form.html', {'form':form}, RequestContext(request))
+
 
 @login_required
 def assessment_view(request, unit, slug):
