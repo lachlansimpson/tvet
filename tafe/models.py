@@ -791,6 +791,9 @@ class Timetable(models.Model):
         '''Timetable reference: year and term number'''
         return str(self.year) + ', Term ' + str(self.term)
 
+    def get_first_monday(self):
+        return self.start_date - datetime.timedelta(days=self.start_date.weekday())
+
     @models.permalink	
     def get_absolute_url(self):
         return ('timetable_view', [str(self.slug)])

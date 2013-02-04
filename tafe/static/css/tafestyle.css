@@ -91,6 +91,7 @@ div.stat-title h4 {
     padding-left: 5px;
 }
 
+
 /*
     DJANGO Admin styles
     As adjusted for KIT/TVET
@@ -939,4 +940,49 @@ table#change-history tbody th {
 #content-related .module h2 {
     background: #eee url(../img/nav-bg.gif) bottom left repeat-x;
     color: #666;
+}
+/* These added for the jquery.formset.js css
+ * http://code.google.com/p/django-dynamic-formset/wiki/Usage
+ * I tried hard to make the links into buttons (see the commented out 
+ * code below) but couldn't get it to work
+ * /
+
+/*a.add-row {
+    border:     1px solid white;
+    padding:            5px 10px !important;
+    font-size:          8px !important;
+    background-color:   #ECE5DF;
+    font-weight:                bold;
+    color:                      #2d525d;
+    margin: 10px;
+}*/
+
+a.delete-row {
+    padding: 15px;
+    height: auto;
+    width: auto;
+}
+    /*border:     1px solid white;
+    padding:            5px 10px !important;
+    font-size:          8px !important;
+    background-color:   #ECE5DF;
+    font-weight:                bold;
+    color: red;
+    margin: 10px;
+}*/
+
+#session-room, #session-subject {
+    margin: 6px;
+}
+
+div.sessionform {
+    -moz-border-radius: 6px;
+    -webkit-border-radius: 6px;
+    border-radius: 6px;
+    border: 1px solid black;
+    margin-bottom: 5px;
+    height: auto;
+}
+
+div.form-submit {
 }

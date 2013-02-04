@@ -1,0 +1,32 @@
+{% extends "tafe/base_site.html" %}
+
+{% comment %}
+Add session to timetable page of the portal.
+{% endcomment %}
+{% block title %}
+    Timetable detail
+{% endblock %}
+{% block coltype %}colMS{% endblock %}
+{% block content %}
+<div id="content-left" class="grid_12">
+    <div id="list" class="grid_8">
+    <h3>{{ timetable.year }}, Term {{ timetable.term }} Timetable</h3>    
+
+    <h4>Adding new sessions</h4>
+    <form method="post" action="">{% csrf_token %}
+        <p>{{ form.as_p }}</p>
+        <div class="clear"></div>      
+        {{ formset.management_form }}
+        {% for form in formset %}
+            <div class="sessionform">
+                {{ form.id }}
+                <div id="session-room">Room: {{ form.room_number }}</div>
+                <div id="session-subject">Subject: {{ form.subject }}</div>
+            </div>
+        {% endfor %}
+        <div class="clear"></div>      
+        <div class="form-submit"><p><input type="submit" value="Submit" /></p></div>
+    </form>
+</div>
+</div>
+{% endblock %}

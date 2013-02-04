@@ -12,7 +12,8 @@
         <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js"></script>
         {% endcomment %}
         
-        <script type="text/javascript" src="{{ STATIC_URL }}js/jquery-1.8.1.min.js"></script>
+        <script type="text/javascript" src="{{ STATIC_URL }}js/jquery.js"></script>
+        <script type="text/javascript" src="{{ STATIC_URL }}js/jquery.formset.js"></script>
         <script type="text/javascript" src="{{ STATIC_URL }}js/hoverIntent.js"></script>
         <script type="text/javascript" src="{{ STATIC_URL }}js/superfish.js"></script>
         <script type="text/javascript">
@@ -22,7 +23,13 @@
 			jQuery('ul.sf-menu').superfish();
 		});
 
-		</script>
+            // this is for the formset adding in forms
+            // see here for more info: http://code.google.com/p/django-dynamic-formset/wiki/Usage
+           $(function() {
+               $('.sessionform').formset();
+           })
+       </script>
+
             
         {% endblock %}
         <!--[if lte IE 7]><link rel="stylesheet" type="text/css" href="{% block stylesheet_ie %}{% static "admin/css/ie.css" %}{% endblock %}" /><![endif]-->

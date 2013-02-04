@@ -1,7 +1,7 @@
 # Create your views here.
 
 from tafe.models import Timetable, Session, Course, StudentAttendance, Subject, Assessment, StaffAttendance, Applicant, Student, Enrolment, Result
-from tafe.forms import SessionRecurringForm, ApplicantSuccessForm, ReportRequestForm
+from tafe.forms import SessionRecurringForm, ApplicantSuccessForm, ReportRequestForm, TimetableAddSessionForm
 from django.utils.datastructures import SortedDict
 from django.shortcuts import render_to_response, get_object_or_404
 from django.http import HttpResponse, HttpResponseRedirect
@@ -247,6 +247,48 @@ def applicant_shortlist_qualification(request):
     
     return render_to_response('tafe/applicant_shortlist_qualifications.html', {'applicants_by_course':applicants_by_course}, RequestContext(request))
 ############### Timetables ###############
+
+def generate_dates(start_date, end_date):
+    td = datetime.timedelta(days=7)
+    current_date = start_date
+    list_dates = []
+
+    while current_date <= end_date:
+        list_dates.append(current_date)
+        current_date += td
+
+    return list_dates
+
+@login_required
+def add_sessions_view(request, slug):
+    timetable = get_object_or_404(Timetable, slug=slug)
+    SessionFormset = modelformset_factory(Session, fields = ('subject', 'room_number'), max_num=13, extra=1)
+
+    if request.method == 'POST':
+        form = TimetableAddSessionForm(request.POST) 
+        formset = SessionFormset(request.POST)
+        if form.is_valid():
+            session_choice = form.cleaned_data['session_choice']
+            session_day = int(form.cleaned_data['day_choice'])
+            first_session_date = timetable.start_date + datetime.timedelta(days=session_day)
+            dates = generate_dates(first_session_date, timetable.end_date)
+        if formset.is_valid():
+            for smallform in formset.cleaned_data:
+                for date in dates:
+                  newsession = Session()
+                  newsession.session_number = session_choice
+                  newsession.timetable = timetable
+                  newsession.subject = smallform['subject']
+                  newsession.room_number = smallform['room_number']
+                  newsession.date = date
+                  newsession.save()
+            
+        return HttpResponseRedirect('/tafe/timetable/%s' %(timetable.slug))
+    else:
+        form = TimetableAddSessionForm()
+        formset = SessionFormset(queryset=Session.objects.none())
+    return render_to_response('tafe/timetable_add_session.html',{'form':form, 'formset':formset, 'timetable':timetable,}, RequestContext(request))
+
 
 @login_required
 def timetable_daily_view(request, year, month, day):
