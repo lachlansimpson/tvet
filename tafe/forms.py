@@ -1,10 +1,17 @@
 ''' forms.py holds the new forms for creating objects '''
 from django import forms
-from tafe.models import Timetable, Subject, Applicant, Session, Assessment
+from tafe.models import Timetable, Subject, Applicant, Session, Assessment, Result
 from tafe.models import SESSION_CHOICES
 from django.forms.extras.widgets import SelectDateWidget
 from django.forms.widgets import CheckboxSelectMultiple
 from django.forms.models import modelformset_factory
+import datetime
+
+class ResultForm(forms.ModelForm):
+    class Meta:
+        model = Result
+        fields = ('date_submitted','mark')
+        widgets = { 'date_submitted': SelectDateWidget,}
 
 class SessionRecurringForm(forms.Form):
     subject = forms.ModelChoiceField(queryset=Subject.objects.all())

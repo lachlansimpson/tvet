@@ -1,7 +1,7 @@
 # Create your views here.
 
-from tafe.models import Timetable, Session, Course, StudentAttendance, Subject, Assessment, StaffAttendance, Applicant, Student, Enrolment, Result
-from tafe.forms import SessionRecurringForm, ApplicantSuccessForm, ReportRequestForm, TimetableAddSessionForm, AssessmentAddForm
+from tafe.models import Timetable, Session, Course, StudentAttendance, Subject, Assessment, StaffAttendance, Applicant, Student, Enrolment, Result, Grade
+from tafe.forms import SessionRecurringForm, ApplicantSuccessForm, ReportRequestForm, TimetableAddSessionForm, AssessmentAddForm, ResultForm
 from django.utils.datastructures import SortedDict
 from django.shortcuts import render_to_response, get_object_or_404
 from django.http import HttpResponse, HttpResponseRedirect
@@ -340,10 +340,49 @@ def timetable_weekly_view(request, slug, year=None, month=None, day=None):
 
 ############### Assessments ###############
 
-#@login required
-#def assessment_mark_view(request, unit, slug):
-#    subject = get_object_or_404(Subject, slug=unit)
-#    pass
+@login_required
+def assessment_mark_single(request, unit, assessment, student):
+    subject = get_object_or_404(Subject, slug=unit)
+    assessment = get_object_or_404(Assessment, slug=assessment)
+    student = get_object_or_404(Student, slug=student)
+    grade = get_object_or_404(Grade, student=student, subject=subject)
+    user = request.user
+    if request.method == 'POST':
+        form = ResultForm(request.POST)
+        if form.is_valid():
+            newResult = Result()
+            newResult.grade = grade
+            newResult.assessment = assessment
+            newResult.date_submitted = form.cleaned_data['date_submitted']
+            newResult.mark = form.cleaned_data['mark']
+            newResult.last_change_by = user
+            newResult.save()
+            return HttpResponseRedirect(assessment.get_absolute_url())
+        else:
+            pass
+    else:
+        form = ResultForm()
+    return render_to_response('tafe/result_single_form.html', {'form':form}, RequestContext(request))
+
+@login_required
+def assessment_mark_all(request, unit, slug):
+    subject = get_object_or_404(Subject, slug=unit)
+    assessment = get_object_or_404(Assessment, slug=slug)
+    AssessmentResultFormSet = modelformset_factory(queryset=Result.objects.filter(assessment_exact=assessment).filter(grade_exact, fields=('date_submitted','mark')))
+    if assessment.subject.id != subject.id:
+        return HttpResponseRedirect('/tafe/404.html')
+    if request.method=='POST':    
+        formset = AssessmentResultFormSet(request.POST)
+        if formset.is_valid():        
+            for student_grade in subject.grades.all():
+                newResult = Result()
+                newResult.grade = student_grade
+                newResult.assessment = assessment
+        else:
+            pass
+    else: 
+        formset = AssessmentResultFormSet()
+    return render_to_response('tafe/result_all_form.html', {'formset':formset}, RequestContext(request))
 
 @login_required
 def unit_add_assessment_view(request, slug):
@@ -366,14 +405,14 @@ def unit_add_assessment_view(request, slug):
 
     return render_to_response('tafe/assessment_add_form.html', {'form':form}, RequestContext(request))
 
-
 @login_required
 def assessment_view(request, unit, slug):
     ''' An Assessment's details '''
     subject = get_object_or_404(Subject, slug=unit)
     assessment = get_object_or_404(Assessment, slug=slug, subject=subject) 
+    grades_no_results = Grade.objects.filter(subject=subject).exclude(results=assessment)
 
-    return render_to_response('tafe/assessment_detail.html',{'assessment':assessment,}, RequestContext(request))
+    return render_to_response('tafe/assessment_detail.html',{'assessment':assessment, 'grades_no_results':grades_no_results}, RequestContext(request))
 
 ############### Reports ###############
 
