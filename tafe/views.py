@@ -7,7 +7,7 @@ from django.shortcuts import render_to_response, get_object_or_404
 from django.http import HttpResponse, HttpResponseRedirect
 from django.contrib.auth.decorators import login_required
 from django.template import RequestContext
-from django.forms.models import modelformset_factory
+from django.forms.models import modelformset_factory, inlineformset_factory
 from django.template.defaultfilters import slugify
 from dateutil.relativedelta import *
 import csv
@@ -368,11 +368,13 @@ def assessment_mark_single(request, unit, assessment, student):
 def assessment_mark_all(request, unit, slug):
     subject = get_object_or_404(Subject, slug=unit)
     assessment = get_object_or_404(Assessment, slug=slug)
-    AssessmentResultFormSet = modelformset_factory(queryset=Result.objects.filter(assessment_exact=assessment).filter(grade_exact, fields=('date_submitted','mark')))
+    #AssessmentResultFormSet = modelformset_factory(queryset=Result.objects.filter(assessment_exact=assessment).filter(grade_exact, fields=('date_submitted','mark')))
+    ResultFormSet = inlineformset_factory(Assessment, Result)
+    ResultFormSet.form.base_fields['grade'].queryset = Grade.objects.filter(subject=subject)
     if assessment.subject.id != subject.id:
         return HttpResponseRedirect('/tafe/404.html')
     if request.method=='POST':    
-        formset = AssessmentResultFormSet(request.POST)
+        formset = ResultFormSet(request.POST, instance=assessment)
         if formset.is_valid():        
             for student_grade in subject.grades.all():
                 newResult = Result()
@@ -381,8 +383,8 @@ def assessment_mark_all(request, unit, slug):
         else:
             pass
     else: 
-        formset = AssessmentResultFormSet()
-    return render_to_response('tafe/result_all_form.html', {'formset':formset}, RequestContext(request))
+        formset = ResultFormSet(instance=assessment)
+    return render_to_response('tafe/result_all_form.html', {'assessment':assessment, 'formset':formset}, RequestContext(request))
 
 @login_required
 def unit_add_assessment_view(request, slug):
