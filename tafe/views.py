@@ -366,9 +366,9 @@ def assessment_mark_single(request, unit, assessment, student):
 
 @login_required
 def assessment_mark_all(request, unit, slug):
+    user = request.user
     subject = get_object_or_404(Subject, slug=unit)
     assessment = get_object_or_404(Assessment, slug=slug)
-    #AssessmentResultFormSet = modelformset_factory(queryset=Result.objects.filter(assessment_exact=assessment).filter(grade_exact, fields=('date_submitted','mark')))
     ResultFormSet = inlineformset_factory(Assessment, Result)
     ResultFormSet.form.base_fields['grade'].queryset = Grade.objects.filter(subject=subject)
     if assessment.subject.id != subject.id:
@@ -376,10 +376,11 @@ def assessment_mark_all(request, unit, slug):
     if request.method=='POST':    
         formset = ResultFormSet(request.POST, instance=assessment)
         if formset.is_valid():        
-            for student_grade in subject.grades.all():
-                newResult = Result()
-                newResult.grade = student_grade
-                newResult.assessment = assessment
+            results = formset.save(commit=False) 
+            for result in results: 
+                result.last_change_by = user
+                result.save()
+            return HttpResponseRedirect(assessment.get_absolute_url())
         else:
             pass
     else: 
