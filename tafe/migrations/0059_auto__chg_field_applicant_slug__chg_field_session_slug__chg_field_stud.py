@@ -25,7 +25,7 @@ class Migration(SchemaMigration):
         db.alter_column('tafe_staffattendance', 'slug', self.gf('django.db.models.fields.SlugField')(max_length=200))
 
         # Changing field 'Grade.slug'
-        db.alter_column('tafe_grade', 'slug', self.gf('django.db.models.fields.SlugField')(max_length=20200L))
+        db.alter_column('tafe_grade', 'slug', self.gf('django.db.models.fields.SlugField')(max_length=200))
 
         # Changing field 'StudentAttendance.slug'
         db.alter_column('tafe_studentattendance', 'slug', self.gf('django.db.models.fields.SlugField')(max_length=200))
@@ -187,7 +187,7 @@ class Migration(SchemaMigration):
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'last_change_by': ('django.db.models.fields.related.ForeignKey', [], {'blank': 'True', 'related_name': "'grade_last_change_by'", 'null': 'True', 'to': "orm['auth.User']"}),
             'penultimate_change_by': ('django.db.models.fields.related.ForeignKey', [], {'blank': 'True', 'related_name': "'grade_penultimate_change_by'", 'null': 'True', 'to': "orm['auth.User']"}),
-            'slug': ('django.db.models.fields.SlugField', [], {'max_length': '20200L'}),
+            'slug': ('django.db.models.fields.SlugField', [], {'max_length': '200'}),
             'student': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'grades'", 'to': "orm['tafe.Student']"}),
             'subject': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'grades'", 'to': "orm['tafe.Subject']"})
         },
