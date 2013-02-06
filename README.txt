@@ -8,3 +8,5 @@ TODOs, obvious refactorings and just plain old bad architecture:
  - The results/assessment forms, maybe even the assessment/results model in general
  - last_change_by and penultimate - should probably all be moved into their respective model's save method rather than in their admin methods. Currently in admin methods, which means double code when having outside forms.
  - for some reason the .filter().exclude() on the assessment detail view isn't working.
+ - Timetable views are still iffy. 
+  -- no days on grid if the timetable doesn't have a Morning 1 session 
