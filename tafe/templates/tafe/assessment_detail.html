@@ -11,15 +11,20 @@ Assessment detail page of the portal.
 {% block content %}
 <div id="content-left" class="grid_12">
     <div id="bio" class="grid_5">
-        <h4>{{ assessment.subject }}</h4>
+        <h4>Subject: <a href="{{ assessment.subject.get_absolute_url }}">{{ assessment.subject }}</a></h4>
         <p>Name of assessment: {{ assessment.name }}</p>
         <p>Date assessment given: {{ assessment.date_given }}</p>
         <p>Date assessment is due: {{ assessment.date_due }}</p>
     </div>
     <div id="results" class="grid_6">
         <h5>Results</h5>
-    {% for result in assessment.results.all %}
-    <p><a href="{{ result.grade.student.get_absolute_url}}">{{ result.grade.student }}</a>: {{ result.get_mark_display }}</p>
+        <strong>Unmarked</strong>
+        {% for grade in grades_no_results.all %}
+            <p><a href="{{ grade.student.get_absolute_url }}">{{ grade.student }}</a>: <a href="{{ assessment.get_absolute_url }}/result/{{ grade.student.slug }}">Mark submission</a></p>
+        {% endfor %}
+        <strong>Marked</strong>
+        {% for result in assessment.results.all %}
+            <p><a href="{{ result.grade.student.get_absolute_url}}">{{ result.grade.student }}</a>: {{ result.get_mark_display }}</p>
     {% endfor %}
     </div>
     <div class="clear"></div>

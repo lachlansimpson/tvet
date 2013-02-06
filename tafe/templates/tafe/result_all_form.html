@@ -1,0 +1,29 @@
+{% extends "tafe/base_site.html" %}
+
+{% comment %}
+Session detail page of the portal.
+{% endcomment %}
+
+{% block title %}
+    Mark all results for this subject
+{% endblock %}
+{% block coltype %}colMS{% endblock %}
+{% block content %}
+<div id="content-left" class="grid_12">
+    <div id="list" class="grid_8">
+        {{ assessment.subject.name }}{{ assessment.name }}<br />
+
+    Due: {{ assessment.date_due }}<br />
+
+    <h4>Results</h4>
+    <form method="post" action="">{% csrf_token %}
+        <h5>Students</h5>
+        {{ formset.management_form }}
+        {% for form in formset %}
+        <p>{{ form }}</p>
+        {% endfor %}
+    <p><input type="submit" value="Submit" /></p>
+</form>
+</div>
+</div>
+{% endblock %}

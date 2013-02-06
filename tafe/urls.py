@@ -2,7 +2,7 @@ from django.conf.urls import patterns, url
 from django.contrib.auth.decorators import permission_required
 from django.views.generic import DetailView, ListView, CreateView
 from tafe.models import Student, Subject, Enrolment, Course, Grade, Timetable, Applicant, Staff
-from tafe.views import session_create, session_view, session_attendance_view, timetable_daily_view, units_by_qualifications_view, unit_view, assessment_view, student_reports, applicant_reports, reports, applicant_qualification, applicant_shortlist, applicant_shortlist_qualification, add_sessions_view
+from tafe.views import session_create, session_view, session_attendance_view, timetable_daily_view, units_by_qualifications_view, unit_view, assessment_view, student_reports, applicant_reports, reports, applicant_qualification, applicant_shortlist, applicant_shortlist_qualification, unit_add_assessment_view, assessment_mark_all, assessment_mark_single
 
 urlpatterns = patterns('tafe.views',
     url(r'^$', 'index'),
@@ -27,7 +27,10 @@ urlpatterns = patterns('tafe.views',
     url(r'^units/$', ListView.as_view(queryset=Subject.objects.all())),
     url(r'^units/qualifications/$', units_by_qualifications_view, name='units_by_qualifications_view'),
     url(r'^unit/(?P<slug>[-\w]+)/$', unit_view, name='unit_view'),
+    url(r'^unit/(?P<slug>[-\w]+)/add-assessment/$', unit_add_assessment_view, name='unit_add_assessment_view'),
     url(r'^unit/(?P<unit>[-\w]+)/assessment/(?P<slug>[-\w]+)/$', assessment_view, name='assessment_view'),
+    url(r'^unit/(?P<unit>[-\w]+)/assessment/(?P<slug>[-\w]+)/mark/$', assessment_mark_all, name='assessment_mark_all'),
+    url(r'^unit/(?P<unit>[-\w]+)/assessment/(?P<assessment>[-\w]+)/result/(?P<student>[-\w]+)$', assessment_mark_single, name='assessment_mark_single'),
     
     url(r'^enrolments/$', ListView.as_view(queryset=Enrolment.objects.all())),
     url(r'^enrolment/(?P<slug>[-\w]+)/$', DetailView.as_view(model=Enrolment), name='enrolment_view'),

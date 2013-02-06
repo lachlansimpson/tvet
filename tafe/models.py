@@ -77,8 +77,9 @@ WITHDRAWAL_REASONS = (
 )
 
 SUBJECT_RESULTS = (
-    (u'P',u'Pass'),
-    (u'F',u'Fail'),
+    (u'A',u'Achieved'),
+    (u'PA',u'Partially Achieved'),
+    (u'NA',u'Not Attempted'),
 )
 
 COURSE_RESULTS = (
@@ -461,7 +462,7 @@ class Assessment(models.Model):
         return self.subject.name + ', ' + self.name + ', ' + str(self.date_due)
 
     def get_absolute_url(self):
-        return self.subject.get_absolute_url() + "assessment/" + self.slug
+        return self.subject.get_absolute_url() + "assessment/" + self.slug 
 
     def get_year(self):
         return self.date_due.year
@@ -680,10 +681,6 @@ class Result(models.Model):
     def __unicode__(self):
         '''Result reference: the assignment name, due date and grade given'''
         return self.assessment.name + ', ' + str(self.date_submitted) + ', ' + str(self.get_mark_display())
-
-    @models.permalink	
-    def get_absolute_url(self):
-        return ('result_view', [str(self.slug)])
 
 class Session(models.Model):
     session_number = models.CharField(max_length=1,choices=SESSION_CHOICES)
