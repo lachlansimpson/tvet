@@ -38,9 +38,13 @@ class EnrolmentInline(admin.TabularInline):
     model = Enrolment 
     extra = 1    
 
-class GradeInline(admin.TabularInline):
+class GradeForSubjectInline(admin.TabularInline):
     model = Grade
     fields = ('student','date_started',)
+
+class GradeForStudentInline(admin.TabularInline):
+    model = Grade
+    fields = ('subject','date_started',)
 
 class ResultInline(admin.StackedInline):
     model = Result
@@ -540,7 +544,7 @@ class StudentAdminForm(ModelForm):
         }            
 
 class StudentAdmin(admin.ModelAdmin):
-    inlines = (EnrolmentInline, StudentISLPRInline, GradeInline, StudentAttendanceInline, ApplicantInline)
+    inlines = (EnrolmentInline, StudentISLPRInline, GradeForStudentInline, StudentAttendanceInline, ApplicantInline)
     date_hierarchy = 'dob'
     fieldsets = (
         ('Bio', { 'fields':(('first_name','surname'),('dob','gender'), ('island', 'slug'))}),
@@ -591,7 +595,7 @@ class SubjectAdmin(admin.ModelAdmin):
     list_filter = ('year', 'semester', 'name')
     model = Subject
     prepopulated_fields = {'slug': ('name','year')}
-    inlines = [ AssessmentInline, SessionInline, GradeInline,]
+    inlines = [ AssessmentInline, SessionInline, GradeForSubjectInline,]
     actions = ['add_all_students',]
     save_on_top = True
     
