@@ -4,8 +4,13 @@ Create an assesment
 {% endcomment %}
 {% block coltype %}colMS{% endblock %}
 {% block content %}
+<div id="content-left" class="grid_12">
+    <div id="bio" class="grid_6">
+    <h3>Add an assessment</h3>    
     <form action="" method="post">{% csrf_token %} 
         {{ form.as_p }}
         <input type="submit" value="Submit">
     </form>
+</div>
+</div>
 {% endblock %}

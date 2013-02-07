@@ -8,6 +8,7 @@ from django.forms.models import modelformset_factory
 import datetime
 
 class ResultForm(forms.ModelForm):
+        
     class Meta:
         model = Result
         fields = ('date_submitted','mark')
