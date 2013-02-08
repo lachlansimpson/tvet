@@ -18,7 +18,7 @@ urlpatterns = patterns('tafe.views',
     url(r'^students/$', ListView.as_view(queryset=Student.objects.all().order_by('first_name'))),
     url(r'^student/(?P<slug>[-\w]+)/$', DetailView.as_view(model=Student), name='student_view'),
 
-    url(r'^staff/$', permission_required('staff.can_change', raise_exception=True)(ListView.as_view(queryset=Staff.people.all().order_by('surname')))),
+    url(r'^staff/$', permission_required('staff.can_change', raise_exception=True)(ListView.as_view(queryset=Staff.people.all().order_by('first_name')))),
     url(r'^staff/(?P<slug>[-\w]+)/$', permission_required('staff.can_change', raise_exception=True)(DetailView.as_view(model=Staff)), name='staff_view'),
                        
     url(r'^qualifications/$', ListView.as_view(queryset=Course.objects.all())),

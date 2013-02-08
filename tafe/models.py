@@ -724,6 +724,7 @@ class Staff(Person):
     credential = models.ManyToManyField('Credential', blank=True, null=True, related_name='credentials')
 
     class Meta(Person.Meta):
+        ordering = ['first_name','surname'] 
         verbose_name='Staff'
         verbose_name_plural='Staff'
 

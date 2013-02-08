@@ -369,7 +369,7 @@ def assessment_mark_all(request, unit, slug):
     user = request.user
     subject = get_object_or_404(Subject, slug=unit)
     assessment = get_object_or_404(Assessment, slug=slug)
-    ResultFormSet = inlineformset_factory(Assessment, Result)
+    ResultFormSet = inlineformset_factory(Assessment, Result,form=ResultForm)
     ResultFormSet.form.base_fields['grade'].queryset = Grade.objects.filter(subject=subject)
     if assessment.subject.id != subject.id:
         return HttpResponseRedirect('/tafe/404.html')
