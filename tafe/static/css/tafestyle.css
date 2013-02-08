@@ -13,7 +13,7 @@
     display: none;
 }
 
-#assessments, #sessions, #bio, #enrolment, #units, #attendance, #attendance_results, #application-details, #credentials, #ISLPR, #list, #grades, #timetable, #results {
+#search, #assessments, #sessions, #bio, #enrolment, #units, #attendance, #attendance_results, #application-details, #credentials, #ISLPR, #list, #grades, #timetable, #results {
     -moz-border-radius: 6px;
     -webkit-border-radius: 6px;
     border-radius: 6px;
@@ -25,7 +25,7 @@
     float: left;
 }
 
-#attendance, #assessments, #units, #admin, #comments, #ISLPR, #attendance_results {
+#attendance, #assessments, #units, #admin, #comments, #ISLPR, #attendance_results, #results {
     margin-top: 10px;
 }
 
