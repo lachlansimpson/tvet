@@ -203,6 +203,7 @@ class StudentAttendance(Attendance):
     student = models.ForeignKey('Student', related_name='attendance_records')
 
     class Meta:
+        unique_together = ('student','session')
         verbose_name='Student Attendance Record'
         verbose_name_plural='Student Attendance Records'
 
@@ -219,6 +220,7 @@ class StaffAttendance(Attendance):
     staff_member = models.ForeignKey('Staff', related_name='attendance_records')
 
     class Meta:
+        unique_together = ('staff_member','session')
         verbose_name='Staff Attendance Record'
         verbose_name_plural='Staff Attendance Records'
 
@@ -722,6 +724,7 @@ class Staff(Person):
     credential = models.ManyToManyField('Credential', blank=True, null=True, related_name='credentials')
 
     class Meta(Person.Meta):
+        ordering = ['first_name','surname'] 
         verbose_name='Staff'
         verbose_name_plural='Staff'
 

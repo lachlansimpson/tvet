@@ -10,22 +10,18 @@ Session detail page of the portal.
 {% block coltype %}colMS{% endblock %}
 {% block content %}
 <div id="content-left" class="grid_12">
-    <div id="list" class="grid_8">
-    {{ session.get_session_number_display }}<br />
+    <div id="list" class="grid_11">
+    <h2>{{ session.subject.name }}  |   {{ session.get_session_number_display }}  |  {{ session.date }}</h2>
 
-    {{ session.subject.name }}<br />
-
-    {{ session.date }}<br />
-
-    <h4>Attendance</h4>
+    <h3>Attendance</h3>
     <form method="post" action="">{% csrf_token %}
-        <h5>Staff</h5>
+        <h4>Staff</h4>
         {{ staff_formset }}
     <div class="clear"></div>     
-        <h5>Students</h5>
+        <h4>Students</h4>
         {{ student_formset.management_form }}
         {% for form in student_formset %}
-        <p>{{ form }}</p>
+        <div class="studentattendance"><p>{{ form }}</p></div>  
         {% endfor %}
     <p><input type="submit" value="Submit" /></p>
 </form>
