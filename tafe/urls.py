@@ -2,7 +2,7 @@ from django.conf.urls import patterns, url
 from django.contrib.auth.decorators import permission_required
 from django.views.generic import DetailView, ListView, CreateView
 from tafe.models import Student, Subject, Enrolment, Course, Grade, Timetable, Applicant, Staff
-from tafe.views import session_create, session_view, session_attendance_view, timetable_daily_view, units_by_qualifications_view, unit_view, assessment_view, student_reports, applicant_reports, reports, applicant_qualification, applicant_shortlist, applicant_shortlist_qualification, unit_add_assessment_view, assessment_mark_all, assessment_mark_single
+from tafe.views import session_create, session_view, session_attendance_view, timetable_daily_view, units_by_qualifications_view, unit_view, assessment_view, student_reports, applicant_reports, reports, applicant_qualification, applicant_shortlist, applicant_shortlist_qualification, unit_add_assessment_view, assessment_mark_all, assessment_mark_single, student_qualification
 
 urlpatterns = patterns('tafe.views',
     url(r'^$', 'index'),
@@ -16,6 +16,7 @@ urlpatterns = patterns('tafe.views',
     url(r'^applicant/(?P<slug>[-\w]+)/$', DetailView.as_view(model=Applicant), name='applicant_view'),
 
     url(r'^students/$', ListView.as_view(queryset=Student.objects.all().order_by('first_name'))),
+    url(r'^students/qualifications/$', student_qualification),
     url(r'^student/(?P<slug>[-\w]+)/$', DetailView.as_view(model=Student), name='student_view'),
 
     url(r'^staff/$', permission_required('staff.can_change', raise_exception=True)(ListView.as_view(queryset=Staff.people.all().order_by('first_name')))),
