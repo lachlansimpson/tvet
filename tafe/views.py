@@ -182,27 +182,14 @@ def unit_view(request, slug):
 def student_qualification(request):
     ''' All students will be listed by qualification '''
     enrolments = Enrolment.objects.filter(date_started__year=today.year).order_by('course__name')
-    courses = Course.objects.filter(year=today.year).order_by('name')
-    ''' This adds the courses and applicants to a dictionary '''
-    '''
-    apps_by_course = {}
-    for course in courses:
-      course_applicants = [] 
-      for applicant in applicants:
-        if applicant.applied_for == course:
-          course_applicants.append(applicant)
-      apps_by_course[course] = course_applicants
-    '''   
-    ''' This sorts the dictionary for rendering in alphabetical order by the template '''
-    '''
-    key_list = apps_by_course.keys()
-    key_list.sort()
-    applicants_by_course = SortedDict()
-    for key in key_list:
-        applicants_by_course[key] = apps_by_course[key]
+    
+    return render_to_response('tafe/student_qualifications.html', {'enrolments':enrolments, 'courses':courses}, RequestContext(request))
 
-    return render_to_response('tafe/student_qualifications.html', {'students_by_course':students_by_course}, RequestContext(request))
-    '''
+@login_required
+def student_qualification_csv(request):
+    ''' All students will be listed by qualification and output as csv'''
+    enrolments = Enrolment.objects.filter(date_started__year=today.year).order_by('course__name')
+    
     return render_to_response('tafe/student_qualifications.html', {'enrolments':enrolments, 'courses':courses}, RequestContext(request))
 
 
