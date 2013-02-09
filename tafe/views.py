@@ -183,14 +183,38 @@ def student_qualification(request):
     ''' All students will be listed by qualification '''
     enrolments = Enrolment.objects.filter(date_started__year=today.year).order_by('course__name')
     
-    return render_to_response('tafe/student_qualifications.html', {'enrolments':enrolments, 'courses':courses}, RequestContext(request))
+    return render_to_response('tafe/student_qualifications.html', {'enrolments':enrolments}, RequestContext(request))
 
 @login_required
 def student_qualification_csv(request):
     ''' All students will be listed by qualification and output as csv'''
-    enrolments = Enrolment.objects.filter(date_started__year=today.year).order_by('course__name')
+    courses = Course.objects.filter(year=today.year)
+  
+    students_by_course = SortedDict()
+    for course in courses:
+      if course.students.all().count()==0:
+        continue
+      students = []
+      for student in course.students.all():
+        students.append((student.first_name, student.surname))
+      coursename = course.__unicode__()
+      students_by_course[coursename] = students
     
-    return render_to_response('tafe/student_qualifications.html', {'enrolments':enrolments, 'courses':courses}, RequestContext(request))
+    filename = '%s_students.csv' %(today.year)
+    return students_list_csv_export(students_by_course,filename) 
+
+def students_list_csv_export(students_by_course, filename):
+    response = HttpResponse(mimetype='text/csv')
+    response['Content-Disposition'] = 'attachment; filename=%s' % filename
+
+    writer = csv.writer(response)
+    for key, value in students_by_course.items():
+        table = (str(key),)
+        writer.writerow(table)
+        for student in value:
+          writer.writerow(student)
+        writer.writerow("")
+    return response
 
 
 ############### Applicants ###############
