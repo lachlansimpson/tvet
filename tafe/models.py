@@ -617,7 +617,7 @@ class Enrolment(models.Model):
         return ('enrolment_view', [str(self.slug)])
 
     def year_started(self):
-        return date_started.year
+        return self.date_started.year
     
     def save(self, *args, **kwargs):
         '''SLUG:Can't use prepopulated_fields due to function's restrictions
