@@ -12,7 +12,7 @@ Applicant Reports
 <div id="content-left" class="grid_12">
     <div id="stats" class="grid_12">
     {%  if not stats %}
-    <h5Sorry, there are no Applications at the moment.</h5>
+    <h5>Sorry, there are no Applications at the moment.</h5>
     {% else %}
         {% for name, stat in stats.items %}    
             <div id="statblock">
@@ -25,8 +25,7 @@ Applicant Reports
                 </div>    
                 <div id="stats-24" class="stats-row">
                     <div class="stat-title">
-                        <h4>Applicants, 16-24</h4>
-                    </div>
+                        <h4>Applicants, 16-24</h4></div>
                     <div class="stat">
                         {{ stat.queryset_24f }} ({{ stat.queryset_24f_pc }}%)
                     </div>

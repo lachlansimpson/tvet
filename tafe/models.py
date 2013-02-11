@@ -301,6 +301,10 @@ class Person(models.Model):
         """Person reference: full name """
         return self.first_name + ' ' + self.surname
 
+    def get_full_name(self):
+        """Person reference: full name """
+        return self.first_name + ' ' + self.surname
+    
     def age_today(self):
         return today.year - self.dob.year
 
