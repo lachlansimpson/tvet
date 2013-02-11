@@ -487,7 +487,7 @@ def applicant_reports(request, year=None, format=None):
     '''
     year = year or datetime.date.today().year
     format = format or 'html'
-    queryset = Applicant.objects.filter(applied_for__year__exact=year).exclude(successful=1)
+    queryset = Applicant.objects.filter(applied_for__year__exact=year)
     
     if queryset.count()==0: # If there are no objects in the queryset... 
         return render_to_response('tafe/applicants_report.html',{},RequestContext(request))
