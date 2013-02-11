@@ -29,17 +29,6 @@ List of applicants enrolled
             </ul>
         {% endfor %}
 
-         
-         {% for enrolment in enrolments %}
-          <h3 id="{{ course.name }}">{{ course.name }}</h3>
-          <ul>
-              {% for applicant in list|dictsort:"first_name" %}
-              <li><a href="{{ applicant.get_absolute_url }}">{{ applicant }}</a> | 
-              <a href="/admin/tafe/applicant/{{ applicant.pk }}/"><i>edit</i></a></li>
-              {% endfor %}
-          </ul>
-          </li>
-        {% endfor %}
       {% else %}
           <p>No students are available.</p>
       {% endif %}

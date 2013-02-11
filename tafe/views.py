@@ -182,28 +182,39 @@ def unit_view(request, slug):
 def student_qualification(request):
     ''' All students will be listed by qualification '''
     enrolments = Enrolment.objects.filter(date_started__year=today.year).order_by('course__name')
-    courses = Course.objects.filter(year=today.year).order_by('name')
-    ''' This adds the courses and applicants to a dictionary '''
-    '''
-    apps_by_course = {}
-    for course in courses:
-      course_applicants = [] 
-      for applicant in applicants:
-        if applicant.applied_for == course:
-          course_applicants.append(applicant)
-      apps_by_course[course] = course_applicants
-    '''   
-    ''' This sorts the dictionary for rendering in alphabetical order by the template '''
-    '''
-    key_list = apps_by_course.keys()
-    key_list.sort()
-    applicants_by_course = SortedDict()
-    for key in key_list:
-        applicants_by_course[key] = apps_by_course[key]
+    
+    return render_to_response('tafe/student_qualifications.html', {'enrolments':enrolments}, RequestContext(request))
 
-    return render_to_response('tafe/student_qualifications.html', {'students_by_course':students_by_course}, RequestContext(request))
-    '''
-    return render_to_response('tafe/student_qualifications.html', {'enrolments':enrolments, 'courses':courses}, RequestContext(request))
+@login_required
+def student_qualification_csv(request):
+    ''' All students will be listed by qualification and output as csv'''
+    courses = Course.objects.filter(year=today.year)
+  
+    students_by_course = SortedDict()
+    for course in courses:
+      if course.students.all().count()==0:
+        continue
+      students = []
+      for student in course.students.all():
+        students.append((student.first_name, student.surname))
+      coursename = course.__unicode__()
+      students_by_course[coursename] = students
+    
+    filename = '%s_students.csv' %(today.year)
+    return students_list_csv_export(students_by_course,filename) 
+
+def students_list_csv_export(students_by_course, filename):
+    response = HttpResponse(mimetype='text/csv')
+    response['Content-Disposition'] = 'attachment; filename=%s' % filename
+
+    writer = csv.writer(response)
+    for key, value in students_by_course.items():
+        table = (str(key),)
+        writer.writerow(table)
+        for student in value:
+          writer.writerow(student)
+        writer.writerow("")
+    return response
 
 
 ############### Applicants ###############
