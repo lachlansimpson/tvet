@@ -137,13 +137,13 @@ ISLPR_CHOICES = (
 EDUCATION_LEVEL_CHOICES = (
     ('0','PSSC - Post Secondary School Certificate'),
     ('1','KNC - Kiribati National certificate'),
-    ('2','USP - University of South Pacific - Extension; Degree; Post Graduate'),
+    ('8','SPFSC - Fiji School Certificate'),    
+    ('7','Form 7'),
+    ('6','Form 6'),
+    ('2','USP - University of South Pacific: Degree or higher'),
+    ('5','Form 5'),
     ('3','JSSC - Junior School Certificate - Form 3'), 
     ('4','Form 4'),
-    ('5','Form 5'),
-    ('6','Form 6'),
-    ('7','Form 7'),
-    ('8','SPFSC - Fiji School Certificate'),
     ('9','Form 3 or below'),
 )
 

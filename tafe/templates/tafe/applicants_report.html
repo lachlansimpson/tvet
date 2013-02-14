@@ -15,7 +15,7 @@ Applicant Reports
     <h5>Sorry, there are no Applications at the moment.</h5>
     {% else %}
         {% for name, stat in stats.items %}    
-            <div id="statblock">
+            <div class="statblock">
                 <div id="stats-title" class="stats-row"><h2>{{ name }} Applicants</h2></div>
                 <div id="stats-headers" class="stats-row">
                     <div class="stat-title">&nbsp;</div>
@@ -92,8 +92,30 @@ Applicant Reports
                         {{ stat.queryset }}
                     </div>
                 </div>
-            </div><!--statblock -->
+            </div><!--statblock islands, ages, disabililties, courses -->
             {% endfor %}
+
+            <div class="statblock">
+            {% for name, stats in others.items %}
+
+                <div id="stats-title" class="stats-row"><h2>{{ name }} Applicants - Miscellaneous Stats</h2></div>
+                <div id="stats-headers" class="stats-row">
+                    <div class="stat-title">&nbsp;</div>
+                    <div class="stat"><strong>Female</strong></div>
+                    <div class="stat"><strong>Male</strong></div>
+                    <div class="stat"><strong>Total</strong></div>
+                </div>    
+                
+                {% for type, listing in stats.items %}
+                    <div class="stats-misc">
+                    <div class="stat-title"><h4>{{ type }}</h4></div>
+                    {% for number in listing %}
+                        <div class="stat">{{ number }}</div>
+                    {% endfor %}     
+                   </div> 
+                 {% endfor %}
+            {% endfor %}
+        </div> <!-- statblock, misc-->
         {% endif %}
       </div><!-- stats -->
     </div>

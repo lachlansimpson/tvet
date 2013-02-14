@@ -1,5 +1,6 @@
 # Create your views here.
 
+from tafe.models import EDUCATION_LEVEL_CHOICES
 from tafe.models import Timetable, Session, Course, StudentAttendance, Subject, Assessment, StaffAttendance, Applicant, Student, Enrolment, Result, Grade
 from tafe.forms import SessionRecurringForm, ApplicantSuccessForm, ReportRequestForm, TimetableAddSessionForm, AssessmentAddForm, ResultForm
 from django.utils.datastructures import SortedDict
@@ -494,7 +495,9 @@ def applicant_reports(request, year=None, format=None):
     if format=='raw': # If raw is required, no stats needed. Return raw queryset data
         return raw_csv_export(queryset)
     else: # we need to make the stats
-        stats = SortedDict() 
+        stats = SortedDict()
+        others = SortedDict() 
+        others['All'] = other_stats(queryset)
         stats['All'] = total_stats(queryset) 
         courses = Course.objects.filter(year=year)
         for course in courses: 
@@ -508,7 +511,7 @@ def applicant_reports(request, year=None, format=None):
             filename = '%s_%s_stats.csv' %(slugify(queryset.model.__name__),year)
             return stats_csv_export(stats,filename)
         else: # format == 'html'
-            return render_to_response('tafe/applicants_report.html',{'stats':stats}, RequestContext(request))        
+            return render_to_response('tafe/applicants_report.html',{'stats':stats, 'others':others}, RequestContext(request))        
 
 @login_required
 def student_reports(request, year=None, format=None):
@@ -524,7 +527,8 @@ def student_reports(request, year=None, format=None):
     if format == 'raw':
         return raw_csv_export(queryset)
     else:    
-        stats = SortedDict()  
+        stats = others = SortedDict()  
+        others['All'] = other_stats(queryset)
         stats['All'] = total_stats(queryset) 
         courses = Course.objects.filter(year=year)
         for course in courses:
@@ -533,13 +537,15 @@ def student_reports(request, year=None, format=None):
             if queryset.count()==0:
                 continue
             stats[name] = total_stats(queryset)
-       
+
+        #others = other_stats(queryset)
+
         ''' test to see if CSV dump is wanted''' 
         if format == 'csv':
             filename = '%s_%s_stats.csv' %(slugify(queryset.model.__name__),year)
             return stats_csv_export(stats,filename)
         else:     #if not a CSV dump, send to web  
-            return render_to_response('tafe/student_reports.html',{'stats':stats},RequestContext(request))
+            return render_to_response('tafe/student_reports.html',{'stats':stats, 'others':others},RequestContext(request))
 
 def stats_csv_export(stats, filename):
     response = HttpResponse(mimetype='text/csv')
@@ -576,6 +582,19 @@ def raw_csv_export(queryset):
         writer.writerow(row)
     # Return CSV file to browser as download
     return response
+
+def other_stats(queryset):
+    queryset_m = queryset.filter(gender = 'M')
+    queryset_f = queryset.filter(gender = 'F')
+    misc_stats = SortedDict() 
+
+    for number,level in EDUCATION_LEVEL_CHOICES:
+        a=queryset.filter(education_level=number).count()
+        m=queryset.filter(education_level=number,gender='M').count()
+        f=queryset.filter(education_level=number,gender='F').count()
+        misc_stats[level] = (f,m,a)
+
+    return misc_stats
 
 def total_stats(queryset):
     queryset_m = queryset.filter(gender = 'M')

@@ -15,7 +15,10 @@ Student Reports
     <h5>Sorry, there are no enrollments at the moment.</h5>
     {% else %}
         {% for name, stat in stats.items %}    
-            <div id="statblock">
+            <div class="statblock">
+                <table>
+                    <colgroup span="4" title="{{ name }} Student Enrolments">>
+                
                 <div id="stats-title" class="stats-row">
                     <h2>{{ name }} Student Enrolments</h2> 
                 </div>
@@ -94,6 +97,7 @@ Student Reports
                         {{ stat.queryset }}
                     </div>
                 </div>
+            </table>
             </div><!--statblock -->
             {% endfor %}
         {% endif %}

@@ -37,18 +37,20 @@
     padding: 5px 10px 10px 10px;
 }
 
-#statblock {
+div.statblock {
     width: 70%;
     clear: both;
     margin-top: 10px;
-    background-color: #ECE5DF;
+    background-color: #C7B6A5;
+
+    -moz-border-radius: 6px 6px 6px 6px;
+    -webkit-border-radius: 6px 6px 6px 6px;
+    border-radius: 6px 6px 6px 6px;
+    border: 1px solid black;
 }
 
 #stats-title {
     background-color: #C7B6A5;
-    -moz-border-radius: 6px 6px 0 0;
-    -webkit-border-radius: 6px 6px 0 0;
-    border-radius: 6px 6px 0 0;
 }
 
 .studentattendance {
@@ -75,9 +77,6 @@ div#stats-title h2 {
 }
 
 #stats-total {
-    -moz-border-radius: 0 0 6px 6px;
-    -webkit-border-radius: 0 0 6px 6px;
-    border-radius: 0 0 6px 6px;
 }
 
 .stat {
@@ -90,10 +89,17 @@ div#stats-title h2 {
 
 .stats-row {
     width: 100%;
-    border-style: solid;
-    border-width: 1px;
     clear: both;
     height: 40px;
+    background-color: #ECE5DF;
+}
+
+.stats-misc {
+    width: 100%;
+    clear: both;
+    height: auto;
+    background-color: #ECE5DF;
+
 }
 
 div.stat-title h4 {
