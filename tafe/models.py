@@ -96,6 +96,11 @@ CLASSIFICATION_CHOICES = (
 )
 
 AQF_LEVEL_CHOICES = (
+    ('CERT4','Certificate IV'),
+    ('CERT3','Certificate III'),
+    ('CERT2','Certificate II'),
+    ('CERT1','Certificate I'),
+    ('VPC', 'Vocational Preparation Course'),
     ('BHONS','Bachelor Honors'),
     ('GCERT','Graduate Certificate'),
     ('GDIP','Graduate Diploma'), 
@@ -103,10 +108,6 @@ AQF_LEVEL_CHOICES = (
     ('ADIP','Advanced Diploma'),
     ('ADEG','Associate Degree'),
     ('DIP','Diploma'),
-    ('CERT4','Certificate IV'),
-    ('CERT3','Certificate III'),
-    ('CERT2','Certificate II'),
-    ('CERT1','Certificate I'),
     ('PHD','Doctoral'),
     ('MAST','Masters'),
     ('OTH','Other'),
