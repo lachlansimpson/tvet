@@ -487,7 +487,7 @@ def applicant_reports(request, year=None, format=None):
     '''
     year = year or datetime.date.today().year
     format = format or 'html'
-    queryset = Applicant.objects.filter(applied_for__year__exact=year).exclude(successful=1)
+    queryset = Applicant.objects.filter(applied_for__year__exact=year)
     
     if queryset.count()==0: # If there are no objects in the queryset... 
         return render_to_response('tafe/applicants_report.html',{},RequestContext(request))
@@ -496,7 +496,6 @@ def applicant_reports(request, year=None, format=None):
     else: # we need to make the stats
         stats = SortedDict() 
         stats['All'] = total_stats(queryset) 
-        
         courses = Course.objects.filter(year=year)
         for course in courses: 
             name = course.__unicode__()
