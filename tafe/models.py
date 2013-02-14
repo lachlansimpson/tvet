@@ -374,6 +374,13 @@ class Applicant(Person):
         self.last_change_by = request.user
         self.save()
     
+    def not_short_list_applicant(self,request):
+        ''' Marks an applicant as NOT shortlisted '''
+        self.short_listed = 0
+        self.penultimate_change_by = self.last_change_by
+        self.last_change_by = request.user
+        self.save()
+    
     def send_an_offer(self,request):
         ''' Marks an applicant as shortlisted '''
         self.date_offer_sent = today
