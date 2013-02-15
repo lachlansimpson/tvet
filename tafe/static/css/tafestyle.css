@@ -49,8 +49,10 @@ div.statblock {
     border: 1px solid black;
 }
 
-div.stats-title {
+colgroup.stats-title {
     background-color: #C7B6A5;
+    width: 100%;
+    height: 40px;
 }
 
 .studentattendance {

@@ -17,16 +17,15 @@ Student Reports
         {% for name, stat in stats.items %}    
             <div class="statblock">
             <table>
-                <colgroup span="4" title="{{ name }} Student Enrolments" />
+                <caption><h2>{{ name }} Student Enrolments</h2></caption>
+                <colgroup class="stats-title" span="4" />
                 <thead>
-                    <div id="stats-title" class="stats-row">
                     <tr>
-                        <th scope="col">&nbsp</th>
+                        <th scope="col">Statistic</th>
                         <th scope="col">Female</th>
                         <th scope="col">Male</th>
                         <th scope="col">Total</th>
                     </tr>
-                    </div>
                 </thead>
                 <tfoot>
                     <tr><th>Date created: </th></tr>

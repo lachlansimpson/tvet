@@ -17,11 +17,11 @@ Applicant Reports
         {% for name, stat in stats.items %}    
         <div class="statblock">        
             <table>
-                <colgroup span="4" title="{{ name }} Applicants" />
+                <colgroup class="stats-title" span="4" title="{{ name }} Applicants" />
                     <thead>
                         <div class="stats-row">
                             <tr>
-                                <th scope="col">&nbsp</th>
+                                <th scope="col">Statistc</th>
                                 <th scope="col">Female</th>
                                 <th scope="col">Male</th>
                                 <th scope="col">Total</th>
@@ -69,11 +69,11 @@ Applicant Reports
                 {% for name, stats in others.items %}
                 <div class="statblock">
                     <table>
-                        <colgroup span="4" title="{{ name }} Applicants - Miscellaneous statistics" />
+                        <colgroup class="stats-title" span="4" title="{{ name }} Applicants - Miscellaneous statistics" />
                         <thead>
                             <div class="stats-row">
                                 <tr>
-                                    <th scope="col">&nbsp</th>
+                                    <th scope="col">Statistic</th>
                                     <th scope="col">Female</th>
                                     <th scope="col">Male</th>
                                     <th scope="col">Total</th>
