@@ -11,112 +11,95 @@ Applicant Reports
 {% block content %}
 <div id="content-left" class="grid_12">
     <div id="stats" class="grid_12">
-    {%  if not stats %}
-    <h5>Sorry, there are no Applications at the moment.</h5>
-    {% else %}
+        {%  if not stats %}
+        <h5>Sorry, there are no Applications at the moment.</h5>
+        {% else %}
         {% for name, stat in stats.items %}    
-            <div class="statblock">
-                <div id="stats-title" class="stats-row"><h2>{{ name }} Applicants</h2></div>
-                <div id="stats-headers" class="stats-row">
-                    <div class="stat-title">&nbsp;</div>
-                    <div class="stat"><strong>Female</strong></div>
-                    <div class="stat"><strong>Male</strong></div>
-                    <div class="stat"><strong>Total</strong></div>
-                </div>    
-                <div id="stats-24" class="stats-row">
-                    <div class="stat-title">
-                        <h4>Applicants, 16-24</h4></div>
-                    <div class="stat">
-                        {{ stat.queryset_24f }} ({{ stat.queryset_24f_pc }}%)
-                    </div>
-                    <div class="stat">
-                        {{ stat.queryset_24m }} ({{ stat.queryset_24m_pc }}%)
-                    </div>
-                    <div class="stat">
-                        {{ stat.queryset_24 }} ({{ stat.queryset_24_pc }}%)
-                    </div>
-                </div>
-                <div id="stats-25" class="stats-row">
-                    <div class="stat-title">
-                        <h4>Applicants, 25+</h4>
-                    </div>
-                    <div class="stat">
-                        {{ stat.queryset_25f }} ({{ stat.queryset_25f_pc }}%)
-                    </div>
-                    <div class="stat">
-                        {{ stat.queryset_25m }} ({{ stat.queryset_25m_pc }}%)
-                    </div>
-                    <div class="stat">
-                        {{ stat.queryset_25 }} ({{ stat.queryset_25_pc }}%)
-                    </div>
-                </div>
-                <div id="stats-outer" class="stats-row">
-                    <div class="stat-title">
-                        <h4>Outer islands</h4>
-                    </div>
-                    <div class="stat">
-                        {{ stat.outer_f }} ({{ stat.outer_f_pc }}%)
-                    </div>
-                    <div class="stat">
-                        {{ stat.outer_m }} ({{ stat.outer_m_pc }}%)
-                    </div>
-                    <div class="stat">
-                        {{ stat.outer }} ({{ stat.outer_pc }}%)
-                    </div>
-                </div>
-                <div id="stats-disability" class="stats-row">
-                    <div class="stat-title">
-                        <h4>With a disability</h4>
-                    </div>
-                    <div class="stat">
-                        {{ stat.disability_f }} ({{ stat.disability_f_pc }}%)
-                    </div>
-                    <div class="stat">
-                        {{ stat.disability_m }} ({{ stat.disability_m_pc }}%)
-                    </div>
-                    <div class="stat">
-                        {{ stat.disability }} ({{ stat.disability_pc }}%)
-                    </div>
-                </div>
-                <div id="stats-total" class="stats-row">
-                    <div class="stat-title">
-                        <h4>Totals</h4>
-                    </div>
-                    <div class="stat">
-                       {{ stat.queryset_f }} ({{ stat.queryset_f_pc }}%)      
-                    </div>
-                    <div class="stat">
-                        {{ stat.queryset_m }} ({{ stat.queryset_m_pc }}%)
-                    </div>
-                    <div class="stat">
-                        {{ stat.queryset }}
-                    </div>
-                </div>
-            </div><!--statblock islands, ages, disabililties, courses -->
-            {% endfor %}
+        <div class="statblock">        
+            <table>
+                <colgroup span="4" title="{{ name }} Applicants" />
+                    <thead>
+                        <div id="stats-title" class="stats-row">
+                            <tr>
+                                <th scope="col">&nbsp</th>
+                                <th scope="col">Female</th>
+                                <th scope="col">Male</th>
+                                <th scope="col">Total</th>
+                            </tr>
+                        </div>
+                    </thead>    
+                    <tfoot>
+                        <tr><th>Date created: </th></tr>
+                    </tfoot>
+                    <tbody> 
+                        <tr>
+                            <td><h4>Applicants, 16-24</h4></td>
+                            <td>{{ stat.queryset_24f }} ({{ stat.queryset_24f_pc }}%)</td>
+                            <td>{{ stat.queryset_24m }} ({{ stat.queryset_24m_pc }}%)</td>
+                            <td>{{ stat.queryset_24 }} ({{ stat.queryset_24_pc }}%)</td>
+                        </tr>                        
+                        <tr>
+                            <td><h4>Applicants, 25+</h4></td>
+                            <td>{{ stat.queryset_25f }} ({{ stat.queryset_25f_pc }}%)</td>
+                            <td>{{ stat.queryset_25m }} ({{ stat.queryset_25m_pc }}%)</td>
+                            <td>{{ stat.queryset_25 }} ({{ stat.queryset_25_pc }}%)</td>
+                        </tr>                        
+                        <tr>
+                            <td><h4>Outer Islands</h4></td>
+                            <td>{{ stat.outer_f }} ({{ stat.outer_f_pc }}%)</td>
+                            <td>{{ stat.outer_m }} ({{ stat.outer_m_pc }}%)</td>
+                            <td>{{ stat.outer }} ({{ stat.outer_pc }}%)</td>
+                        </tr>                        
+                        <tr>
+                            <td><h4>Disability</h4></td>
+                            <td>{{ stat.disability_f }} ({{ stat.disability_f_pc }}%)</td>
+                            <td>{{ stat.disability_m }} ({{ stat.disability_m_pc }}%)</td>
+                            <td>{{ stat.disability }} ({{ stat.disability_pc }}%)</td>
+                        </tr>                        
+                        <tr>
+                            <td><h4>Totals</h4></td>
+                            <td>{{ stat.queryset_f }} ({{ stat.queryset_f_pc }}%)</td>
+                            <td>{{ stat.queryset_m }} ({{ stat.queryset_m_pc }}%)</td>
+                            <td>{{ stat.queryset }} ({{ stat.queryset_pc }}%)</td>
+                        </tbody>
+                    </table>
+                </div><!--statblock islands, ages, disabililties, courses -->
+                {% endfor %}
 
-            <div class="statblock">
-            {% for name, stats in others.items %}
+                {% for name, stats in others.items %}
+                <div class="statblock">
+                    <table>
+                        <colgroup span="4" title="{{ name }} Applicants - Miscellaneous statistics" />
+                            <thead>
+                                <div id="stats-title" class="stats-row">
+                                    <tr>
+                                        <th scope="col">&nbsp</th>
+                                        <th scope="col">Female</th>
+                                        <th scope="col">Male</th>
+                                        <th scope="col">Total</th>
+                                    </tr>
+                                </div>
+                            </thead>    
+                            <tfoot>
+                                <tr><th>Date created: </th></tr>
+                            </tfoot>
+                            <tbody> 
+                                {% for type, listing in stats.items %}
+                                <div class="stats-misc">
+                                    <tr>
+                                        <td><div class="stat-title"><h4>{{ type }}</h4></div></td>
+                                        {% for number in listing %}
+                                        <td><div class="stat">{{ number }}</div></td>
+                                        {% endfor %}     
+                                    </tr>
+                                </div> 
+                                {% endfor %}
 
-                <div id="stats-title" class="stats-row"><h2>{{ name }} Applicants - Miscellaneous Stats</h2></div>
-                <div id="stats-headers" class="stats-row">
-                    <div class="stat-title">&nbsp;</div>
-                    <div class="stat"><strong>Female</strong></div>
-                    <div class="stat"><strong>Male</strong></div>
-                    <div class="stat"><strong>Total</strong></div>
-                </div>    
-                
-                {% for type, listing in stats.items %}
-                    <div class="stats-misc">
-                    <div class="stat-title"><h4>{{ type }}</h4></div>
-                    {% for number in listing %}
-                        <div class="stat">{{ number }}</div>
-                    {% endfor %}     
-                   </div> 
-                 {% endfor %}
-            {% endfor %}
-        </div> <!-- statblock, misc-->
-        {% endif %}
-      </div><!-- stats -->
-    </div>
+                        </tbody>    
+                    </table>
+                </div> <!-- statblock, misc-->
+                {% endfor %}               
+            {% endif %}
+            </div><!-- stats -->
+            <!-- </div>!-- end content-left -->
 {% endblock %}
