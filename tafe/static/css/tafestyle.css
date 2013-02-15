@@ -49,7 +49,7 @@ div.statblock {
     border: 1px solid black;
 }
 
-#stats-title {
+div.stats-title {
     background-color: #C7B6A5;
 }
 

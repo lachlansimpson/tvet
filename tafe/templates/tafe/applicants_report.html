@@ -19,7 +19,7 @@ Applicant Reports
             <table>
                 <colgroup span="4" title="{{ name }} Applicants" />
                     <thead>
-                        <div id="stats-title" class="stats-row">
+                        <div class="stats-row">
                             <tr>
                                 <th scope="col">&nbsp</th>
                                 <th scope="col">Female</th>
@@ -70,31 +70,28 @@ Applicant Reports
                 <div class="statblock">
                     <table>
                         <colgroup span="4" title="{{ name }} Applicants - Miscellaneous statistics" />
-                            <thead>
-                                <div id="stats-title" class="stats-row">
-                                    <tr>
-                                        <th scope="col">&nbsp</th>
-                                        <th scope="col">Female</th>
-                                        <th scope="col">Male</th>
-                                        <th scope="col">Total</th>
-                                    </tr>
-                                </div>
-                            </thead>    
-                            <tfoot>
-                                <tr><th>Date created: </th></tr>
-                            </tfoot>
-                            <tbody> 
-                                {% for type, listing in stats.items %}
-                                <div class="stats-misc">
-                                    <tr>
-                                        <td><div class="stat-title"><h4>{{ type }}</h4></div></td>
-                                        {% for number in listing %}
-                                        <td><div class="stat">{{ number }}</div></td>
-                                        {% endfor %}     
-                                    </tr>
-                                </div> 
-                                {% endfor %}
-
+                        <thead>
+                            <div class="stats-row">
+                                <tr>
+                                    <th scope="col">&nbsp</th>
+                                    <th scope="col">Female</th>
+                                    <th scope="col">Male</th>
+                                    <th scope="col">Total</th>
+                                </tr>
+                            </div>
+                        </thead>    
+                        <tfoot>
+                            <tr><th>Date created: </th></tr>
+                        </tfoot>
+                        <tbody> 
+                            {% for type, listing in stats.items %}
+                            <tr>
+                                <td><div class="stat-title"><h4>{{ type }}</h4></div></td>
+                                {% for number in listing %}
+                                <td><div class="stat">{{ number }}</div></td>
+                                {% endfor %}     
+                            </tr>
+                            {% endfor %}
                         </tbody>    
                     </table>
                 </div> <!-- statblock, misc-->
