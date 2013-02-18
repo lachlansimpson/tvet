@@ -407,7 +407,7 @@ class Applicant(Person):
             ''' need to confirm that they haven't already got an enrolment for this year
                 if so, we pass on creating a new enrolment '''
             for enrolment in self.student_details.enrolments.all():
-                if a.applied_for == enrolment.course:
+                if self.applied_for == enrolment.course:
                     pass
             '''
             TODO will have to break all this down, but the essential assumption is: 
