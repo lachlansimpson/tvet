@@ -30,6 +30,17 @@ class AssessmentInline(admin.TabularInline):
 class CourseInline(admin.TabularInline):
     model = Course
 
+class SubjectCoursesAdmin(admin.ModelAdmin):
+  inlines = [ 'CoursesInline', ]
+  exclude = ('subjects',)
+
+class CoursesInline(admin.StackedInline):
+    model = Course.subjects.through
+    extra = 1
+    verbose_name = 'Qualification'
+    verbose_name_plural = 'Qualifications'
+
+
 class CredentialInline(admin.TabularInline):
     model = Staff.credential.through
     extra = 1
@@ -595,7 +606,7 @@ class SubjectAdmin(admin.ModelAdmin):
     list_filter = ('year', 'semester', 'name')
     model = Subject
     prepopulated_fields = {'slug': ('name','year')}
-    inlines = [ AssessmentInline, SessionInline, GradeForSubjectInline,]
+    inlines = [ CoursesInline, AssessmentInline, SessionInline, GradeForSubjectInline,]
     actions = ['add_all_students',]
     save_on_top = True
     

@@ -473,6 +473,11 @@ class Assessment(models.Model):
     def get_year(self):
         return self.date_due.year
 
+
+class CourselessUnitManager(models.Manager):
+  def get_query_set(self):
+    return super(CourselessUnitManager, self).get_query_set().filter(course__isnull=True)
+
 class Subject(models.Model):
     '''Represents individual subjects, classes, cohorts'''
     name = models.CharField(max_length=125)
@@ -481,6 +486,9 @@ class Subject(models.Model):
     year = models.CharField(max_length=4)
     staff_member = models.ForeignKey('Staff', blank=True, null=True)
     students = models.ManyToManyField('Student', through='Grade', blank=True, null=True)
+
+    objects = models.Manager()
+    courseless = CourselessUnitManager()
 
     class Meta:
         ordering= ['name','year']
