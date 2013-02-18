@@ -28,6 +28,7 @@ urlpatterns = patterns('tafe.views',
 
     url(r'^units/$', ListView.as_view(queryset=Subject.objects.all())),
     url(r'^units/qualifications/$', units_by_qualifications_view, name='units_by_qualifications_view'),
+    url(r'^units/noqualifications/$', ListView.as_view(queryset=Subject.courseless.all())),
     url(r'^unit/(?P<slug>[-\w]+)/$', unit_view, name='unit_view'),
     url(r'^unit/(?P<slug>[-\w]+)/add-assessment/$', unit_add_assessment_view, name='unit_add_assessment_view'),
     url(r'^unit/(?P<unit>[-\w]+)/assessment/(?P<slug>[-\w]+)/$', assessment_view, name='assessment_view'),
