@@ -429,6 +429,7 @@ class Applicant(Person):
             self.disability_description = self.student_details.disability_description
             self.education_level = self.student_details.education_level            
             self.save() 
+            new_student = self.student_details
         else:
             '''not converted, let's go!'''
             '''create the Student object, transfer all data'''
