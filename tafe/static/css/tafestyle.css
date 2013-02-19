@@ -9,6 +9,7 @@
  *
  */
 
+
 #site-name {
     display: none;
 }
@@ -109,10 +110,41 @@ div.stat-title h4 {
 }
 
 
+/* tables for Reports */
+
+table {
+    -webkit-border-radius: 9px;
+    -moz-border-radius: 9px;
+    border-radius: 9px;
+    border-spacing: 0;
+    border:solid black 1px;
+    font-family: Futura, Arial, sans-serif;
+    overflow: hidden;
+}
+
+caption { 
+    font-size: larger; 
+    margin: 1em auto; 
+    text-align: left;
+    overflow: hidden;
+}
+
+th, td { padding: .75em; }
+
+th {
+    background: linear-gradient(#ccc,##777);
+    color: #fff;
+    overflow: hidden;
+}
+
+tr:nth-child(odd) { background: #ccc; }
+
+tfoot tr { text-align: left; }
+
 /*
-    DJANGO Admin styles
-    As adjusted for KIT/TVET
-*/
+DJANGO Admin styles
+As adjusted for KIT/TVET
+ */
 
 body {
     margin: 0;
@@ -348,175 +380,6 @@ p img, h1 img, h2 img, h3 img, h4 img, td img {
     white-space: nowrap;
 }
 
-/* TABLES */
-
-table {
-    border-collapse: collapse;
-    border-color: #ccc;
-}
-
-td, th {
-    font-size: 11px;
-    line-height: 13px;
-    border-bottom: 1px solid #eee;
-    vertical-align: top;
-    padding: 5px;
-    font-family: "Lucida Grande", Verdana, Arial, sans-serif;
-}
-
-th {
-    text-align: left;
-    font-size: 12px;
-    font-weight: bold;
-}
-
-thead th,
-tfoot td {
-    color: #666;
-    padding: 2px 5px;
-    font-size: 11px;
-    background: #e1e1e1 url(../img/nav-bg.gif) top left repeat-x;
-    border-left: 1px solid #ddd;
-    border-bottom: 1px solid #ddd;
-}
-
-tfoot td {
-    border-bottom: none;
-    border-top: 1px solid #ddd;
-}
-
-thead th:first-child,
-tfoot td:first-child {
-    border-left: none !important;
-}
-
-thead th.optional {
-    font-weight: normal !important;
-}
-
-fieldset table {
-    border-right: 1px solid #eee;
-}
-
-tr.row-label td {
-    font-size: 9px;
-    padding-top: 2px;
-    padding-bottom: 0;
-    border-bottom: none;
-    color: #666;
-    margin-top: -1px;
-}
-
-tr.alt {
-    background: #f6f6f6;
-}
-
-.row1 {
-    background: #EDF3FE;
-}
-
-.row2 {
-    background: white;
-}
-
-/* SORTABLE TABLES */
-
-thead th {
-    padding: 2px 5px;
-    line-height: normal;
-}
-
-thead th a:link, thead th a:visited {
-    color: #666;
-}
-
-thead th.sorted {
-    background: #c5c5c5 url(../img/nav-bg-selected.gif) top left repeat-x;
-}
-
-table thead th .text span {
-    padding: 2px 5px;
-    display:block;
-}
-
-table thead th .text a {
-    display: block;
-    cursor: pointer;
-    padding: 2px 5px;
-}
-
-table thead th.sortable:hover {
-    background: white url(../img/nav-bg-reverse.gif) 0 -5px repeat-x;
-}
-
-thead th.sorted a.sortremove {
-    visibility: hidden;
-}
-
-table thead th.sorted:hover a.sortremove {
-    visibility: visible;
-}
-
-table thead th.sorted .sortoptions {
-    display: block;
-    padding: 4px 5px 0 5px;
-    float: right;
-    text-align: right;
-}
-
-table thead th.sorted .sortpriority {
-    font-size: .8em;
-    min-width: 12px;
-    text-align: center;
-    vertical-align: top;
-}
-
-table thead th.sorted .sortoptions a {
-    width: 14px;
-    height: 12px;
-    display: inline-block;
-}
-
-table thead th.sorted .sortoptions a.sortremove {
-    background: url(../img/sorting-icons.gif) -4px -5px no-repeat;
-}
-
-table thead th.sorted .sortoptions a.sortremove:hover {
-    background: url(../img/sorting-icons.gif) -4px -27px no-repeat;
-}
-
-table thead th.sorted .sortoptions a.ascending {
-    background: url(../img/sorting-icons.gif) -5px -50px no-repeat;
-}
-
-table thead th.sorted .sortoptions a.ascending:hover {
-    background: url(../img/sorting-icons.gif) -5px -72px no-repeat;
-}
-
-table thead th.sorted .sortoptions a.descending {
-    background: url(../img/sorting-icons.gif) -5px -94px no-repeat;
-}
-
-table thead th.sorted .sortoptions a.descending:hover {
-    background: url(../img/sorting-icons.gif) -5px -115px no-repeat;
-}
-
-/* ORDERABLE TABLES */
-
-table.orderable tbody tr td:hover {
-    cursor: move;
-}
-
-table.orderable tbody tr td:first-child {
-    padding-left: 14px;
-    background-image: url(../img/nav-bg-grabber.gif);
-    background-repeat: repeat-y;
-}
-
-table.orderable-initalized .order-cell, body>tr>td.order-cell {
-    display: none;
-}
-
 /* FORM DEFAULTS */
 
 input, textarea, select, .form-row p {
@@ -552,9 +415,9 @@ input[type=text], input[type=password], textarea, select, .vTextField {
 }
 
 .button[disabled], input[type=submit][disabled], input[type=button][disabled] {
-	background-image: url(../img/nav-bg.gif);
-	background-position: bottom;
-	opacity: 0.4;
+    background-image: url(../img/nav-bg.gif);
+    background-position: bottom;
+    opacity: 0.4;
 }
 
 .button.default, input[type=submit].default, .submit-row input.default {
@@ -571,9 +434,9 @@ input[type=text], input[type=password], textarea, select, .vTextField {
 }
 
 .button[disabled].default, input[type=submit][disabled].default, input[type=button][disabled].default {
-	background-image: url(../img/default-bg.gif);
-	background-position: bottom;
-	opacity: 0.4;
+    background-image: url(../img/default-bg.gif);
+    background-position: bottom;
+    opacity: 0.4;
 }
 
 
@@ -667,7 +530,7 @@ ul.errorlist {
 }
 
 .errorlist li a {
- 	color: white;
+    color: white;
     text-decoration: underline;
 }
 
@@ -964,28 +827,28 @@ table#change-history tbody th {
  * code below) but couldn't get it to work
  * /
 
-/*a.add-row {
-    border:     1px solid white;
-    padding:            5px 10px !important;
-    font-size:          8px !important;
-    background-color:   #ECE5DF;
-    font-weight:                bold;
-    color:                      #2d525d;
-    margin: 10px;
-}*/
+ /*a.add-row {
+ border:     1px solid white;
+ padding:            5px 10px !important;
+ font-size:          8px !important;
+ background-color:   #ECE5DF;
+ font-weight:                bold;
+ color:                      #2d525d;
+ margin: 10px;
+ }*/
 
 a.delete-row {
     padding: 15px;
     height: auto;
     width: auto;
 }
-    /*border:     1px solid white;
-    padding:            5px 10px !important;
-    font-size:          8px !important;
-    background-color:   #ECE5DF;
-    font-weight:                bold;
-    color: red;
-    margin: 10px;
+/*border:     1px solid white;
+padding:            5px 10px !important;
+font-size:          8px !important;
+background-color:   #ECE5DF;
+font-weight:                bold;
+color: red;
+margin: 10px;
 }*/
 
 #session-room, #session-subject {
@@ -1003,13 +866,3 @@ div.sessionform {
 
 div.form-submit {
 }
-
-
-th.col1, td.col1 {
-  width:10%;
-}
-
-th.col2 td.col2 {
-  width:30%;
-}
-
