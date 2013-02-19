@@ -398,11 +398,17 @@ class Applicant(Person):
     
     def convert_to_student(self):
         '''Turn an applicant into a student, create all required associated objects'''
-        if self.successful:
-            '''Already converted. Note that this is on the Application itself, 
-            which is why it preceeds the student check'''
-            pass 
+        '''if self.successful:
+            Already converted. Note that this is on the Application itself, 
+            which is why it preceeds the student check
+            pass '''
+        
         if self.student_details:
+            ''' need to confirm that they haven't already got an enrolment for this year
+                if so, we pass on creating a new enrolment '''
+            for enrolment in self.student_details.enrolments.all():
+                if self.applied_for == enrolment.course:
+                    pass
             '''
             TODO will have to break all this down, but the essential assumption is: 
             if there's a student details attached, this is an application by a 
@@ -423,6 +429,7 @@ class Applicant(Person):
             self.disability_description = self.student_details.disability_description
             self.education_level = self.student_details.education_level            
             self.save() 
+            new_student = self.student_details
         else:
             '''not converted, let's go!'''
             '''create the Student object, transfer all data'''
@@ -444,26 +451,26 @@ class Applicant(Person):
             self.student_details = new_student
             self.save()
 
-            '''Create the Enrolment record for the Student and the Course they applied for'''
-            new_enrolment = Enrolment()
-            new_enrolment.student = new_student
-            new_enrolment.course = self.applied_for
-            new_enrolment.save()
+        '''Create the Enrolment record for the Student and the Course they applied for'''
+        new_enrolment = Enrolment()
+        new_enrolment.student = new_student
+        new_enrolment.course = self.applied_for
+        new_enrolment.save()
 
-            '''At the moment all units/subjects in a course are compulsory - 
-            this method will need to change for greater flexibility in the future'''
-            ''' Create the Grade object for each unit in the course, related to the 
-            student object'''
-            for unit in self.applied_for.subjects.all():
-                new_grade = Grade()
-                new_grade.student = new_student
-                new_grade.subject = unit
-                new_grade.date_started = today
-                new_grade.save()
+        '''At the moment all units/subjects in a course are compulsory - 
+        this method will need to change for greater flexibility in the future'''
+        ''' Create the Grade object for each unit in the course, related to the 
+        student object'''
+        for unit in self.applied_for.subjects.all():
+            new_grade = Grade()
+            new_grade.student = new_student
+            new_grade.subject = unit
+            new_grade.date_started = today
+            new_grade.save()
 
-            '''Converted successfully, move along'''
-            self.successful = 1 
-            self.save()
+        '''Converted successfully, move along'''
+        self.successful = 1 
+        self.save()
 
 class Assessment(models.Model):
     name = models.CharField(max_length=50)
