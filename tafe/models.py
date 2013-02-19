@@ -96,6 +96,11 @@ CLASSIFICATION_CHOICES = (
 )
 
 AQF_LEVEL_CHOICES = (
+    ('CERT4','Certificate IV'),
+    ('CERT3','Certificate III'),
+    ('CERT2','Certificate II'),
+    ('CERT1','Certificate I'),
+    ('VPC', 'Vocational Preparation Course'),
     ('BHONS','Bachelor Honors'),
     ('GCERT','Graduate Certificate'),
     ('GDIP','Graduate Diploma'), 
@@ -103,10 +108,6 @@ AQF_LEVEL_CHOICES = (
     ('ADIP','Advanced Diploma'),
     ('ADEG','Associate Degree'),
     ('DIP','Diploma'),
-    ('CERT4','Certificate IV'),
-    ('CERT3','Certificate III'),
-    ('CERT2','Certificate II'),
-    ('CERT1','Certificate I'),
     ('PHD','Doctoral'),
     ('MAST','Masters'),
     ('OTH','Other'),
@@ -373,6 +374,13 @@ class Applicant(Person):
         self.last_change_by = request.user
         self.save()
     
+    def not_short_list_applicant(self,request):
+        ''' Marks an applicant as NOT shortlisted '''
+        self.short_listed = 0
+        self.penultimate_change_by = self.last_change_by
+        self.last_change_by = request.user
+        self.save()
+    
     def send_an_offer(self,request):
         ''' Marks an applicant as shortlisted '''
         self.date_offer_sent = today
@@ -536,7 +544,7 @@ class Course(models.Model):
     '''Represents Courses - a collection of subjects leading to a degree'''
     name = models.CharField(max_length=30)
     aqf_level = models.CharField('AQF Level', max_length=5, choices=AQF_LEVEL_CHOICES)
-    course_code = models.CharField(max_length=8, blank=True)
+    course_code = models.CharField(max_length=20, blank=True)
     year = models.CharField(max_length=4)
     slug = models.SlugField(max_length=60)
     students = models.ManyToManyField('Student', through='Enrolment', blank=True, null=True)

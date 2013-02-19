@@ -249,7 +249,7 @@ class ApplicantAdmin(admin.ModelAdmin):
     list_display = ('__unicode__', 'gender', 'disability', 'applied_for', 'island', 'successful', 'test_ma', 'test_eng')
     list_filter = ('gender', 'short_listed', MathTestFilter, EnglishTestFilter, IslandFilter, OfferFilter, 'successful', 'applied_for', 'eligibility')
     readonly_fields = ('added', 'updated','last_change_by','penultimate_change_by')
-    actions = ['mark_unsuccessful', 'short_list_applicants','send_an_offer','accept_an_offer','make_student']
+    actions = ['mark_unsuccessful', 'short_list_applicants','not_short_list_applicants','send_an_offer','accept_an_offer','make_student']
     date_hierarchy = 'dob'
     save_on_top = True
 
@@ -293,6 +293,19 @@ class ApplicantAdmin(admin.ModelAdmin):
         else:
             message_bit = "%s applicants were" % rows_updated
         self.message_user(request, "%s short listed." % message_bit)
+
+    def not_short_list_applicants(self, request, queryset):
+        ''' Marks a group of applicants as shortlisted'''
+        rows_updated = 0
+        for applicant in queryset:
+            applicant.not_short_list_applicant(request)
+            rows_updated += 1
+        
+        if rows_updated == 1:
+            message_bit = "1 applicant was"
+        else:
+            message_bit = "%s applicants were" % rows_updated
+        self.message_user(request, "%s marked as not short listed." % message_bit)
 
     def send_an_offer(self, request, queryset):
         '''Marks the date offer sent as today to group of applicants'''
