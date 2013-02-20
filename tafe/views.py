@@ -527,7 +527,8 @@ def student_reports(request, year=None, format=None):
     if format == 'raw':
         return raw_csv_export(queryset)
     else:    
-        stats = others = SortedDict()  
+        stats = SortedDict()
+        others = SortedDict() 
         others['All'] = other_stats(queryset)
         stats['All'] = total_stats(queryset) 
         courses = Course.objects.filter(year=year)
@@ -538,14 +539,12 @@ def student_reports(request, year=None, format=None):
                 continue
             stats[name] = total_stats(queryset)
 
-        #others = other_stats(queryset)
-
         ''' test to see if CSV dump is wanted''' 
         if format == 'csv':
             filename = '%s_%s_stats.csv' %(slugify(queryset.model.__name__),year)
             return stats_csv_export(stats,filename)
         else:     #if not a CSV dump, send to web  
-            return render_to_response('tafe/student_reports.html',{'stats':stats, 'others':others},RequestContext(request))
+            return render_to_response('tafe/student_reports.html',{'stats':stats, 'others':others}, RequestContext(request))
 
 def stats_csv_export(stats, filename):
     response = HttpResponse(mimetype='text/csv')
