@@ -38,24 +38,6 @@
     padding: 5px 10px 10px 10px;
 }
 
-div.statblock {
-    width: 70%;
-    clear: both;
-    margin-top: 10px;
-    background-color: #C7B6A5;
-
-    -moz-border-radius: 6px 6px 6px 6px;
-    -webkit-border-radius: 6px 6px 6px 6px;
-    border-radius: 6px 6px 6px 6px;
-    border: 1px solid black;
-}
-
-colgroup.stats-title, tr.stats-title {
-    background-color: #C7B6A5;
-    width: 100%;
-    height: 40px;
-}
-
 .studentattendance {
     -moz-border-radius: 6px;
     -webkit-border-radius: 6px;
@@ -64,48 +46,6 @@ colgroup.stats-title, tr.stats-title {
     margin: 5px;
     padding-left: 5px;
 }
-
-div#stats-title h2 {
-    padding-left: 5px;
-}
-
-#stats-headers {
-    width: 100%;
-    clear: both;
-}
-
-.stat-title {
-    width: 25%;
-    float: left;
-}
-
-.stat {
-    width: 25%;
-    float: left;
-    text-align: center;
-    margin: 1em 0 .8em 0;
-    padding-bottom: 3px;
-}
-
-.stats-row {
-    width: 100%;
-    clear: both;
-    height: 40px;
-    background-color: #ECE5DF;
-}
-
-.stats-misc {
-    width: 100%;
-    clear: both;
-    height: auto;
-    background-color: #ECE5DF;
-
-}
-
-div.stat-title h4 {
-    padding-left: 5px;
-}
-
 
 /* tables for Reports */
 
