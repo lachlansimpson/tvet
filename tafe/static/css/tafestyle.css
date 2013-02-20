@@ -79,9 +79,6 @@ div#stats-title h2 {
     float: left;
 }
 
-#stats-total {
-}
-
 .stat {
     width: 25%;
     float: left;
@@ -119,7 +116,7 @@ table {
     border-spacing: 0;
     border:solid black 1px;
     font-family: Futura, Arial, sans-serif;
-    overflow: hidden;
+    overflow: hidden !important;
 }
 
 caption { 
@@ -129,17 +126,37 @@ caption {
     overflow: hidden;
 }
 
-th, td { padding: .75em; }
+th, td { 
+    padding: .75em; 
+}
 
 th {
     background: linear-gradient(#ccc,##777);
     color: #fff;
-    overflow: hidden;
+    overflow: hidden !important;
 }
 
-tr:nth-child(odd) { background: #ccc; }
+tr th, tr td{
+    border: 1px solid gray;
+    border-collapse: collapse;
+}
 
-tfoot tr { text-align: left; }
+tr:nth-child(odd) { 
+    background: #ECE5DF; 
+    overflow: hidden !important;
+}
+
+tfoot tr th { 
+    text-align: left; 
+    color: black;
+    background: #C7B6A5 !important;
+}
+
+thead tr th {
+    background: #C7B6A5 !important;
+    color: black;
+    overflow: hidden !important;
+}
 
 /*
 DJANGO Admin styles

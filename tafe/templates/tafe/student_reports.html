@@ -10,17 +10,16 @@ Student Reports
 {% block coltype %}colMS{% endblock %}
 {% block content %}
 <div id="content-left" class="grid_12">
-    <div id="stats" class="grid_10">
+    <div id="stats" class="grid_12">
     {%  if not stats %}
     <h5>Sorry, there are no enrollments at the moment.</h5>
     {% else %}
-        {% for name, stat in stats.items %}    
-            <div class="statblock">
-            <table>
-                <caption><h2>{{ name }} Student Enrolments</h2></caption>
-                <colgroup class="stats-title" span="4" />
+    {% for name, stat in stats.items %}    
+        <table>
+            <caption>{{ name }} Student Enrolments</caption>
+            <colgroup span="4" />
                 <thead>
-                    <tr class="stats-title">
+                    <tr>
                         <th scope="col">Statistic</th>
                         <th scope="col">Female</th>
                         <th scope="col">Male</th>
@@ -28,7 +27,7 @@ Student Reports
                     </tr>
                 </thead>
                 <tfoot>
-                    <tr><th>Date created: </th></tr>
+                    <tr><th colspan="4">Date created: </th></tr>
                 </tfoot>
                 <tbody> 
                     <tr>
@@ -64,7 +63,6 @@ Student Reports
                 </tbody>
                 </div>
             </table>
-            </div><!--statblock -->
             {% endfor %}
         {% endif %}
     </div><!-- stats -->
