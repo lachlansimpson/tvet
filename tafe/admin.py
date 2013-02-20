@@ -418,6 +418,7 @@ class CredentialAdmin(admin.ModelAdmin):
         obj.save()
 
 class EnrolmentAdmin(admin.ModelAdmin):
+    actions =[ 'mark_sponsored_student',]
     fieldsets = [
         ('',{'fields':['student','course','date_started','date_ended','mark','withdrawal_reason','semester_1_payment','semester_1_payment_receipt','semester_1_payment_date','semester_2_payment','semester_2_payment_receipt','semester_2_payment_date']}),
         ('Admin (non editable)', {'fields':(('last_change_by','penultimate_change_by'),)}),
@@ -426,6 +427,18 @@ class EnrolmentAdmin(admin.ModelAdmin):
     list_filter = ('course', 'date_started')
     readonly_fields = ('last_change_by','penultimate_change_by')
     save_on_top = True
+
+    def mark_sponsored_student(self, request, queryset):
+        rows_updated = 0
+        for enrolment in queryset:
+            enrolment.mark_sponsored_student(request)
+            rows_updated += 1
+        
+        if rows_updated == 1:
+            message_bit = "1 student was"
+        else:
+            message_bit = "%s students were" % rows_updated
+        self.message_user(request, "%s marked as sponsored." % message_bit)
 
     def save_model(self, request, obj, form, change): 
         # If the enrolment has mark withdrawn but no reason, 

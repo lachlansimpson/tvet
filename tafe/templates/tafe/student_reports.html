@@ -14,6 +14,7 @@ Student Reports
     {%  if not stats %}
     <h5>Sorry, there are no enrollments at the moment.</h5>
     {% else %}
+    <!-- General Stats -->
     {% for name, stat in stats.items %}    
         <table>
             <caption>{{ name }} Student Enrolments</caption>
@@ -64,10 +65,39 @@ Student Reports
                 </div>
             </table>
             {% endfor %}
-
+            <!-- Education Level Stats -->
             {% for name, stats in others.items %}
                 <table>
                 <caption>{{ name }} Students - Miscellaneous statistics</caption>               
+                    <colgroup span="4" title="{{ name }} Applicants - Miscellaneous statistics" />    
+                    <thead>
+                            <tr>
+                                <th scope="col">Statistic</th>
+                                <th scope="col">Female</th>
+                                <th scope="col">Male</th>
+                                <th scope="col">Total</th>
+                            </tr>   
+                    </thead>    
+                    <tfoot>
+                        <tr><th colspan="4">Date created: </th></tr>
+                    </tfoot>
+                    <tbody> 
+                        {% for type, listing in stats.items %}
+                        <tr>
+                            <td><div><h4>{{ type }}</h4></div></td>
+                            {% for number in listing %}
+                            <td><div>{{ number }}</div></td>
+                            {% endfor %}     
+                        </tr>   
+                        {% endfor %}
+                    </tbody>    
+                </table>
+            {% endfor %}     
+            
+            <!-- Sponsored Student Stats -->
+            {% for name, stats in sponsored.items %}
+                <table>
+                <caption>{{ name }} Sponsored Students - Miscellaneous statistics</caption>               
                     <colgroup span="4" title="{{ name }} Applicants - Miscellaneous statistics" />    
                     <thead>
                             <tr>

@@ -667,6 +667,16 @@ class Enrolment(models.Model):
         if self.semester_2_payment == 'P' and self.semester_2_payment_date is None:
             raise ValidationError('Semester 2 is marked paid, but there is no date of payment')
 
+    def make_sponsored_student(self):
+        ''' If semester 1 isn't set, default to that '''
+        if self.semester_1_payment == None:
+            self.semester_1_payment = 'S'
+        elif self.semester_2_payment == None: ''' else, if it is set, and semester 2 isn't, set semester 2'''
+            self.semester_2_payment = 'S'
+        else: ''' TODO: raise an error'''
+            pass
+        self.save()
+
 class Grade(models.Model):
     '''Represents a Student's interactions with a Subject. ie, being in a class.'''
     student = models.ForeignKey('Student', related_name='grades')
@@ -769,6 +779,11 @@ class Staff(Person):
     def get_absolute_url(self):
         return ('staff_view', [str(self.slug)])
 
+
+class SponsoredEnrolmentManager(models.Manager):
+    def get_query_set(self):
+        return super(SponsoredEnrolmentManager, self).get_query_set().filter(enrolments__semester_1_payment='S')
+
 class NewStudentManager(models.Manager):
     def get_query_set(self):
         return super(NewStudentManager, self).get_query_set().filter(enrolment__student__isnull=True)
@@ -779,6 +794,7 @@ class Student(Person):
     
     objects = models.Manager()
     new_students = NewStudentManager()
+    sponsored_students = SponsoredEnrolmentManager()
 
     def get_id(self):
         ''' 

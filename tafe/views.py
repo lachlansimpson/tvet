@@ -521,6 +521,7 @@ def student_reports(request, year=None, format=None):
     '''
     year = year or datetime.date.today().year
     queryset = Student.objects.filter(enrolments__course__year__exact=year) 
+    sponsored_qs = Student.sponsored_students.all()
     
     if queryset.count()==0:
        return render_to_response('tafe/student_reports.html',{},RequestContext(request))
@@ -529,6 +530,8 @@ def student_reports(request, year=None, format=None):
     else:    
         stats = SortedDict()
         others = SortedDict() 
+        sponsored = SortedDict()
+        sponsored['All'] = sponsored_stats(sponsored_qs)
         others['All'] = other_stats(queryset)
         stats['All'] = total_stats(queryset) 
         courses = Course.objects.filter(year=year)
@@ -544,7 +547,7 @@ def student_reports(request, year=None, format=None):
             filename = '%s_%s_stats.csv' %(slugify(queryset.model.__name__),year)
             return stats_csv_export(stats,filename)
         else:     #if not a CSV dump, send to web  
-            return render_to_response('tafe/student_reports.html',{'stats':stats, 'others':others}, RequestContext(request))
+            return render_to_response('tafe/student_reports.html',{'stats':stats, 'others':others, 'sponsored':sponsored}, RequestContext(request))
 
 def stats_csv_export(stats, filename):
     response = HttpResponse(mimetype='text/csv')
@@ -581,6 +584,18 @@ def raw_csv_export(queryset):
         writer.writerow(row)
     # Return CSV file to browser as download
     return response
+
+def sponsored_stats(queryset):
+    queryset_m = queryset.filter(gender = 'M')
+    queryset_f = queryset.filter(gender = 'F')
+    spons_stats = SortedDict() 
+
+    a = queryset.values('address').distinct()
+    m = queryset_m.values('address').distinct()
+    f = queryset_f.values('address').distinct()
+
+    spons_stats['Addresses'] = (f,m,a)
+    return spons_stats
 
 def other_stats(queryset):
     queryset_m = queryset.filter(gender = 'M')
