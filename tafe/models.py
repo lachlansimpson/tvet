@@ -31,6 +31,27 @@ ISLAND_CHOICES = (
     ('Internatio',u'International'),
 )
 
+ADDRESS_CHOICES = (
+        ('Betio','Betio'),
+        ('Bairiki','Bairiki'),
+        ('Nanikaai','Nanikaai'),
+        ('Teaoraereke','Teaoraereke'),
+        ('Antenon','Antenon'),
+        ('Antebuka','Antebuka'),
+        ('Banraeaba','Banraeaba'),
+        ('Ambo','Ambo'),
+        ('Taborio','Taborio'),
+        ('Eita','Eita'),
+        ('Bangatebure','Bangatebure'),
+        ('Bikenibeu','Bikenibeu'),
+        ('Nawerewere','Nawerewere'),
+        ('Bonriki','Bonriki'),
+        ('Temwaiku','Temwaiku'),
+        ('Tanaea','Tanaea'),
+        ('Buota','Buota'),
+        ('Abatao','Abatao'),
+)
+
 GENDER_CHOICES = (
     (u'M',u'Male'),
     (u'F',u'Female'),
@@ -280,7 +301,7 @@ class Person(models.Model):
     phone = models.CharField(max_length=12, blank=True)
     phone2 = models.CharField(max_length=12, blank=True)
     email = models.EmailField(blank=True)
-    address = models.TextField(blank=True)
+    address = models.CharField(max_length='11', choices=ADDRESS_CHOICES, null=True, blank=True)
 
     disability = models.NullBooleanField()
     disability_description = models.CharField('Description', max_length=50, blank=True)
@@ -667,13 +688,17 @@ class Enrolment(models.Model):
         if self.semester_2_payment == 'P' and self.semester_2_payment_date is None:
             raise ValidationError('Semester 2 is marked paid, but there is no date of payment')
 
+    ''' Convert a regular Student into a Sponsored Student '''
+    ''' If semester 1 isn't set, default to that '''  
+    ''' else, if it is set, and semester 2 isn't, set semester 2''' 
+    ''' TODO: raise an error'''
     def make_sponsored_student(self):
-        ''' If semester 1 isn't set, default to that '''
+   
         if self.semester_1_payment == None:
             self.semester_1_payment = 'S'
-        elif self.semester_2_payment == None: ''' else, if it is set, and semester 2 isn't, set semester 2'''
+        elif self.semester_2_payment == None:
             self.semester_2_payment = 'S'
-        else: ''' TODO: raise an error'''
+        else: 
             pass
         self.save()
 
