@@ -90,6 +90,7 @@ ABSENCE_CHOICES = (
 )
 
 WITHDRAWAL_REASONS = (
+    ('dntuo','Did not take up offer'),
     ('personal','Personal'),
     ('family','Family'),
     ('job','Employment'),
