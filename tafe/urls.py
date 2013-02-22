@@ -35,7 +35,8 @@ urlpatterns = patterns('tafe.views',
     url(r'^unit/(?P<unit>[-\w]+)/assessment/(?P<slug>[-\w]+)/mark/$', assessment_mark_all, name='assessment_mark_all'),
     url(r'^unit/(?P<unit>[-\w]+)/assessment/(?P<assessment>[-\w]+)/result/(?P<student>[-\w]+)$', assessment_mark_single, name='assessment_mark_single'),
     
-    url(r'^enrolments/$', ListView.as_view(queryset=Enrolment.objects.all())),
+    url(r'^enrolments/$', ListView.as_view(queryset=Enrolment.non_withdrawn.all())),
+    url(r'^enrolments/all/$', ListView.as_view(queryset=Enrolment.objects.all())),
     url(r'^enrolment/(?P<slug>[-\w]+)/$', DetailView.as_view(model=Enrolment), name='enrolment_view'),
                       
     url(r'^grades/$', ListView.as_view(queryset=Grade.objects.all())),

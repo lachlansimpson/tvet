@@ -626,12 +626,17 @@ class Credential(models.Model):
     def __unicode__(self):
         return str(self.get_aqf_level_display()) +', '+self.name+', '+self.institution
 
+class NonWithdrawnEnrolments(models.Manager):
+    def get_query_set(self):
+        return super(NonWithdrawnEnrolments, self).get_query_set().filter(mark__exact=None)
+
 class Enrolment(models.Model):
     '''Represents a Student's enrolment in a Course'''
     student = models.ForeignKey('Student', related_name='enrolments')
     course = models.ForeignKey(Course, related_name='enrolments')
     date_started = models.DateField(default=today)
     date_ended = models.DateField(blank=True, null=True)
+
     semester_1_payment = models.CharField(max_length=1, choices=FEE_PAYMENT_CHOICES, default='N') 
     semester_1_payment_receipt = models.CharField(max_length=8, blank=True, null=True)
     semester_1_payment_date = models.DateField(blank=True, null=True)
@@ -643,7 +648,10 @@ class Enrolment(models.Model):
     withdrawal_reason = models.CharField(max_length=8, choices=WITHDRAWAL_REASONS, blank=True)
     
     slug = models.SlugField(max_length=110, blank=True)
-    
+   
+    objects = models.Manager()
+    non_withdrawn = NonWithdrawnEnrolments()
+
     last_change_by = models.ForeignKey(User, related_name='%(class)s_last_change_by', editable=False, blank=True, null=True)
     penultimate_change_by = models.ForeignKey(User, related_name='%(class)s_penultimate_change_by', blank=True, null=True, editable=False)
 
@@ -688,18 +696,51 @@ class Enrolment(models.Model):
         if self.semester_2_payment == 'P' and self.semester_2_payment_date is None:
             raise ValidationError('Semester 2 is marked paid, but there is no date of payment')
 
+        ''' Withdrawal Validation '''
+        if self.mark=='W' and self.withdrawal_reason=='':
+            raise ValidationError('Withdrawal requires reason')
+
     ''' Convert a regular Student into a Sponsored Student '''
     ''' If semester 1 isn't set, default to that '''  
     ''' else, if it is set, and semester 2 isn't, set semester 2''' 
     ''' TODO: raise an error'''
     def make_sponsored_student(self):
-   
         if self.semester_1_payment == None:
             self.semester_1_payment = 'S'
         elif self.semester_2_payment == None:
             self.semester_2_payment = 'S'
         else: 
             pass
+        self.save()
+
+    def mark_withdrawn_personal(self):
+        self.mark = 'W'
+        self.date_ended = today
+        self.withdrawal_reason = 'personal'
+        self.save()
+
+    def mark_withdrawn_family(self):
+        self.mark ='W'
+        self.date_ended=today
+        self.withdrawal_reason = 'family'
+        self.save()
+    
+    def mark_withdrawn_job(self):
+        self.mark ='W'
+        self.date_ended=today
+        self.withdrawal_reason = 'job'
+        self.save()
+    
+    def mark_withdrawn_study(self):
+        self.mark ='W'
+        self.date_ended=today
+        self.withdrawal_reason = 'study'
+        self.save()
+    
+    def mark_withdrawn_health(self):
+        self.mark ='W'
+        self.date_ended=today
+        self.withdrawal_reason = 'health'
         self.save()
 
 class Grade(models.Model):
@@ -817,6 +858,7 @@ class Student(Person):
     '''Represents each student '''
     education_level = models.CharField(max_length=2, blank=True, choices=EDUCATION_LEVEL_CHOICES)
     
+
     objects = models.Manager()
     new_students = NewStudentManager()
     sponsored_students = SponsoredEnrolmentManager()

@@ -418,15 +418,75 @@ class CredentialAdmin(admin.ModelAdmin):
         obj.save()
 
 class EnrolmentAdmin(admin.ModelAdmin):
-    actions =[ 'mark_sponsored_student',]
+    actions =[ 'mark_sponsored_student', 'mark_withdrawn_personal', 'mark_withdrawn_family', 'mark_withdrawn_job', 'mark_withdrawn_study', 'mark_withdrawn_health' ]
     fieldsets = [
         ('',{'fields':['student','course','date_started','date_ended','mark','withdrawal_reason','semester_1_payment','semester_1_payment_receipt','semester_1_payment_date','semester_2_payment','semester_2_payment_receipt','semester_2_payment_date']}),
         ('Admin (non editable)', {'fields':(('last_change_by','penultimate_change_by'),)}),
     ]
     list_display = ('student', 'course', 'date_started')
-    list_filter = ('course', 'date_started')
+    list_filter = ('course', 'date_started', 'mark', 'withdrawal_reason')
     readonly_fields = ('last_change_by','penultimate_change_by')
     save_on_top = True
+
+    def mark_withdrawn_study(self, request, queryset):
+        rows_updated = 0
+        for enrolment in queryset:
+            enrolment.mark_withdrawn_study()
+            rows_updated += 1
+        
+        if rows_updated == 1:
+            message_bit = "1 student was"
+        else:
+            message_bit = "%s students were" % rows_updated
+        self.message_user(request, "%s marked as withdrawn for reason of study." % message_bit)
+
+    def mark_withdrawn_personal(self, request, queryset):
+        rows_updated = 0
+        for enrolment in queryset:
+            enrolment.mark_withdrawn_personal()
+            rows_updated += 1
+        
+        if rows_updated == 1:
+            message_bit = "1 student was"
+        else:
+            message_bit = "%s students were" % rows_updated
+        self.message_user(request, "%s marked as withdrawn for personal reasons." % message_bit)
+    
+    def mark_withdrawn_family(self, request, queryset):
+        rows_updated = 0
+        for enrolment in queryset:
+            enrolment.mark_withdrawn_family()
+            rows_updated += 1
+        
+        if rows_updated == 1:
+            message_bit = "1 student was"
+        else:
+            message_bit = "%s students were" % rows_updated
+        self.message_user(request, "%s marked as withdrawn for family reasons." % message_bit)
+
+    def mark_withdrawn_job(self, request, queryset):
+        rows_updated = 0
+        for enrolment in queryset:
+            enrolment.mark_withdrawn_job()
+            rows_updated += 1
+        
+        if rows_updated == 1:
+            message_bit = "1 student was"
+        else:
+            message_bit = "%s students were" % rows_updated
+        self.message_user(request, "%s marked as withdrawn for a job." % message_bit)
+    
+    def mark_withdrawn_health(self, request, queryset):
+        rows_updated = 0
+        for enrolment in queryset:
+            enrolment.mark_withdrawn_health()
+            rows_updated += 1
+        
+        if rows_updated == 1:
+            message_bit = "1 student was"
+        else:
+            message_bit = "%s students were" % rows_updated
+        self.message_user(request, "%s marked as withdrawn for health reasons." % message_bit)
 
     def mark_sponsored_student(self, request, queryset):
         rows_updated = 0
