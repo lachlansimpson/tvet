@@ -743,6 +743,12 @@ class Enrolment(models.Model):
         self.date_ended=today
         self.withdrawal_reason = 'health'
         self.save()
+    
+    def mark_withdrawn_untaken(self):
+        self.mark ='W'
+        self.date_ended=today
+        self.withdrawal_reason = 'dntuo'
+        self.save()
 
 class Grade(models.Model):
     '''Represents a Student's interactions with a Subject. ie, being in a class.'''
