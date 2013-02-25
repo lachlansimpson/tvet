@@ -585,7 +585,7 @@ class Course(models.Model):
 
     def __unicode__(self):
         '''Course Reference: name of the course'''
-        fullname = str(self.aqf_level) + ' in ' + str(self.name)
+        fullname = str(self.aqf_level) + ' in ' + str(self.name) + ', ' + str(self.year)
         return str(fullname)
 
     @models.permalink	

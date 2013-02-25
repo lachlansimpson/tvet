@@ -12,21 +12,39 @@ List of applicants enrolled
 {% block coltype %}colMS{% endblock %}
 {% block content %}
   <div class="grid_12">
-      <div id="list" class="grid_5">
-      <h3>Studentlist by Qualification</h3>
+      <div id="list" class="grid_6">
+      <h3>Student list by Qualification</h3>
       {% if enrolments %}
          {% regroup enrolments|dictsort:"course.name" by course as course_list %}
          {% for course in course_list %}
-              <a href="#{{ course.grouper }}">{{ course.grouper }}</a> | 
+              <a href="#{{ course.grouper|slugify }}">{{ course.grouper }}</a> | 
          {% endfor %}
          {% regroup enrolments|dictsort:"course.name" by course as course_list %}
         {% for course in course_list %}
-        <h3><a href="#{{ course.grouper }}">{{ course.grouper }}</a></h3>
-            <ul>
-                {% for enrolment in course.list %}
-                    <li>{{ enrolment.student }}</li>
-                {% endfor %}
-            </ul>
+        <h3><a id="{{ course.grouper|slugify }}">{{ course.grouper }}</a></h3>
+        <table>  
+            <colgroup span="5" />
+            <thead>
+                <tr>
+                    <th scope="col">Name</th>
+                    <th scope="col">Gender</th>
+                    <th scope="col">Date of Birth</th>
+                    <th scope="col">Address</th>
+                    <th scope="col">Date Started Course</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for enrolment in course.list %}
+            <tr>
+                <td>{{ enrolment.student }}</td>
+                <td>{{ enrolment.student.get_gender_display }}</td>
+                <td>{{ enrolment.student.dob|date:'d/m/Y' }}</td>
+                <td>{{ enrolment.student.address }}</td>
+                <td>{{ enrolment.date_started|date:'d/m/Y' }}</td>
+            </tr>
+            {% endfor %}
+            </tbody>
+        </table>    
         {% endfor %}
 
       {% else %}
