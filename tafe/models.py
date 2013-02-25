@@ -629,7 +629,7 @@ class Credential(models.Model):
 
 class NonWithdrawnEnrolments(models.Manager):
     def get_query_set(self):
-        return super(NonWithdrawnEnrolments, self).get_query_set().filter(mark__exact=None)
+        return super(NonWithdrawnEnrolments, self).get_query_set().exclude(mark__exact='W')
 
 class Enrolment(models.Model):
     '''Represents a Student's enrolment in a Course'''
@@ -705,6 +705,15 @@ class Enrolment(models.Model):
     ''' If semester 1 isn't set, default to that '''  
     ''' else, if it is set, and semester 2 isn't, set semester 2''' 
     ''' TODO: raise an error'''
+
+    def admin_display_non_withdrawn(self):
+        if self.mark == 'W':
+            return False
+        else:
+            return True
+    admin_display_non_withdrawn.boolean = True
+    admin_display_non_withdrawn.short_description = 'Current Enrolments'
+
     def make_sponsored_student(self):
         if self.semester_1_payment == None:
             self.semester_1_payment = 'S'
