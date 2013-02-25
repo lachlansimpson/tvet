@@ -419,17 +419,20 @@ class CredentialAdmin(admin.ModelAdmin):
 
 class EnrolmentCurrentListFilter(admin.SimpleListFilter):
     parameter_name = 'current'
-    title = 'Enrolments'
+    title = 'Enrolment Status'
     def lookups(self, request, model_admin):
         return (
                 ('Current','Currently enrolled'),
                 ('Withdrawn','Withdrawn from enrolment'),
                 )
+
     def queryset(self, request, queryset):
         if self.value() == 'Current':
             return queryset.exclude(mark__exact='W')
-        else:
+        elif self.value() == 'Withdrawn':
             return queryset.filter(mark__exact='W')
+        else:
+            return queryset
 
 class EnrolmentAdmin(admin.ModelAdmin):
     actions =[ 'mark_sponsored_student', 'mark_withdrawn_personal', 'mark_withdrawn_family', 'mark_withdrawn_job', 'mark_withdrawn_study', 'mark_withdrawn_health','mark_withdrawn_untaken']
@@ -438,7 +441,7 @@ class EnrolmentAdmin(admin.ModelAdmin):
         ('Admin (non editable)', {'fields':(('last_change_by','penultimate_change_by'),)}),
     ]
     list_display = ('student', 'course', 'date_started')
-    list_filter = ('course', 'date_started', 'mark', 'withdrawal_reason', EnrolmentCurrentListFilter)
+    list_filter = ('course', EnrolmentCurrentListFilter, 'mark', 'withdrawal_reason')
     readonly_fields = ('last_change_by','penultimate_change_by')
     save_on_top = True
 
