@@ -442,7 +442,7 @@ class EnrolmentAdmin(admin.ModelAdmin):
         ('Admin (non editable)', {'fields':(('last_change_by','penultimate_change_by'),)}),
     ]
     list_display = ('student', 'course', 'date_started')
-    list_filter = ('course', EnrolmentCurrentListFilter, 'mark', 'withdrawal_reason')
+    list_filter = ('course', EnrolmentCurrentListFilter, 'mark', 'withdrawal_reason', 'semester_1_payment', 'semester_2_payment')
     readonly_fields = ('last_change_by','penultimate_change_by')
     save_on_top = True
 
