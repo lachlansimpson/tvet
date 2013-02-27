@@ -521,7 +521,7 @@ def student_reports(request, year=None, format=None):
     Island and disability. Stats considered per course and overall
     '''
     year = year or datetime.date.today().year
-    queryset = Student.objects.filter(enrolments__course__year__exact=year, enrolments__mark__exact='') 
+    queryset = Student.objects.filter(enrolments__course__year__exact=year, enrolments__mark__exact='').exclude(enrolments__course__aqf_level__exact='sc') 
     sponsored_qs = Student.sponsored_students.all()
     
     if queryset.count()==0:
