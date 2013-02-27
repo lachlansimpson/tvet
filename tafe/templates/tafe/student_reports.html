@@ -115,7 +115,9 @@ Student Reports
                         <tr>
                             <td><div><h4>{{ type }}</h4></div></td>
                             {% for number in listing %}
-                            <td><div>{{ number }}</div></td>
+                            <td>
+                                {{ number }}
+                            </td>
                             {% endfor %}     
                         </tr>   
                         {% endfor %}

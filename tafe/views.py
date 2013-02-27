@@ -1,6 +1,6 @@
 # Create your views here.
 
-from tafe.models import EDUCATION_LEVEL_CHOICES
+from tafe.models import EDUCATION_LEVEL_CHOICES, ADDRESS_CHOICES
 from tafe.models import Timetable, Session, Course, StudentAttendance, Subject, Assessment, StaffAttendance, Applicant, Student, Enrolment, Result, Grade
 from tafe.forms import SessionRecurringForm, ApplicantSuccessForm, ReportRequestForm, TimetableAddSessionForm, AssessmentAddForm, ResultForm
 from django.utils.datastructures import SortedDict
@@ -591,11 +591,15 @@ def sponsored_stats(queryset):
     queryset_f = queryset.filter(gender = 'F')
     spons_stats = SortedDict() 
 
-    a = queryset.values('address').distinct()
-    m = queryset_m.values('address').distinct()
-    f = queryset_f.values('address').distinct()
+    for key, value in ADDRESS_CHOICES:
+        a = queryset.filter(address=key).count()
+        if a == 0:
+            continue
+        else:
+            m = queryset_m.filter(address=key).count()
+            f = queryset_f.filter(address=key).count()
+            spons_stats[value] = (f,m,a)
 
-    spons_stats['Addresses'] = (f,m,a)
     return spons_stats
 
 def other_stats(queryset):
