@@ -196,8 +196,9 @@ def student_qualification_csv(request):
       if course.students.all().count()==0:
         continue
       students = []
+      students.append(('First Name','Surname','Gender','Date of Birth','Address','Start date'))
       for student in course.students.all():
-        students.append((student.first_name, student.surname))
+        students.append((student.first_name, student.surname, student.get_gender_display(), student.dob, student.address, student.enrolments.get(course=course).start_date))
       coursename = course.__unicode__()
       students_by_course[coursename] = students
     

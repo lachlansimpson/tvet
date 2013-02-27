@@ -123,6 +123,7 @@ AQF_LEVEL_CHOICES = (
     ('CERT2','Certificate II'),
     ('CERT1','Certificate I'),
     ('VPC', 'Vocational Preparation Course'),
+    ('SC', 'Short Course'),
     ('BHONS','Bachelor Honors'),
     ('GCERT','Graduate Certificate'),
     ('GDIP','Graduate Diploma'), 
