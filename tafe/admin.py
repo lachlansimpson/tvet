@@ -383,6 +383,7 @@ class CourseAdmin(admin.ModelAdmin):
         ('Subjects', { 'fields':('subjects',)}),
     )
     list_display = ('aqf_level', 'name', 'year','subjects_available')
+    list_filter = ('aqf_level','year','name')
     model = Course 
     prepopulated_fields = {'slug': ('aqf_level','name','year')}
     save_on_top = True
