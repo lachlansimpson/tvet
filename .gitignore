@@ -1,0 +1,6 @@
+*.log
+*.pot
+*.pyc
+*local_settings.py
+*kit-header.jpg
+*tvet/tafe/templates/admin/base_site.html
