@@ -1,16 +1,20 @@
 Student and Staff Information System
 ====================================
 
-This software was written in Django 1.4
-
 It's purpose is to track Applications, Students and Staff at a Technical Vocational Education and Training institute. 
 Qualifications/Courses, the Subjects/Units within, Assessments Enrolments and each subject's Session details are also modelled.
+
+It was written with a specific institution in mind, and as such has Kiribati specific options. 
 
 About
 -----
 This software was written for the Technical and Vocational Education and Training (TVET) Project being run from the Ministry of Labour and Human Resource Development in the Government of Kiribati.
 
 The final product was in production at the Kiribati Institute of Technology (KIT).
+
+Installation
+------------
+This software was written in Django 1.4, and should be installed as a django app.
 
 License
 -------
